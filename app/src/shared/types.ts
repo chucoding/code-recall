@@ -53,7 +53,10 @@ export interface UserSubscription {
 }
 
 /**
- * CLOVA Studio Chat Completion API Response
+ * AI 플래시카드 생성 응답
+ *
+ * 형태는 초기 공급자였던 CLOVA Studio Chat Completion 응답에서 왔고, 서버가 OpenAI
+ * 응답을 이 형태로 정규화해 돌려준다.
  */
 export interface ChatCompletionResponse {
   status: {
