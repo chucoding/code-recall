@@ -26,7 +26,7 @@ https://coderecall.app/
 ### 주요 기능
 
 - **GitHub 연동**: OAuth 로그인 후 복습할 리포지토리 선택
-- **커밋 기반 플래시카드**: 지정 기간의 커밋을 가져와 HyperCLOVA X로 질문/답 형식 플래시카드 자동 생성
+- **커밋 기반 플래시카드**: 지정 기간의 커밋을 가져와 OpenAI로 질문/답 형식 플래시카드 자동 생성
 - **플래시카드 복습**: 카드 넘기기로 복습, 마크다운·코드 diff 렌더링 지원
 - **매일 알림**: 매일 오전 8시(KST) FCM 푸시로 "복습할 카드가 도착했어요" 리마인더
 - **PWA**: 설치 가능한 웹 앱으로 모바일·데스크톱에서 사용
@@ -40,7 +40,7 @@ https://coderecall.app/
 | **프론트엔드** | React 18, TypeScript, Vite, Tailwind CSS, Zustand |
 | **PWA** | vite-plugin-pwa (오프라인·설치 지원) |
 | **백엔드·인프라** | Firebase (Authentication, Firestore, Cloud Functions, FCM) |
-| **AI** | 네이버 클라우드 HyperCLOVA X (HCX-007) — 플래시카드 생성 |
+| **AI** | OpenAI gpt-5.6-luna (기본), 네이버 클라우드 HyperCLOVA X (HCX-007) (선택) |
 | **연동** | GitHub API (커밋·파일 조회) |
 | **기타** | Markdown 렌더링 (react-markdown, remark-gfm), 코드 하이라이트 (react-syntax-highlighter) |
 
@@ -161,6 +161,9 @@ pnpm push
 firebase deploy --only functions,firestore:rules
 firebase deploy --only hosting
 ```
+
+AI 모델을 바꾼 뒤
+- 랜딩 데모 카드는 `refreshTrendingRepos`가 매일 오전 9시(KST)에 미리 만들어 둔 것을 쓰므로, 배포 직후에는 이전 모델이 만든 카드가 그대로 보인다. 새 모델 결과를 바로 확인하거나 시연해야 하면 Cloud Scheduler에서 `refreshTrendingRepos`를 강제 실행해 캐시를 앞당긴다.
 
 ## 🌏 리전
 

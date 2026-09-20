@@ -1,4 +1,5 @@
 import type { FlashCardData } from '@/entities/flashcard';
+import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/ai-timeout';
 
 const FUNCTIONS_URL = import.meta.env.PROD
   ? import.meta.env.VITE_FUNCTIONS_URL_PROD
@@ -9,7 +10,7 @@ export async function translateFlashcards(
   targetLang: 'ko' | 'en'
 ): Promise<FlashCardData[]> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  const timeoutId = setTimeout(() => controller.abort(), AI_REQUEST_TIMEOUT_MS);
 
   let response: Response;
   try {
@@ -21,7 +22,7 @@ export async function translateFlashcards(
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === 'AbortError') {
-      throw new Error('번역 API 호출 시간 초과 (30초)');
+      throw new Error(`번역 API 호출 시간 초과 (${AI_REQUEST_TIMEOUT_MS / 1000}초)`);
     }
     throw err;
   } finally {
