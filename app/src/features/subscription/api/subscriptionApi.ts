@@ -1,3 +1,4 @@
+import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/ai-timeout';
 import { apiClient } from '@/shared/api/apiClient';
 
 export type PriceId = 'monthly' | 'yearly';
@@ -42,7 +43,10 @@ export interface RegenerateCardQuestionResult {
 export async function regenerateCardQuestion(
   params: RegenerateCardQuestionParams
 ): Promise<RegenerateCardQuestionResult> {
-  const { data } = await apiClient.post<RegenerateCardQuestionResult>('/regenerateCardQuestion', params);
+  // apiClient는 GitHub 프록시용 공용 인스턴스라 제한 시간이 15초. AI 재생성은 그보다 오래 걸리므로 이 호출에만 연장
+  const { data } = await apiClient.post<RegenerateCardQuestionResult>('/regenerateCardQuestion', params, {
+    timeout: AI_REQUEST_TIMEOUT_MS,
+  });
   return data;
 }
 

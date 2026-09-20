@@ -1,3 +1,4 @@
+import { AI_REQUEST_TIMEOUT_MS } from '@/shared/api/ai-timeout';
 import type { ChatCompletionResponse, FlashcardStructuredOutput } from '@/shared/types';
 
 const FUNCTIONS_URL = import.meta.env.PROD
@@ -6,7 +7,7 @@ const FUNCTIONS_URL = import.meta.env.PROD
 
 export async function chatCompletions(text: string, options?: { lang?: 'ko' | 'en' }): Promise<ChatCompletionResponse> {
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 30_000);
+  const timeoutId = setTimeout(() => controller.abort(), AI_REQUEST_TIMEOUT_MS);
 
   let response: Response;
   try {
@@ -18,7 +19,7 @@ export async function chatCompletions(text: string, options?: { lang?: 'ko' | 'e
     });
   } catch (err) {
     if (err instanceof DOMException && err.name === 'AbortError') {
-      throw new Error('AI API 호출 시간 초과 (30초)');
+      throw new Error(`AI API 호출 시간 초과 (${AI_REQUEST_TIMEOUT_MS / 1000}초)`);
     }
     throw err;
   } finally {
