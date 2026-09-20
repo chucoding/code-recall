@@ -1,5 +1,12 @@
 import React from 'react';
-import './TermsModal.css';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/shared/ui/dialog';
+import { Button } from '@/shared/ui/button';
 
 interface TermsModalProps {
   isOpen: boolean;
@@ -8,28 +15,25 @@ interface TermsModalProps {
 }
 
 const TermsModal: React.FC<TermsModalProps> = ({ isOpen, termsType, onClose }) => {
-  if (!isOpen) return null;
-
   return (
-    <div className="terms-modal-overlay" onClick={onClose}>
-      <div className="terms-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="terms-modal-header">
-          <h2>{termsType === 'terms' ? '이용약관' : '개인정보처리방침'}</h2>
-          <button 
-            className="terms-modal-close"
-            onClick={onClose}
-          >
-            ×
-          </button>
-        </div>
-        <div className="terms-modal-content">
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent
+        showClose={true}
+        className="max-w-[600px] w-full max-h-[80vh] flex flex-col max-[480px]:max-h-[90vh] p-0 gap-0"
+      >
+        <DialogHeader className="px-7 py-6 border-b border-border max-[480px]:p-5 text-left">
+          <DialogTitle className="text-2xl max-[480px]:text-xl">
+            {termsType === 'terms' ? '이용약관' : '개인정보처리방침'}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="flex-1 overflow-y-auto p-7 text-foreground leading-[1.8] max-[480px]:p-5 [&_h3]:text-foreground [&_h3]:text-[1.1rem] [&_h3]:font-bold [&_h3]:mt-7 [&_h3]:mb-3 [&_h3]:pt-2 [&_h3:first-child]:mt-0 [&_p]:my-2 [&_p]:text-[0.95rem] [&_p]:text-muted-foreground [&_p]:leading-[1.7] max-[480px]:[&_h3]:text-base max-[480px]:[&_p]:text-[0.9rem]">
           {termsType === 'terms' ? (
             <>
               <h3>제1조 (목적)</h3>
-              <p>본 약관은 RecallBuddy(이하 "서비스")의 이용과 관련하여 서비스와 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.</p>
+              <p>본 약관은 CodeRecall(이하 "서비스")의 이용과 관련하여 서비스와 이용자의 권리, 의무 및 책임사항을 규정함을 목적으로 합니다.</p>
 
               <h3>제2조 (정의)</h3>
-              <p>1. "서비스"란 RecallBuddy가 제공하는 학습 관리 및 플래시카드 서비스를 의미합니다.</p>
+              <p>1. "서비스"란 CodeRecall가 제공하는 학습 관리 및 플래시카드 서비스를 의미합니다.</p>
               <p>2. "이용자"란 본 약관에 따라 서비스를 이용하는 회원을 말합니다.</p>
               <p>3. "회원"이란 서비스에 접속하여 본 약관에 따라 서비스를 이용하는 고객을 말합니다.</p>
 
@@ -67,7 +71,7 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, termsType, onClose }) =
           ) : (
             <>
               <h3>1. 개인정보의 수집 및 이용 목적</h3>
-              <p>RecallBuddy는 다음의 목적을 위하여 개인정보를 처리합니다:</p>
+              <p>CodeRecall는 다음의 목적을 위하여 개인정보를 처리합니다:</p>
               <p>- 회원 가입 및 관리: GitHub 계정 정보를 통한 본인 확인</p>
               <p>- 서비스 제공: GitHub 저장소 연동 및 학습 콘텐츠 관리</p>
               <p>- 알림 서비스: 학습 알림 제공</p>
@@ -104,25 +108,21 @@ const TermsModal: React.FC<TermsModalProps> = ({ isOpen, termsType, onClose }) =
 
               <h3>8. 개인정보 보호책임자</h3>
               <p>서비스는 개인정보 처리에 관한 업무를 총괄해서 책임지고, 개인정보 처리와 관련한 이용자의 불만처리 및 피해구제를 위하여 아래와 같이 개인정보 보호책임자를 지정하고 있습니다.</p>
-              <p>개인정보 보호책임자: RecallBuddy 운영팀</p>
+              <p>개인정보 보호책임자: 서현석 (chucoding@gmail.com)</p>
 
               <h3>9. 개인정보처리방침의 변경</h3>
               <p>이 개인정보처리방침은 시행일로부터 적용되며, 법령 및 방침에 따른 변경내용의 추가, 삭제 및 정정이 있는 경우에는 변경사항의 시행 7일 전부터 공지사항을 통하여 고지할 것입니다.</p>
             </>
           )}
         </div>
-        <div className="terms-modal-footer">
-          <button 
-            className="terms-modal-close-btn"
-            onClick={onClose}
-          >
+        <DialogFooter className="px-7 py-5 border-t border-border flex justify-end max-[480px]:px-5 max-[480px]:py-4">
+          <Button onClick={onClose}>
             닫기
-          </button>
-        </div>
-      </div>
-    </div>
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
 export default TermsModal;
-

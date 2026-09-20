@@ -1,71 +1,40 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
-import { useIndexedDB } from 'react-indexed-db-hook';
-import { auth, store } from '../firebase';
-import { getRepositories, getBranches, Branch } from '../api/github-api';
-import { Repository } from '../types';
-import './Onboarding.css';
+import { auth, store } from '@/shared/config/firebase';
+import { trackEvent } from '@/shared/config/analytics';
+import { getRepositories, getBranches } from '@/features/github-sync';
+import { Repository, UserRepository } from '@/shared/types';
+import { LayoutTemplate, TriangleAlert, CircleCheck, RefreshCw, Lightbulb, Smartphone, ChevronRight, ChevronDown, GitBranch } from 'lucide-react';
+import { Button } from '@/shared/ui/button';
+import { Alert, AlertDescription } from '@/shared/ui/alert';
+import { Label } from '@/shared/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/ui/select';
 
 interface OnboardingProps {
   onComplete: () => void;
 }
 
-interface RepositorySettings {
-  repositoryFullName: string;
-  repositoryUrl: string;
-  branch: string;
-}
-
-const CACHE_KEY = 'github_repositories';
-const getBranchCacheKey = (owner: string, repo: string) => `github_branches_${owner}_${repo}`;
-
 const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   const [step, setStep] = useState<number>(1);
-  const [settings, setSettings] = useState<RepositorySettings>({
-    repositoryFullName: '',
-    repositoryUrl: '',
-    branch: 'main',
-  });
+  /** 온보딩에서는 1개만 선택 → 저장 시 repositories: [선택한 1개] */
+  const [selectedRepo, setSelectedRepo] = useState<UserRepository | null>(null);
   const [repositories, setRepositories] = useState<Repository[]>([]);
-  const [branches, setBranches] = useState<Branch[]>([]);
   const [loadingRepos, setLoadingRepos] = useState<boolean>(false);
-  const [loadingBranches, setLoadingBranches] = useState<boolean>(false);
   const [saving, setSaving] = useState<boolean>(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const [isBranchDropdownOpen, setIsBranchDropdownOpen] = useState<boolean>(false);
-  const [error, setError] = useState<{ type: 'repos' | 'branches' | 'save'; message: string } | null>(null);
-
-  const repositoriesDB = useIndexedDB('repositories');
+  const [error, setError] = useState<{ type: 'repos' | 'save'; message: string } | null>(null);
+  const [branches, setBranches] = useState<{ name: string }[]>([]);
+  const [loadingBranches, setLoadingBranches] = useState<boolean>(false);
+  const selectedRepoRef = useRef<UserRepository | null>(null);
+  selectedRepoRef.current = selectedRepo;
 
   // 리포지토리 목록 가져오기
   const fetchRepositories = useCallback(async () => {
     try {
       setLoadingRepos(true);
       setError(null);
-
-      // 캐시 확인
-      try {
-        const cached = await repositoriesDB.getByID(CACHE_KEY);
-        if (cached) {
-          setRepositories(cached.data);
-          setLoadingRepos(false);
-          return;
-        }
-      } catch (cacheError) {
-        console.error('캐시 읽기 실패:', cacheError);
-      }
-
-      // API 호출
       const repos = await getRepositories();
       setRepositories(repos);
-
-      // 캐시 저장
-      try {
-        await repositoriesDB.add({ id: CACHE_KEY, data: repos, timestamp: Date.now() });
-      } catch (error) {
-        console.error('캐시 저장 실패:', error);
-      }
-
       setLoadingRepos(false);
     } catch (error: any) {
       console.error('리포지토리 불러오기 실패:', error);
@@ -79,53 +48,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       });
       setLoadingRepos(false);
     }
-  }, [repositoriesDB]);
-
-  // 브랜치 목록 가져오기
-  const fetchBranches = useCallback(async (owner: string, repo: string) => {
-    try {
-      setLoadingBranches(true);
-      setError(null);
-      
-      const cacheKey = getBranchCacheKey(owner, repo);
-      
-      // 캐시 확인
-      try {
-        const cached = await repositoriesDB.getByID(cacheKey);
-        if (cached) {
-          setBranches(cached.data);
-          setLoadingBranches(false);
-          return;
-        }
-      } catch (cacheError) {
-        console.error('브랜치 캐시 읽기 실패:', cacheError);
-      }
-
-      // API 호출
-      const branchList = await getBranches(owner, repo);
-      setBranches(branchList);
-
-      // 캐시 저장
-      try {
-        await repositoriesDB.add({ id: cacheKey, data: branchList, timestamp: Date.now() });
-      } catch (error) {
-        console.error('브랜치 캐시 저장 실패:', error);
-      }
-
-      setLoadingBranches(false);
-    } catch (error: any) {
-      console.error('브랜치 불러오기 실패:', error);
-      const errorMessage = error?.response?.status === 401 || error?.response?.status === 403
-        ? 'GitHub 접근 권한이 없습니다. 다시 로그인해주세요.'
-        : '브랜치 목록을 불러오는데 실패했습니다.';
-      
-      setError({
-        type: 'branches',
-        message: errorMessage
-      });
-      setLoadingBranches(false);
-    }
-  }, [repositoriesDB]);
+  }, []);
 
   // Step 2에 진입하면 리포지토리 목록 로드
   useEffect(() => {
@@ -134,37 +57,45 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     }
   }, [step, repositories.length, fetchRepositories]);
 
-  // 리포지토리 선택 시 브랜치 로드
-  useEffect(() => {
-    if (settings.repositoryFullName && step === 2) {
-      const [owner, repo] = settings.repositoryFullName.split('/');
-      if (owner && repo) {
-        fetchBranches(owner, repo);
-      }
-    }
-  }, [settings.repositoryFullName, step, fetchBranches]);
-
   const handleRepositorySelect = (repo: Repository) => {
-    setSettings({
-      repositoryFullName: repo.full_name,
-      repositoryUrl: repo.html_url,
-      branch: 'main',
-    });
+    setSelectedRepo({ fullName: repo.full_name, url: repo.html_url });
     setIsDropdownOpen(false);
     setBranches([]);
   };
 
-  const handleBranchSelect = (branch: Branch) => {
-    setSettings(prev => ({ ...prev, branch: branch.name }));
-    setIsBranchDropdownOpen(false);
+  // selectedRepo 변경 시 브랜치 목록 로드 (stale 응답 무시: 레포 전환 시 이전 요청 결과가 새 레포 브랜치를 덮어쓰지 않도록)
+  useEffect(() => {
+    if (!selectedRepo) {
+      setBranches([]);
+      setLoadingBranches(false);
+      return;
+    }
+    const [owner, repo] = selectedRepo.fullName.split('/');
+    if (!owner || !repo) return;
+    const fetchFor = selectedRepo.fullName;
+    setLoadingBranches(true);
+    getBranches(owner, repo)
+      .then((list) => {
+        const stillSelected = fetchFor === selectedRepoRef.current?.fullName;
+        if (stillSelected) { setBranches(list); setLoadingBranches(false); }
+      })
+      .catch(() => {
+        const stillSelected = fetchFor === selectedRepoRef.current?.fullName;
+        if (stillSelected) { setBranches([]); setLoadingBranches(false); }
+      });
+  }, [selectedRepo?.fullName]);
+
+  const handleBranchChange = (value: string) => {
+    if (!selectedRepo) return;
+    setSelectedRepo({ ...selectedRepo, branch: value && value !== '__default__' ? value : undefined });
   };
 
   const handleSaveSettings = async () => {
     if (!auth.currentUser) return;
-    if (!settings.repositoryFullName || !settings.branch) {
+    if (!selectedRepo) {
       setError({
         type: 'save',
-        message: '리포지토리와 브랜치를 모두 선택해주세요.'
+        message: '리포지토리를 선택해주세요.'
       });
       return;
     }
@@ -173,14 +104,15 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       setSaving(true);
       setError(null);
       const userDocRef = doc(store, 'users', auth.currentUser.uid);
+      const repoToSave = { fullName: selectedRepo.fullName, url: selectedRepo.url, ...(selectedRepo.branch ? { branch: selectedRepo.branch } : {}) };
       await setDoc(userDocRef, {
-        repositoryFullName: settings.repositoryFullName,
-        repositoryUrl: settings.repositoryUrl,
-        branch: settings.branch,
+        repositories: [repoToSave],
         onboardingCompleted: true,
         onboardingSkipped: false,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       }, { merge: true });
+
+      trackEvent('onboarding_complete');
 
       // Step 3으로 이동
       setStep(3);
@@ -209,7 +141,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 
   const canProceed = () => {
     if (step === 1) return true;
-    if (step === 2) return settings.repositoryFullName && settings.branch;
+    if (step === 2) return !!selectedRepo;
     return false;
   };
 
@@ -238,120 +170,107 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
   };
 
   return (
-    <div className="onboarding-container">
-      <div className="onboarding-background"></div>
+    <div className="fixed inset-0 w-screen h-screen flex items-center justify-center z-[9999] p-5 overflow-y-auto">
+      <div className="absolute inset-0 w-full h-full bg-bg"></div>
       
-      <div className="onboarding-card">
+      <div className="relative bg-surface rounded-3xl pt-12 px-10 pb-10 max-w-[560px] w-full max-h-[calc(100vh-40px)] overflow-y-auto shadow-[0_20px_60px_rgba(0,0,0,0.5)] animate-slide-up m-auto border border-border max-[640px]:pt-10 max-[640px]:px-6 max-[640px]:pb-8 max-[640px]:mx-4">
         {/* Progress Bar */}
-        <div className="onboarding-progress">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-primary/10 rounded-t-3xl overflow-hidden">
           <div 
-            className="onboarding-progress-bar" 
+            className="h-full bg-gradient-to-r from-primary to-primary-dark transition-[width] duration-[400ms] ease-out"
             style={{ width: `${(step / 3) * 100}%` }}
           ></div>
         </div>
 
         {/* Step 1: 환영 */}
         {step === 1 && (
-          <div className="onboarding-step onboarding-step-1">
-            <div className="onboarding-character">
-              <img 
-                src="/onboarding.png" 
-                alt="RecallBuddy 캐릭터" 
-                className="character-image"
-              />
-            </div>
-            <h1 className="onboarding-title">환영합니다!</h1>
-            <p className="onboarding-description">
-              <strong>RecallBuddy</strong>가 여러분의 학습을<br />
-              소중한 장기 기억으로 만들어드립니다
+          <div className="text-center animate-fade-in">
+            <h1 className="text-3xl font-bold text-text mb-4 m-0 max-[640px]:text-[28px]">환영합니다</h1>
+            <p className="text-base text-text-light leading-relaxed mb-8 m-0 [&_strong]:text-primary [&_strong]:font-semibold max-[640px]:text-sm">
+              <strong>CodeRecall</strong>이 GitHub 학습 기록을<br />
+              플래시카드로 복습할 수 있게 도와드립니다
             </p>
             
-            <div className="onboarding-features">
-              <div className="onboarding-feature">
-                <span className="feature-icon">🔄</span>
-                <span className="feature-text">1일, 7일, 30일 전 커밋 자동 분석</span>
+            <div className="my-8 text-left space-y-3">
+              <div className="flex items-center gap-3 p-4 bg-surface-light rounded-xl transition-colors duration-200 hover:bg-border cursor-default border border-transparent hover:border-border-medium">
+                <span className="shrink-0 flex items-center justify-center text-primary" aria-hidden><RefreshCw className="w-6 h-6" /></span>
+                <span className="text-sm text-text-body font-medium max-[640px]:text-[13px]">1일, 7일, 30일 전 커밋 자동 분석</span>
               </div>
-              <div className="onboarding-feature">
-                <span className="feature-icon">💡</span>
-                <span className="feature-text">AI가 핵심 내용을 질문으로 변환</span>
+              <div className="flex items-center gap-3 p-4 bg-surface-light rounded-xl transition-colors duration-200 hover:bg-border cursor-default border border-transparent hover:border-border-medium">
+                <span className="shrink-0 flex items-center justify-center text-primary" aria-hidden><Lightbulb className="w-6 h-6" /></span>
+                <span className="text-sm text-text-body font-medium max-[640px]:text-[13px]">AI가 핵심 내용을 질문으로 변환</span>
               </div>
-              <div className="onboarding-feature">
-                <span className="feature-icon">📱</span>
-                <span className="feature-text">매일 아침 푸시 알림으로 학습</span>
+              <div className="flex items-center gap-3 p-4 bg-surface-light rounded-xl transition-colors duration-200 hover:bg-border cursor-default border border-transparent hover:border-border-medium">
+                <span className="shrink-0 flex items-center justify-center text-primary" aria-hidden><Smartphone className="w-6 h-6" /></span>
+                <span className="text-sm text-text-body font-medium max-[640px]:text-[13px]">매일 아침 푸시 알림으로 복습</span>
               </div>
             </div>
 
-            <button 
-              className="onboarding-button onboarding-button-primary"
-              onClick={handleNext}
-            >
-              시작하기 →
-            </button>
+            <Button className="w-full py-3.5 px-8 rounded-xl text-base mb-3" onClick={handleNext}>
+              <span className="inline-flex items-center justify-center gap-1.5">시작하기 <ChevronRight className="w-5 h-5 shrink-0" aria-hidden /></span>
+            </Button>
           </div>
         )}
 
         {/* Step 2: 리포지토리 선택 */}
         {step === 2 && (
-          <div className="onboarding-step onboarding-step-2">
-            <div className="onboarding-icon">⚙️</div>
-            <h1 className="onboarding-title">리포지토리 선택</h1>
-            <p className="onboarding-description">
+          <div className="text-center animate-fade-in">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/10 flex items-center justify-center" aria-hidden>
+              <LayoutTemplate className="w-8 h-8 text-primary" aria-hidden />
+            </div>
+            <h1 className="text-3xl font-bold text-text mb-4 m-0 max-[640px]:text-[28px]">리포지토리 선택</h1>
+            <p className="text-base text-text-light leading-relaxed mb-8 m-0 max-[640px]:text-sm">
               학습하고 싶은 GitHub 리포지토리를 선택해주세요
             </p>
 
             {/* 에러 메시지 */}
             {error && (
-              <div className="onboarding-error">
-                <span className="error-icon">⚠️</span>
-                <div className="error-content">
-                  <p className="error-message">{error.message}</p>
-                  <div className="error-actions">
-                    <button 
-                      className="error-action-button error-skip-button"
-                      onClick={handleSkipOnboarding}
-                    >
-                      ⏭️ 나중에 설정하기
-                    </button>
-                  </div>
+              <Alert variant="destructive" className="mb-6 animate-[errorSlide_0.3s_ease-out]">
+                <TriangleAlert className="size-5 shrink-0" aria-hidden />
+                <div className="flex-1">
+                  <AlertDescription className="mb-4">{error.message}</AlertDescription>
+                  <Button variant="outline" size="sm" className="min-w-[150px]" onClick={handleSkipOnboarding}>
+                    나중에 설정하기
+                  </Button>
                 </div>
-              </div>
+              </Alert>
             )}
 
-            <div className="onboarding-form">
+            <div className="my-8 text-left">
               {/* 리포지토리 선택 */}
-              <div className="form-group">
-                <label className="form-label">
+              <div>
+                <label className="block text-sm font-semibold text-text mb-2">
                   리포지토리 *
-                  {loadingRepos && <span className="form-loading"> (로딩 중...)</span>}
+                  {loadingRepos && <span className="font-normal text-primary text-xs"> (로딩 중...)</span>}
                 </label>
-                <div className="custom-dropdown">
+                <div className="relative w-full">
                   <button
-                    className="dropdown-button"
+                    className="w-full p-3 px-4 bg-surface-light border-2 border-border rounded-xl text-sm text-left cursor-pointer transition-all duration-200 flex justify-between items-center text-text hover:border-primary disabled:cursor-not-allowed disabled:opacity-60"
                     onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                     disabled={loadingRepos}
                   >
-                    <span className={settings.repositoryFullName ? "" : "placeholder"}>
-                      {settings.repositoryFullName || "리포지토리를 선택하세요"}
+                    <span className={selectedRepo ? "" : "text-text-muted"}>
+                      {selectedRepo ? selectedRepo.fullName : "리포지토리를 선택하세요"}
                     </span>
-                    <span className="dropdown-arrow">▼</span>
+                    <ChevronDown className="w-4 h-4 text-text-light shrink-0 transition-transform duration-200" aria-hidden />
                   </button>
                   
                   {isDropdownOpen && (
-                    <div className="dropdown-menu">
+                    <div className="absolute top-[calc(100%+4px)] left-0 right-0 bg-surface border-2 border-border rounded-xl max-h-[200px] overflow-y-auto shadow-[0_10px_25px_rgba(0,0,0,0.4)] z-[100] animate-[dropdownSlide_0.2s_ease-out]">
                       {repositories.length === 0 ? (
-                        <div className="dropdown-item disabled">
+                        <div className="p-3 px-4 cursor-not-allowed text-sm text-text-muted hover:bg-transparent">
                           리포지토리가 없습니다
                         </div>
                       ) : (
                         repositories.map((repo) => (
                           <div
                             key={repo.id}
-                            className="dropdown-item"
+                            className="p-3 px-4 cursor-pointer transition-colors duration-200 text-sm hover:bg-surface-light"
                             onClick={() => handleRepositorySelect(repo)}
                           >
-                            <div className="repo-name">{repo.full_name}</div>
+                            <div className="font-semibold text-text mb-1">{repo.full_name}</div>
                             {repo.description && (
-                              <div className="repo-description">{repo.description}</div>
+                              <div className="text-xs text-text-light overflow-hidden text-ellipsis whitespace-nowrap">{repo.description}</div>
                             )}
                           </div>
                         ))
@@ -360,85 +279,70 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
                   )}
                 </div>
               </div>
-
-              {/* 브랜치 선택 */}
-              {settings.repositoryFullName && (
-                <div className="form-group">
-                  <label className="form-label">
-                    브랜치 *
-                    {loadingBranches && <span className="form-loading"> (로딩 중...)</span>}
-                  </label>
-                  <div className="custom-dropdown">
-                    <button
-                      className="dropdown-button"
-                      onClick={() => setIsBranchDropdownOpen(!isBranchDropdownOpen)}
-                      disabled={loadingBranches}
-                    >
-                      <span>{settings.branch}</span>
-                      <span className="dropdown-arrow">▼</span>
-                    </button>
-                    
-                    {isBranchDropdownOpen && (
-                      <div className="dropdown-menu">
-                        {branches.length === 0 ? (
-                          <div className="dropdown-item disabled">
-                            브랜치가 없습니다
-                          </div>
-                        ) : (
-                          branches.map((branch) => (
-                            <div
-                              key={branch.name}
-                              className="dropdown-item"
-                              onClick={() => handleBranchSelect(branch)}
-                            >
-                              {branch.name}
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
+              {/* 브랜치 선택 (선택사항) */}
+              <div className="mt-4">
+                <Label htmlFor="branch-onboarding" className="block text-sm font-semibold text-text mb-2 flex items-center gap-1.5">
+                  <GitBranch className="w-4 h-4 shrink-0" aria-hidden />
+                  브랜치 (선택사항)
+                </Label>
+                <Select
+                  value={selectedRepo?.branch || '__default__'}
+                  onValueChange={handleBranchChange}
+                  disabled={!selectedRepo || loadingBranches || saving}
+                >
+                  <SelectTrigger id="branch-onboarding" className="w-full">
+                    <SelectValue placeholder={selectedRepo ? (loadingBranches ? '로딩 중...' : '기본 브랜치 (main)') : '리포지토리를 먼저 선택하세요'} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="__default__">기본 브랜치 (main)</SelectItem>
+                    {branches.map((b) => (
+                      <SelectItem key={b.name} value={b.name}>{b.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <button 
-              className="onboarding-button onboarding-button-primary"
+            <Button
+              className="w-full py-3.5 px-8 rounded-xl text-base mb-3"
               onClick={handleNext}
               disabled={!canProceed() || saving}
             >
-              {saving ? '저장 중...' : '완료하기 →'}
-            </button>
+              {saving ? '저장 중...' : (<span className="inline-flex items-center justify-center gap-1.5">완료하기 <ChevronRight className="w-5 h-5 shrink-0" aria-hidden /></span>)}
+            </Button>
 
-            <button 
-              className="onboarding-button onboarding-button-secondary"
+            <Button
+              variant="outline"
+              className="w-full py-3.5 px-8 rounded-xl text-base border-2"
               onClick={handleSkipOnboarding}
               disabled={saving}
             >
               나중에 설정하기
-            </button>
+            </Button>
           </div>
         )}
 
         {/* Step 3: 완료 */}
         {step === 3 && (
-          <div className="onboarding-step onboarding-step-3">
-            <div className="onboarding-icon onboarding-icon-success">✨</div>
-            <h1 className="onboarding-title">준비 완료!</h1>
-            <p className="onboarding-description">
+          <div className="text-center animate-fade-in">
+            <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/10 flex items-center justify-center animate-[successPulse_0.6s_ease-out]" aria-hidden>
+              <CircleCheck className="w-8 h-8 text-primary" aria-hidden />
+            </div>
+            <h1 className="text-3xl font-bold text-text mb-4 m-0 max-[640px]:text-[28px]">준비 완료</h1>
+            <p className="text-base text-text-light leading-relaxed mb-8 m-0 max-[640px]:text-sm">
               플래시카드를 생성하고 있습니다...<br />
               잠시만 기다려주세요
             </p>
             
-            <div className="onboarding-spinner"></div>
+            <div className="w-[60px] h-[60px] border-4 border-primary/20 border-t-primary rounded-full animate-spin mt-8 mx-auto"></div>
           </div>
         )}
 
         {/* Step Indicator */}
-        <div className="onboarding-steps-indicator">
-          <div className={`step-dot ${step >= 1 ? 'active' : ''}`}></div>
-          <div className={`step-dot ${step >= 2 ? 'active' : ''}`}></div>
-          <div className={`step-dot ${step >= 3 ? 'active' : ''}`}></div>
+        <div className="flex justify-center gap-2 mt-8">
+          <div className={`h-2 rounded-full transition-all duration-300 ${step >= 1 ? 'w-6 rounded bg-gradient-to-br from-primary to-primary-dark' : 'w-2 bg-border'}`}></div>
+          <div className={`h-2 rounded-full transition-all duration-300 ${step >= 2 ? 'w-6 rounded bg-gradient-to-br from-primary to-primary-dark' : 'w-2 bg-border'}`}></div>
+          <div className={`h-2 rounded-full transition-all duration-300 ${step >= 3 ? 'w-6 rounded bg-gradient-to-br from-primary to-primary-dark' : 'w-2 bg-border'}`}></div>
         </div>
       </div>
     </div>
@@ -446,4 +350,3 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
 };
 
 export default Onboarding;
-

@@ -1,31 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import { initDB } from "react-indexed-db-hook";
+import React, { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Toaster } from 'sonner';
 import { onAuthStateChanged, User } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
 
-import { DBConfig } from './DBConfig';
-import { auth, store } from './firebase';
+import { auth, store } from '@/shared/config/firebase';
+import { trackScreen, trackEvent } from '@/shared/config/analytics';
 import FlashCardViewer from './pages/FlashCardViewer';
+import PastDateReview from './pages/PastDateReview';
 import Login from './pages/Login';
 import Settings from './pages/Settings';
+import Pricing from './pages/Pricing';
 import NoDataView from './pages/NoDataView';
 import Onboarding from './pages/Onboarding';
-import Card from './components/Card';
-import { useTodayFlashcards } from './hooks/useTodayFlashcards';
-import { useNavigationStore } from './stores/navigationStore';
-
-initDB(DBConfig);
+import Card from '@/shared/ui/AppCard';
+import { Button } from '@/shared/ui/button';
+import { useTodayFlashcards, useVisibilityDateCheck } from '@/features/flashcard';
+import { useNavigationStore } from '@/shared/lib/navigationStore';
+import { BookOpen, ArrowLeft, Settings as SettingsIcon, Clock } from 'lucide-react';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState<boolean>(true);
   const [isScrollAtTop, setIsScrollAtTop] = useState<boolean>(true);
   const [needsOnboarding, setNeedsOnboarding] = useState<boolean>(false);
   const [onboardingChecked, setOnboardingChecked] = useState<boolean>(false);
-  const { currentPage, navigateToSettings, navigateToFlashcard } = useNavigationStore();
+  const { currentPage, navigateToSettings, navigateToFlashcard, selectedPastDate, setCurrentPage } = useNavigationStore();
+
+  // Stripe 결제 복귀 URL (#settings?subscription=success) 시 설정 페이지로 이동
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.location.hash.includes('subscription=success')) {
+      setCurrentPage('settings');
+    }
+  }, [setCurrentPage]);
   
   // 오늘의 플래시카드 데이터 로드 (user가 null이면 로드하지 않음)
   const { loading, hasData } = useTodayFlashcards(user);
+
+  // 앱 재활성화 시 날짜 변경 감지 → 하루 지났으면 플래시카드 재로드 (PWA 백그라운드 대응)
+  useVisibilityDateCheck(!!user);
 
   /* 인증 상태 감지 */
   useEffect(() => {
@@ -54,8 +68,8 @@ const App: React.FC = () => {
           setNeedsOnboarding(true);
         } else {
           const data = userDoc.data();
-          // onboardingCompleted가 true이거나 repositoryFullName이 있으면 온보딩 불필요
-          if (data?.onboardingCompleted || data?.repositoryFullName) {
+          // onboardingCompleted가 true이거나 repositories가 있으면 온보딩 불필요
+          if (data?.onboardingCompleted || (Array.isArray(data?.repositories) && data.repositories.length > 0)) {
             setNeedsOnboarding(false);
           } else {
             setNeedsOnboarding(true);
@@ -71,6 +85,27 @@ const App: React.FC = () => {
 
     checkOnboarding();
   }, [user]);
+
+  // GA4 화면 추적 (퍼널 탐색용): 화면이 바뀔 때만 screen_view 전송
+  const lastScreenRef = useRef<string | null>(null);
+  useEffect(() => {
+    let screen: string;
+    if (!user) screen = 'login';
+    else if (authLoading || !onboardingChecked || loading) screen = 'loading';
+    else if (needsOnboarding) screen = 'onboarding';
+    else if (!hasData && currentPage === 'flashcard') screen = 'no_data';
+    else if (currentPage === 'flashcard') screen = 'flashcard';
+    else if (currentPage === 'settings') screen = 'settings';
+    else if (currentPage === 'pricing') screen = 'pricing';
+    else return;
+
+    if (lastScreenRef.current === screen) return;
+    lastScreenRef.current = screen;
+
+    trackScreen(screen, screen === 'flashcard' ? 'FlashCardViewer' : screen === 'settings' ? 'Settings' : undefined);
+    if (screen === 'flashcard') trackEvent('view_flashcard');
+    if (screen === 'settings') trackEvent('view_settings');
+  }, [user, authLoading, onboardingChecked, loading, needsOnboarding, hasData, currentPage]);
 
   // 스크롤 위치 감지
   useEffect(() => {
@@ -92,28 +127,37 @@ const App: React.FC = () => {
     return <Login />;
   }
 
-  // 로딩 중 (인증, 온보딩 확인, 데이터 로딩)
-  if (authLoading || !onboardingChecked || loading) {
+  // 일반 로딩 (인증·온보딩 확인 중)
+  if (authLoading || !onboardingChecked) {
     return (
       <Card>
-        <div style={{
-          width: '50px',
-          height: '50px',
-          border: '3px solid rgba(255, 255, 255, 0.3)',
-          borderTop: '3px solid white',
-          borderRadius: '50%',
-          animation: 'spin 1s linear infinite',
-          margin: '0 auto 20px'
-        }}></div>
-        <h2 style={{ marginBottom: '10px', fontSize: '1.25rem' }}>📚 플래시카드 준비 중</h2>
-        <p style={{ fontSize: '1rem' }}>GitHub에서 최근 커밋을 분석하고 있습니다...</p>
-        <p style={{ marginTop: '10px', fontSize: '0.9rem', opacity: '0.8' }}>⏱️ 데이터 양에 따라 시간이 조금 걸릴 수 있습니다</p>
-        <style>{`
-          @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-          }
-        `}</style>
+        <div className="w-[50px] h-[50px] max-[768px]:w-10 max-[768px]:h-10 border-[3px] border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4 max-[768px]:mb-3" aria-hidden />
+        <h2 className="text-xl max-[768px]:text-lg flex items-center justify-center gap-2 whitespace-nowrap">
+          <BookOpen className="w-6 h-6 max-[768px]:w-5 max-[768px]:h-5 shrink-0" aria-hidden />
+          {t('app.loadingAuth')}
+        </h2>
+      </Card>
+    );
+  }
+
+  // 플래시카드 로딩 (GitHub 분석·AI 생성 중)
+  if (loading) {
+    return (
+      <Card>
+        <div className="w-[50px] h-[50px] max-[768px]:w-10 max-[768px]:h-10 border-[3px] border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4 max-[768px]:mb-3" aria-hidden />
+        <h2 className="mb-2.5 text-xl max-[768px]:text-lg flex items-center justify-center gap-2">
+          <BookOpen className="w-6 h-6 max-[768px]:w-5 max-[768px]:h-5 shrink-0" aria-hidden />
+          {t('app.loadingFlashcards')}
+        </h2>
+        <p className="text-base max-[768px]:text-sm whitespace-nowrap overflow-hidden text-ellipsis">
+          <span className="hidden md:inline">{t('app.analysingCommits')}</span>
+          <span className="md:hidden">{t('app.analysingCommitsShort')}</span>
+        </p>
+        <p className="mt-2.5 text-[0.9rem] max-[768px]:text-xs opacity-80 flex items-center justify-center gap-1.5 whitespace-nowrap overflow-hidden text-ellipsis">
+          <Clock className="w-4 h-4 max-[768px]:w-3 max-[768px]:h-3 shrink-0" aria-hidden />
+          <span className="hidden md:inline">{t('app.mayTakeTime')}</span>
+          <span className="md:hidden">{t('app.waitPatiently')}</span>
+        </p>
       </Card>
     );
   }
@@ -121,113 +165,66 @@ const App: React.FC = () => {
   // 온보딩이 필요한 경우
   if (needsOnboarding) {
     return (
-      <Onboarding 
-        onComplete={() => {
-          // 온보딩 완료 후 페이지 새로고침으로 깔끔하게 시작
-          window.location.reload();
-        }} 
-      />
+      <>
+        <Onboarding
+          onComplete={() => {
+            window.location.reload();
+          }}
+        />
+      </>
     );
   }
 
-  // 데이터가 없는 경우 - 하지만 Settings 페이지는 허용
+  // 데이터가 없는 경우 - Settings, Pricing 페이지는 허용
   if (!hasData && currentPage === 'flashcard') {
     return <NoDataView />;
   }
 
   // 메인 앱 렌더링
   return (
-    <main>
-      {/* 네비게이션 */}
-      <nav style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        background: 'transparent',
-        zIndex: 1000,
-        padding: '12px 20px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        opacity: isScrollAtTop ? 1 : 0,
-        transform: isScrollAtTop ? 'translateY(0)' : 'translateY(-20px)',
-        transition: 'opacity 0.3s ease, transform 0.3s ease',
-        pointerEvents: isScrollAtTop ? 'auto' : 'none',
-      }}>
-        <div>
-          {currentPage === 'settings' && (
-            <button
-              onClick={navigateToFlashcard}
-              style={{
-                padding: '8px 16px',
-                background: 'rgba(255, 255, 255, 0.95)',
-                color: '#333',
-                border: '1px solid rgba(0, 0, 0, 0.1)',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                fontWeight: 600,
-                transition: 'all 0.2s',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                backdropFilter: 'blur(10px)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
-                e.currentTarget.style.transform = 'translateY(-1px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-              }}
-            >
-              ← 뒤로가기
-            </button>
-          )}
-        </div>
-        
-        {currentPage === 'flashcard' && (
-          <button
-            onClick={navigateToSettings}
-            style={{
-              padding: '8px 16px',
-              background: 'rgba(255, 255, 255, 0.95)',
-              color: '#333',
-              border: '1px solid rgba(0, 0, 0, 0.1)',
-              borderRadius: '8px',
-              cursor: 'pointer',
-              fontSize: '1.2rem',
-              transition: 'all 0.2s',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-              backdropFilter: 'blur(10px)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 1)';
-              e.currentTarget.style.transform = 'translateY(-1px)';
-              e.currentTarget.style.boxShadow = '0 4px 12px rgba(0,0,0,0.2)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = 'rgba(255, 255, 255, 0.95)';
-              e.currentTarget.style.transform = 'translateY(0)';
-              e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
-            }}
-            title="설정"
-          >
-            ⚙️
-          </button>
-        )}
-      </nav>
+    <>
+      <Toaster position="bottom-center" richColors closeButton />
+      <main>
+        {/* 플로팅 navbar: transparent 영역은 pointer-events-none으로 아래 콘텐츠 클릭 통과, 버튼만 pointer-events-auto (ui-ux-pro-max: Content padding, Floating navbar) */}
+        <nav className={`fixed top-4 left-4 right-4 max-[768px]:top-2 max-[768px]:left-2 max-[768px]:right-2 bg-transparent z-[1000] px-5 py-3 max-[768px]:py-2 max-[768px]:px-3 flex justify-between items-center transition-all duration-300 ease-in-out pointer-events-none ${isScrollAtTop ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-5'}`}>
+          <div className={isScrollAtTop ? 'pointer-events-auto' : 'pointer-events-none'}>
+            {(currentPage === 'settings' || currentPage === 'pricing') && (
+              <Button
+                variant="outline"
+                onClick={currentPage === 'pricing' ? navigateToSettings : navigateToFlashcard}
+                className="bg-card/95 border-border shadow-[0_2px_8px_rgba(0,0,0,0.3)] gap-1.5 backdrop-blur-sm hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
+              >
+                <ArrowLeft className="w-5 h-5 shrink-0" aria-hidden />
+                {t('common.back')}
+              </Button>
+            )}
+          </div>
 
-      {/* 페이지 컨텐츠 */}
-      <div>
-        {currentPage === 'flashcard' && <FlashCardViewer />}
-        {currentPage === 'settings' && <Settings />}
-      </div>
-    </main>
+          {currentPage === 'flashcard' && (
+            <div className={isScrollAtTop ? 'pointer-events-auto' : 'pointer-events-none'}>
+              <Button
+                variant="outline"
+                onClick={navigateToSettings}
+                title={t('common.settings')}
+                size="icon"
+                className="text-[1.2rem] bg-card/95 border-border shadow-[0_2px_8px_rgba(0,0,0,0.3)] backdrop-blur-sm hover:-translate-y-px hover:shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
+              >
+                <SettingsIcon className="w-5 h-5" aria-hidden />
+              </Button>
+            </div>
+          )}
+        </nav>
+
+        {/* 뷰포트 높이로 제한해 패딩+콘텐츠가 100vh를 넘지 않게 (모바일 세로 스크롤 방지) */}
+        <div className="pt-16 max-[768px]:pt-12 bg-bg h-screen flex flex-col overflow-hidden">
+          <div className="flex-1 min-h-0 overflow-auto">
+            {currentPage === 'flashcard' && (selectedPastDate ? <PastDateReview date={selectedPastDate} /> : <FlashCardViewer />)}
+            {currentPage === 'settings' && <Settings />}
+            {currentPage === 'pricing' && <Pricing />}
+          </div>
+        </div>
+      </main>
+    </>
   );
 };
 

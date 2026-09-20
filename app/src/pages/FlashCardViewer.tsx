@@ -1,222 +1,227 @@
-import React, { useEffect, useState, useRef } from 'react';
-import Slider from "react-slick";
+import React, { useEffect, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-import "./FlashCardViewer.css";
+const MOBILE_BREAKPOINT = 768;
 
-import MarkdownBlock from '../templates/MarkdownBlock';
-import CodeDiffBlock from '../templates/CodeDiffBlock';
-import { useIndexedDB } from "react-indexed-db-hook";
-import type { ContentType } from '../hooks/useTodayFlashcards';
-
-interface Card {
-  question: string;
-  answer: string;
-  contentType?: ContentType;
-  metadata?: {
-    filename?: string;
-    commitMessage?: string;
-  };
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const m = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    setIsMobile(m.matches);
+    const handler = () => setIsMobile(m.matches);
+    m.addEventListener('change', handler);
+    return () => m.removeEventListener('change', handler);
+  }, []);
+  return isMobile;
 }
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { toast } from 'sonner';
 
-interface DBData {
-  date: string;
-  data: Card[];
-}
+import { FlashCardPlayer } from '../features/flashcard';
+import type { DeleteMethod } from '../features/flashcard';
+import type { FlashCard } from '../features/flashcard';
+import { auth, store } from '@/shared/config/firebase';
+import { trackEvent } from '@/shared/config/analytics';
+import { useNavigationStore } from '@/shared/lib/navigationStore';
+import { useSubscription } from '@/features/subscription';
+import { getCurrentDate, shuffleArray } from '@/shared/lib/date';
+import {
+  regenerateCardQuestion,
+  REGENERATE_QUESTION_LIMIT_FREE,
+  REGENERATE_QUESTION_LIMIT_PRO,
+} from '@/features/subscription';
+import { Shuffle } from 'lucide-react';
+import { Button } from '@/shared/ui/button';
+import { FlashCardKeyboardIndicator } from '@/shared/ui/FlashCardKeyboardIndicator';
 
+/**
+ * 로그인 사용자 전용 플래시카드 뷰어
+ * 데이터 소스: Firestore (users/{uid}/flashcards/{오늘날짜}). 데모는 LandingDemo + lib/demoFlashcards.
+ * 진입 시 1회 셔플, "덱 셔플" 버튼으로 순서 재섞기.
+ */
 const FlashCardViewer: React.FC = () => {
-    const [cards, setCards] = useState<Card[]>([]);
-    const [flipped, setFlipped] = useState<boolean>(false);
-    const [currentSlide, setCurrentSlide] = useState<number>(0);
+  const { t, i18n } = useTranslation();
+  const [user, setUser] = useState(auth.currentUser);
+  const [cards, setCards] = useState<FlashCard[]>([]);
+  const [shuffleKey, setShuffleKey] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [syncSlideIndex, setSyncSlideIndex] = useState<number | null>(null);
+  const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
+  const isMobile = useIsMobile();
+  const flashcardReloadTrigger = useNavigationStore((s) => s.flashcardReloadTrigger);
+  const { subscription } = useSubscription(user);
 
-    let sliderRef = useRef<Slider>(null);
-    
-    const next = () => {
-        setFlipped(false);
-        sliderRef.current?.slickNext();
-    };
-    
-    const previous = () => {
-        setFlipped(false);
-        sliderRef.current?.slickPrev();
-    };
+  useEffect(() => {
+    return onAuthStateChanged(auth, setUser);
+  }, []);
 
-    const flipCard = () => {
-        setFlipped(!flipped);
-    };
+  useEffect(() => {
+    const user = auth.currentUser;
+    if (!user) return;
 
-    const { getAll } = useIndexedDB("data");
-    
-    // IndexedDB에서 데이터 로드하는 함수
-    const loadCards = () => {
-        getAll().then((dataFromDB: DBData[]) => {
-            if (dataFromDB && dataFromDB.length > 0) {
-                setCards(dataFromDB[0].data);
-            } else {
-                setCards([]);
-            }
-        });
-    };
-    
-    // 컴포넌트 마운트 시 데이터 로드
-    useEffect(() => {
-        loadCards();
-    }, [getAll]);
-    
-    // 페이지가 다시 포커스되거나 보일 때 데이터 다시 로드
-    useEffect(() => {
-        const handleFocus = () => {
-            console.log('🔄 페이지 포커스 - 플래시카드 데이터 새로고침');
-            loadCards();
-        };
-        
-        const handleVisibilityChange = () => {
-            if (document.visibilityState === 'visible') {
-                console.log('👁️ 페이지 visible - 플래시카드 데이터 새로고침');
-                loadCards();
-            }
-        };
-        
-        window.addEventListener('focus', handleFocus);
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        
-        return () => {
-            window.removeEventListener('focus', handleFocus);
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-        };
-    }, [getAll]);
-    
-    // 주기적으로 IndexedDB 체크 (5초마다)
-    useEffect(() => {
-        const interval = setInterval(() => {
-            loadCards();
-        }, 5000);
-        
-        return () => clearInterval(interval);
-    }, [getAll]);
-    
-    // 키보드 단축키 추가
-    useEffect(() => {
-        const handleKeyPress = (e: KeyboardEvent) => {
-            // 입력 필드에서는 작동하지 않도록
-            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-                return;
-            }
-            
-            switch(e.key) {
-                case 'ArrowLeft':
-                    if (currentSlide > 0) {
-                        previous();
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (currentSlide < cards.length - 1) {
-                        next();
-                    }
-                    break;
-                case 'ArrowUp':
-                case 'ArrowDown':
-                case ' ':
-                    e.preventDefault();
-                    flipCard();
-                    break;
-            }
-        };
-        
-        window.addEventListener('keydown', handleKeyPress);
-        return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [currentSlide, cards.length, flipped]);
-    
-    // 이제 App.tsx에서 로딩과 데이터 없음을 처리하므로 여기서는 빈 배열일 때만 처리
-    if (cards.length === 0) {
-        return null; // App.tsx에서 처리됨
+    const todayDate = getCurrentDate();
+    const flashcardDocRef = doc(store, 'users', user.uid, 'flashcards', todayDate);
+    const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
+
+    getDoc(flashcardDocRef).then((snapshot) => {
+      if (snapshot.exists()) {
+        const d = snapshot.data();
+        const raw = (lang === 'ko' ? d?.data_ko : d?.data_en) as FlashCard[] | undefined;
+        setCards(Array.isArray(raw) && raw.length > 0 ? shuffleArray(raw) : []);
+      } else {
+        setCards([]);
+      }
+    });
+  }, [flashcardReloadTrigger, i18n.language]);
+
+  const handleShuffleDeck = useCallback(() => {
+    setCards((prev) => shuffleArray(prev));
+    setShuffleKey((k) => k + 1);
+  }, []);
+
+  const handleDeleteCard = useCallback((index: number, method: DeleteMethod) => {
+    const deletedCard = cards[index];
+    const newCards = cards.filter((_, i) => i !== index);
+    const newSlide = index >= newCards.length ? Math.max(0, newCards.length - 1) : index;
+
+    setCards(newCards);
+    setCurrentSlide(newSlide);
+    setSyncSlideIndex(newSlide);
+
+    const user = auth.currentUser;
+    if (user) {
+      const todayDate = getCurrentDate();
+      const flashcardDocRef = doc(store, 'users', user.uid, 'flashcards', todayDate);
+      const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
+      setDoc(flashcardDocRef, { [`data_${lang}`]: newCards }, { merge: true });
+
+      toast(t('flashcard.cardRemoved'), {
+        action: {
+          label: t('flashcard.undo'),
+          onClick: () => {
+            const restored = [...newCards];
+            restored.splice(index, 0, deletedCard);
+            setCards(restored);
+            setCurrentSlide(index);
+            setSyncSlideIndex(index);
+            const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
+            setDoc(flashcardDocRef, { [`data_${lang}`]: restored }, { merge: true });
+          },
+        },
+        duration: 5000,
+      });
     }
 
-    return (
-        <div className='flashcard-container'>
-            <div className='progress-indicator'>
-                {currentSlide + 1} / {cards.length}
-            </div>
-            
-            <div className='keyboard-hint'>
-                <div className='keyboard-hint-item'>
-                    <kbd>←</kbd>
-                    <kbd>→</kbd>
-                    <span>이동</span>
-                </div>
-                <div className='keyboard-hint-item'>
-                    <kbd>Space</kbd>
-                    <span>뒤집기</span>
-                </div>
-            </div>
-            
-            <div className='card-player'>
-                <div>
-                    <Slider
-                        ref={slider => {
-                            (sliderRef as any).current = slider;
-                        }}
-                        dots={true}
-                        arrows={false}
-                        swipe={false}
-                        infinite={false}
-                        beforeChange={(_, next) => {
-                            setCurrentSlide(next);
-                        }}
-                        appendDots={(dots) => (
-                            <div style={{ top:'10px'}}>
-                                <ul style={{ padding:'0px' }}>{dots}</ul>
-                            </div>
-                        )}
-                    >
-                        {cards.map((card, i) => {
-                            const contentType = card.contentType || 'markdown';
-                            
-                            return (
-                                <div key={i} className={`flashcard ${flipped && currentSlide === i ? 'flipped' : ''}`}>
-                                    {flipped && currentSlide === i ? (
-                                        contentType === 'code-diff' ? (
-                                            <CodeDiffBlock diffContent={card.answer} />
-                                        ) : (
-                                            <MarkdownBlock markdown={card.answer} />
-                                        )
-                                    ) : (
-                                        <p>{card.question}</p>
-                                    )}
-                                </div>
-                            );
-                        })}                       
-                    </Slider>
-                </div>
-                <div className='button-wrapper'>
-                    <button 
-                        className='button-circle' 
-                        onClick={previous}
-                        disabled={currentSlide === 0}
-                        aria-label="이전 카드"
-                    >
-                        ⬅
-                    </button>
-                    <button 
-                        className='button-oval' 
-                        onClick={flipCard}
-                        aria-label="카드 뒤집기"
-                    >
-                        {flipped ? '질문 보기' : '카드 뒤집기'}
-                    </button>
-                    <button 
-                        className='button-circle' 
-                        onClick={next}
-                        disabled={currentSlide === cards.length - 1}
-                        aria-label="다음 카드"
-                    >
-                        ➡
-                    </button>
-                </div>
-            </div>
+    trackEvent('flashcard_delete', {
+      method,
+      card_index: index + 1,
+      total_before: cards.length,
+      total_after: newCards.length,
+    });
+  }, [cards, t, i18n.language]);
+
+  const tier = subscription?.subscriptionTier === 'pro' ? 'pro' : 'free';
+  const limit = tier === 'pro' ? REGENERATE_QUESTION_LIMIT_PRO : REGENERATE_QUESTION_LIMIT_FREE;
+  const todayStr = getCurrentDate();
+  const count =
+    subscription?.lastRegenerateDate === todayStr
+      ? (subscription?.regenerateCountToday ?? 0)
+      : 0;
+  const canRegenerateQuestion = count < limit;
+
+  const handleRegenerateQuestion = useCallback(
+    async (index: number) => {
+      const card = cards[index];
+      if (!card?.metadata?.rawDiff || !canRegenerateQuestion || !user) return;
+
+      setRegeneratingIndex(index);
+      try {
+        const otherQuestions = cards
+          .filter((_, i) => i !== index)
+          .map((c) => c.question)
+          .filter(Boolean)
+          .slice(0, 10);
+        const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
+        const { question, highlights } = await regenerateCardQuestion({
+          rawDiff: card.metadata.rawDiff,
+          existingQuestion: card.question,
+          existingAnswer: card.answer,
+          flashcardDate: getCurrentDate(),
+          otherQuestions,
+          lang,
+        });
+        const newCards = cards.map((c, i) =>
+          i === index ? { ...c, question, highlights: highlights ?? c.highlights } : c
+        );
+        setCards(newCards);
+        toast(t('flashcard.questionRegenerated'));
+        trackEvent('flashcard_regenerate_question', {
+          card_index: index + 1,
+          total_cards: cards.length,
+          tier,
+        });
+        const flashcardDocRef = doc(store, 'users', user.uid, 'flashcards', getCurrentDate());
+        await setDoc(flashcardDocRef, { [`data_${lang}`]: newCards }, { merge: true });
+      } catch (e: unknown) {
+        const err = e as { response?: { status?: number; data?: { error?: string } } };
+        const msg =
+          err.response?.status === 429
+            ? t('flashcard.regenLimitReached')
+            : (err.response?.data?.error || (e instanceof Error ? e.message : t('errors.regenFailed')));
+        toast.error(msg);
+      } finally {
+        setRegeneratingIndex(null);
+      }
+    },
+    [cards, canRegenerateQuestion, user, t, i18n.language]
+  );
+
+  if (cards.length === 0) {
+    return null;
+  }
+
+    const indicatorPillClass =
+      'items-center justify-center bg-card py-2 px-[18px] rounded-full shadow-[0_8px_20px_rgba(0,0,0,0.3)] text-[0.85rem] font-semibold text-primary backdrop-blur-[10px] border border-border';
+
+  return (
+    <div className="min-h-full flex flex-col bg-bg p-5 relative overflow-hidden before:content-[''] before:absolute before:-top-1/2 before:-left-1/2 before:w-[200%] before:h-[200%] before:bg-[radial-gradient(circle,rgba(7,166,107,0.04)_1px,transparent_1px)] before:bg-[length:50px_50px] before:animate-[float-bg_20s_linear_infinite] before:pointer-events-none max-[768px]:p-2.5 max-[768px]:justify-center">
+      {/* 모바일: 인디케이터+셔플+카드 영역을 한 블록으로 묶어 세로 가운데 배치 */}
+      <div className="flex flex-col max-[768px]:flex-shrink-0 max-[768px]:w-full">
+        {/* 데스크톱: 키보드 안내 + 셔플 | 모바일: 인디케이터 + 셔플 한 줄 (설정 버튼은 App nav에 있음) */}
+        <div className="flex flex-wrap justify-center gap-3 mb-2 relative z-[100] max-[768px]:gap-2 max-[768px]:justify-between max-[768px]:items-center max-[768px]:mb-3 shrink-0">
+          <FlashCardKeyboardIndicator showDelete />
+          {/* 모바일만: 인디케이터 + 셔플 한 줄 (동일 pill 스타일로 조화). 데스크톱에서는 hidden만 적용되도록 inline-flex는 768 이하에서만 */}
+          <span className={`hidden max-[768px]:inline-flex max-[768px]:order-first ${indicatorPillClass}`} aria-live="polite">
+            {currentSlide + 1} / {cards.length}
+          </span>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handleShuffleDeck}
+            aria-label={t('flashcard.deckShuffleAria')}
+            className="inline-flex items-center gap-2 rounded-[20px] bg-card/90 backdrop-blur-sm max-[768px]:order-last"
+          >
+            <Shuffle className="w-5 h-5 shrink-0" aria-hidden />
+            <span>{t('flashcard.deckShuffle')}</span>
+          </Button>
         </div>
-    );
+
+        <FlashCardPlayer
+          key={shuffleKey}
+          cards={cards}
+          keyboardShortcuts
+          onSlideChange={(n) => { setCurrentSlide(n); setSyncSlideIndex(null); }}
+          onDeleteCard={handleDeleteCard}
+          slideIndex={syncSlideIndex ?? undefined}
+          renderIndicator={isMobile ? () => null : undefined}
+          onRegenerateQuestion={handleRegenerateQuestion}
+          regeneratingIndex={regeneratingIndex}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default FlashCardViewer;

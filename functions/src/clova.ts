@@ -1,4 +1,5 @@
 import {onRequest} from "firebase-functions/v2/https";
+import {getFlashcardPrompt} from "./prompts.js";
 
 /**
  * CLOVA Studio Chat Completion API Response
@@ -43,12 +44,14 @@ export const chatCompletions = onRequest(
   },
   async (req, res) => {
     try {
-      const {prompt, text} = req.body;
+      const {text, lang} = req.body as { text?: string; lang?: 'ko' | 'en' };
 
-      if (!prompt || !text) {
-        res.status(400).json({error: "prompt and text are required"});
+      if (!text) {
+        res.status(400).json({error: "text is required"});
         return;
       }
+
+      const prompt = getFlashcardPrompt(lang);
 
       // 고유한 요청 ID 생성
       const requestId = crypto.randomUUID().replace(/-/g, "");

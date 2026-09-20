@@ -33,3 +33,7 @@ npm-debug.log*
 .firebase/
 .firebaserc
 firebase-debug.log*
+
+# python
+__pycache__/
+*.pyc

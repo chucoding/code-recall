@@ -51,7 +51,7 @@ const envPath = path.join(__dirname, '..', 'app', '.env');
 if (!fs.existsSync(envPath)) {
   console.error('❌ app/.env 파일이 존재하지 않습니다.\n');
   console.log('📝 먼저 .env 파일을 생성하세요:');
-  console.log('   cp app/env.example app/.env');
+  console.log('   cp app/.env.example app/.env');
   console.log('   # app/.env 파일에서 VITE_PROJECT_ID를 실제 프로젝트 ID로 수정');
   process.exit(1);
 }
