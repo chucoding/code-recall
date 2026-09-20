@@ -80,7 +80,10 @@
     "fallbackQuestionSuffix": "What changed in this commit?",
     "fallbackAnswerCommit": "Commit message:",
     "fallbackAnswerFiles": "Changed files:",
-    "noFileInfo": "No file info"
+    "noFileInfo": "No file info",
+    "trendingTitle": "GitHub Trending Top 10",
+    "trendingListLabel": "GitHub trending repositories",
+    "trendingUpdatedAt": "As of {{date}}"
   },
   "settings": {
     "language": "Language",

@@ -58,12 +58,20 @@ https://coderecall.app/
 ### 필수 요구사항
 - Node.js 22+
 - pnpm (패키지 매니저)
+- Firebase CLI
+```bash
+npm install -g firebase-tools
+```
 
 ### 1. 온보딩
 
 #### 1.1. 환경 설정
 
 ##### app/.env
+예시 파일을 복사한 뒤 값을 채운다.
+```bash
+cp app/.env.example app/.env
+```
 Firebase Web 설정 (Console > 프로젝트 설정 > 일반 > 웹 앱 구성에서 복사)
 ```bash
 VITE_API_KEY=...
@@ -74,13 +82,23 @@ VITE_MESSAGING_SENDER_ID=...
 VITE_APP_ID=...
 VITE_MEASUREMENT_ID=...
 ```
+- **FCM 웹 푸시** (매일 알림 사용 시 필수): Console > 프로젝트 설정 > Cloud Messaging > Web configuration > Web Push certificates에서 키 쌍 생성 후 공개 키 입력
+```bash
+VITE_VAPID_KEY=...
+```
 - **AI Provider** (선택): 미설정 시 OpenAI 사용. Clova 사용 시:
 ```bash
 VITE_AI_PROVIDER=clova
 ```
+- **Microsoft Clarity** (선택): 히트맵과 세션 녹화
+```bash
+VITE_CLARITY_PROJECT_ID=...
+```
 
-#### functions/.env
-- **OpenAI 사용 시** (기본): Firebase Functions 설정에 `OPENAI_API_KEY` 추가
+`VITE_FIREBASE_*`와 `VITE_FUNCTIONS_URL_*`은 1.3에서 자동으로 채워지므로 직접 입력하지 않는다.
+
+##### functions/.env
+- **OpenAI 사용 시** (기본): `functions/.env` 파일에 `OPENAI_API_KEY` 추가
 ```bash
 OPENAI_API_KEY=your_openai_api_key
 ```
@@ -89,21 +107,28 @@ OPENAI_API_KEY=your_openai_api_key
 CLOVA_API_KEY=your_clova_api_key
 ```
 
-##### Firebase 초기화
+##### Firebase 프로젝트 연결
 ```bash
 firebase login
-firebase init
+firebase use --add
 ```
+`firebase init`은 실행하지 않는다. `firebase.json`과 `firestore.rules`, `functions/`가 이미 저장소에 있어 덮어쓸 수 있다.
+
+연결 정보가 담기는 `.firebaserc`는 `.gitignore` 대상이라 커밋되지 않는다. 저장소를 새로 클론하거나 워크트리를 만들 때마다 `firebase use --add`를 다시 실행한다. 현재 연결 상태는 `firebase use`로 확인한다.
 
 #### 1.2. 프로젝트 셋팅
 ```bash
 pnpm install
 ```
+`Ignored build scripts` 경고는 pnpm 10의 기본 동작이며 빌드에 영향이 없다.
 
-#### 1.3. 프록시 서버 셋팅
+#### 1.3. Functions 환경변수 생성
 ```bash
 pnpm proxy
 ```
+`app/.env`의 `VITE_PROJECT_ID`를 읽어 `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_REGION`, `VITE_FUNCTIONS_URL_LOCAL`, `VITE_FUNCTIONS_URL_PROD`를 채운다.
+
+이 값들은 빌드 시점에 번들로 인라인된다. 건너뛰면 Functions 호출 주소가 빈 문자열이 되어 AI 카드 생성과 질문 재생성, 번역이 모두 실패한다.
 
 ### 2. 개발 서버 시작
 ```bash
@@ -120,8 +145,21 @@ pnpm build
 ```
 
 ### 4. 배포
+
+배포 전 확인
+- `firebase use`로 활성 프로젝트가 잡혀 있는지
+- `app/.env`의 `VITE_FUNCTIONS_URL_PROD`가 채워져 있는지 (1.3)
+- hosting은 predeploy가 없어 `app/dist`를 그대로 올리므로 `pnpm build`를 먼저 실행했는지
+
+전체 배포
 ```bash
 pnpm push
+```
+
+일부만 배포
+```bash
+firebase deploy --only functions,firestore:rules
+firebase deploy --only hosting
 ```
 
 ## 🌏 리전

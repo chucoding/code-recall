@@ -1,1 +1,1 @@
-export type { FileChange, CommitDetail, Branch } from './model/types';
+export type { FileChange, CommitDetail, Branch, TrendingRepository } from './model/types';
