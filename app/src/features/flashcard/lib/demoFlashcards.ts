@@ -12,6 +12,7 @@ import { chatCompletions } from '@/features/ai-generation';
 import type { FlashcardStructuredOutput } from '@/shared/types';
 import type { FlashCard } from '@/entities/flashcard';
 import type { FileChange } from '@/entities/repository';
+import { parseGitHubRepositoryUrl } from './github-url';
 
 /** GitHub Commits API 응답의 커밋 한 건 (public API) */
 export interface DemoCommitData {
@@ -99,19 +100,6 @@ async function fetchDemoFlashcardFromAI(answerContent: string, lang?: 'ko' | 'en
   return null;
 }
 
-function parseGitHubUrl(url: string): { owner: string; repo: string; branch?: string } | null {
-  const cleaned = url.trim().replace(/\/+$/, '');
-  const simpleMatch = cleaned.match(/^([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)(?:@([a-zA-Z0-9/_.-]+))?$/);
-  if (simpleMatch) {
-    return { owner: simpleMatch[1], repo: simpleMatch[2], branch: simpleMatch[3] || undefined };
-  }
-  const urlMatch = cleaned.match(/github\.com\/([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)(?:@([a-zA-Z0-9/_.-]+))?/);
-  if (urlMatch) {
-    return { owner: urlMatch[1], repo: urlMatch[2], branch: urlMatch[3] || undefined };
-  }
-  return null;
-}
-
 const FILE_STATUSES: FileChange['status'][] = ['added', 'modified', 'removed', 'renamed'];
 function toFileChangeStatus(s: string): FileChange['status'] {
   const lower = s?.toLowerCase() ?? '';
@@ -159,7 +147,7 @@ export type GenerateDemoFlashcardsResult =
 export async function generateDemoFlashcards(repoUrl: string, lang?: 'ko' | 'en'): Promise<GenerateDemoFlashcardsResult> {
   const lng = lang || (i18n.language.startsWith('ko') ? 'ko' : 'en');
 
-  const parsed = parseGitHubUrl(repoUrl);
+  const parsed = parseGitHubRepositoryUrl(repoUrl);
   if (!parsed) {
     return { ok: false, error: i18n.t('demo.invalidRepoUrl', { lng }) };
   }

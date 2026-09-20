@@ -1,9 +1,9 @@
-import React, { useCallback, useMemo, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { FlashCardPlayer } from '../features/flashcard';
-import type { FlashCard, DeleteMethod } from '../features/flashcard';
-import { generateDemoFlashcards } from '@/features/flashcard';
+import type { DeleteMethod } from '../features/flashcard';
+import { useDemoFlashcards } from '@/features/flashcard';
 import { regenerateCardQuestionDemo } from '@/features/subscription';
 import { TrendingRepoList } from '@/features/trending-repos';
 import { trackEvent } from '@/shared/config/analytics';
@@ -24,26 +24,39 @@ function getOrCreateDemoDeviceId(): string {
 
 /**
  * 랜딩 데모 페이지
- * 플래시카드 데이터 소스: AI에서 바로 생성 (generateDemoFlashcards).
- * Firebase/Firestore 미사용. 로그인 후 앱 플래시카드는 Firestore에서 로드.
+ * 플래시카드 데이터 소스: 사전 생성 캐시(Firestore) 우선, 없으면 AI에서 바로 생성.
+ * 카드 목록은 컴포넌트 상태가 아니라 `useDemoFlashcards` 쿼리 캐시를 구독해
+ * 같은 저장소를 다시 눌렀을 때 GitHub·AI를 다시 호출하지 않는다.
+ * 로그인 후 앱 플래시카드는 Firestore에서 로드.
  */
 const LandingDemo: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
   const [repoUrl, setRepoUrl] = useState('');
-  const [cards, setCards] = useState<FlashCard[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [syncSlideIndex, setSyncSlideIndex] = useState<number | null>(null);
   const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
   const cardSectionRef = useRef<HTMLDivElement>(null);
   const demoDeviceId = useMemo(getOrCreateDemoDeviceId, []);
+
+  const { cards, isLoading, error, repositoryUrl, requestCards, replaceCards } =
+    useDemoFlashcards(lang);
+
+  // 카드가 준비되면 카드 영역으로 이동. 사전 캐시로 즉시 채워지는 경우도 같은 경로를 탄다
+  const hasCards = cards.length > 0;
+  useEffect(() => {
+    if (!hasCards) return;
+    const timer = setTimeout(() => {
+      cardSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [repositoryUrl, hasCards]);
 
   const handleDeleteCard = useCallback((index: number, method: DeleteMethod) => {
     const deletedCard = cards[index];
     const newCards = cards.filter((_, i) => i !== index);
     const newSlide = index >= newCards.length ? Math.max(0, newCards.length - 1) : index;
 
-    setCards(newCards);
+    replaceCards(newCards);
     setSyncSlideIndex(newSlide);
 
     trackEvent('landing_demo_delete_card', {
@@ -59,13 +72,13 @@ const LandingDemo: React.FC = () => {
         onClick: () => {
           const restored = [...newCards];
           restored.splice(index, 0, deletedCard);
-          setCards(restored);
+          replaceCards(restored);
           setSyncSlideIndex(index);
         },
       },
       duration: 5000,
     });
-  }, [cards, t]);
+  }, [cards, replaceCards, t]);
 
   const handleRegenerateQuestion = useCallback(
     async (index: number) => {
@@ -79,7 +92,6 @@ const LandingDemo: React.FC = () => {
           .map((c) => c.question)
           .filter(Boolean)
           .slice(0, 10);
-        const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
         const { question, highlights } = await regenerateCardQuestionDemo({
           rawDiff: card.metadata.rawDiff,
           existingQuestion: card.question,
@@ -91,7 +103,7 @@ const LandingDemo: React.FC = () => {
         const newCards = cards.map((c, i) =>
           i === index ? { ...c, question, highlights: highlights ?? c.highlights } : c
         );
-        setCards(newCards);
+        replaceCards(newCards);
         toast(t('flashcard.questionRegenerated'));
         trackEvent('landing_demo_regenerate_question', {
           card_index: index + 1,
@@ -132,34 +144,17 @@ const LandingDemo: React.FC = () => {
         setRegeneratingIndex(null);
       }
     },
-    [cards, demoDeviceId, t]
+    [cards, demoDeviceId, lang, replaceCards, t]
   );
 
-  const runSubmit = async (url: string, source: 'form' | 'example') => {
-    setError('');
-    setCards([]);
-    setLoading(true);
+  const runSubmit = (url: string, source: 'form' | 'example') => {
     if (source === 'form') {
       trackEvent('landing_demo_generate', { source: 'form' });
     } else {
       trackEvent('landing_demo_example_repo', { repo_url: url.slice(0, 80) });
     }
-    try {
-      const lang = i18n.language.startsWith('ko') ? 'ko' : 'en';
-      const result = await generateDemoFlashcards(url, lang);
-      if (result.ok) {
-        setCards(result.cards);
-        setTimeout(() => {
-          cardSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 300);
-      } else {
-        setError(result.error);
-      }
-    } catch (err: any) {
-      setError(err.message || '알 수 없는 오류가 발생했습니다.');
-    } finally {
-      setLoading(false);
-    }
+    setSyncSlideIndex(null);
+    requestCards(url);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -183,14 +178,14 @@ const LandingDemo: React.FC = () => {
             placeholder="https://github.com/owner/repo@branch"
             value={repoUrl}
             onChange={(e) => setRepoUrl(e.target.value)}
-            disabled={loading}
+            disabled={isLoading}
           />
           <button
             type="submit"
             className="shrink-0 py-3.5 px-7 bg-primary text-bg rounded-xl text-[0.95rem] font-bold cursor-pointer transition-all duration-300 whitespace-nowrap min-w-[120px] flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-primary-dark hover:enabled:-translate-y-px hover:enabled:shadow-[0_6px_20px_rgba(7,166,107,0.3)] max-[768px]:w-full max-[768px]:py-3.5"
-            disabled={loading || !repoUrl.trim()}
+            disabled={isLoading || !repoUrl.trim()}
           >
-            {loading ? (
+            {isLoading ? (
               <span className="inline-block w-5 h-5 border-[3px] border-bg/30 border-t-bg rounded-full animate-spin" />
             ) : (
               'Generate Cards'
@@ -199,7 +194,7 @@ const LandingDemo: React.FC = () => {
         </div>
       </form>
 
-      <TrendingRepoList onSelect={handleSelectTrendingRepo} disabled={loading} />
+      <TrendingRepoList onSelect={handleSelectTrendingRepo} disabled={isLoading} />
 
       {error && (
         <p className="mt-6 py-3 px-5 bg-error-bg border border-error/30 rounded-xl text-error-light text-sm animate-fade-in">

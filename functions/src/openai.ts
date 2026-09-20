@@ -31,7 +31,7 @@ const OPENAI_MODEL = "gpt-4o-mini";
  * 플래시카드 구조화 출력 스키마 (app types와 동기화)
  * OpenAI Structured Outputs로 응답 형식 보장
  */
-const FLASHCARD_RESPONSE_SCHEMA = {
+export const FLASHCARD_RESPONSE_SCHEMA = {
   type: "json_schema" as const,
   json_schema: {
     name: "flashcard_items",

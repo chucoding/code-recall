@@ -1,7 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { createQueryKeys } from '@/shared/lib/query-keys';
 import type { TrendingRepository } from '@/entities/repository';
 import { fetchTrendingRepositories } from '../api/repos';
 import { FALLBACK_TRENDING_REPOSITORIES } from '../lib/fallback';
+
+/** 트렌딩 목록 쿼리 키 */
+export const trendingRepositoryKeys = createQueryKeys('trending-repositories', {
+  list: (since: string) => [since],
+});
 
 /** `useTrendingRepositories`가 돌려주는 구독 값 */
 export interface TrendingRepositoriesState {
@@ -16,31 +22,26 @@ export interface TrendingRepositoriesState {
  * GitHub Trending 캐시 구독
  *
  * 사용처가 상위에서 목록을 받아오지 않고 직접 구독하도록 훅으로 분리했다.
- * 첫 렌더에서 기본 목록을 내보내 뱃지 줄이 비어 보이지 않게 하고, 캐시를 읽으면 교체한다.
+ * 목록은 스케줄러가 하루 한 번만 갱신하므로 쿼리 캐시에 두어 랜딩을 오갈 때 Firestore를 다시 읽지 않는다.
+ * 캐시를 읽기 전에는 기본 목록을 내보내 뱃지 줄이 비어 보이지 않게 한다.
  */
 export function useTrendingRepositories(): TrendingRepositoriesState {
-  const [state, setState] = useState<TrendingRepositoriesState>({
-    repositories: FALLBACK_TRENDING_REPOSITORIES,
-    updatedAt: null,
-    isFallback: true,
+  const { data } = useQuery({
+    queryKey: trendingRepositoryKeys.list('daily'),
+    queryFn: fetchTrendingRepositories,
   });
 
-  useEffect(() => {
-    let active = true;
-
-    fetchTrendingRepositories().then((snapshot) => {
-      if (!active || !snapshot) return;
-      setState({
-        repositories: snapshot.repositories,
-        updatedAt: snapshot.updatedAt,
-        isFallback: false,
-      });
-    });
-
-    return () => {
-      active = false;
+  if (!data) {
+    return {
+      repositories: FALLBACK_TRENDING_REPOSITORIES,
+      updatedAt: null,
+      isFallback: true,
     };
-  }, []);
+  }
 
-  return state;
+  return {
+    repositories: data.repositories,
+    updatedAt: data.updatedAt,
+    isFallback: false,
+  };
 }

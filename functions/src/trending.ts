@@ -1,5 +1,6 @@
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
+import {pregenerateDemoFlashcards, removeStaleDemoFlashcards} from "./demo-flashcards.js";
 
 /**
  * GitHub Trending Top N 수집
@@ -113,12 +114,20 @@ async function fetchTrendingRepos(): Promise<TrendingRepo[]> {
   return parseTrendingHtml(await response.text());
 }
 
-/** 매일 09시(KST) GitHub Trending Top 10을 수집해 Firestore에 캐시 */
+/**
+ * 매일 09시(KST) GitHub Trending Top 10을 수집해 Firestore에 캐시
+ *
+ * 목록만 캐시하면 방문자가 뱃지를 누를 때마다 GitHub 조회와 AI 생성을 다시 거쳐 수 초를 기다리게 되어,
+ * 같은 실행에서 각 저장소의 데모 카드까지 미리 만들어 둔다. 저장소 10곳의 AI 호출이 이어지므로
+ * 기본 60초로는 모자라 실행 시간을 늘렸다.
+ */
 export const refreshTrendingRepos = onSchedule(
   {
     schedule: "0 9 * * *",
     timeZone: "Asia/Seoul",
     region: "asia-northeast3",
+    timeoutSeconds: 540,
+    memory: "512MiB",
   },
   async () => {
     const repos = await fetchTrendingRepos();
@@ -138,5 +147,13 @@ export const refreshTrendingRepos = onSchedule(
     });
 
     console.log(`Trending 캐시 갱신 완료: ${repos.length}건`);
+
+    // 카드 생성이 실패해도 목록 캐시는 이미 저장돼 랜딩 뱃지는 정상 동작한다
+    try {
+      await pregenerateDemoFlashcards(repos);
+      await removeStaleDemoFlashcards(repos);
+    } catch (error) {
+      console.error("데모 카드 사전 생성 단계 실패", error);
+    }
   }
 );
