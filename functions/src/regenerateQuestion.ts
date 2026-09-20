@@ -3,19 +3,13 @@ import {getAuth} from "firebase-admin/auth";
 import {getFirestore} from "firebase-admin/firestore";
 import {getRegenerateQuestionPrompt} from "./prompts.js";
 import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
+import {getTodayKST} from "./ai-guard.js";
 import crypto from "crypto";
 
 const db = getFirestore();
 const LIMIT_FREE = 3;
 const LIMIT_PRO = 20;
 const LIMIT_DEMO = 1;
-
-/** KST 오늘 날짜 YYYY-MM-DD */
-function getTodayKST(): string {
-  const now = new Date();
-  const kst = new Date(now.getTime() + 9 * 60 * 60 * 1000);
-  return kst.toISOString().split("T")[0];
-}
 
 async function getUidFromRequest(req: { headers: { authorization?: string } }): Promise<string> {
   const authHeader = req.headers.authorization;

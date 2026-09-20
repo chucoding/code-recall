@@ -29,6 +29,10 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // AI 호출 카운터(aiUsage): 규칙을 두지 않아 기본 거부 상태이며 Admin SDK만 읽고 쓴다.
+    // 사용자가 자기 한도를 직접 지울 수 있으면 경계가 없는 것과 같으므로 여기에
+    // match 블록을 추가해 클라이언트 접근을 열지 않는다
+
     // 공지사항: 읽기 전용 (쓰기는 Firebase Console에서만)
     match /notices/{noticeId} {
       allow read: if request.auth != null;
