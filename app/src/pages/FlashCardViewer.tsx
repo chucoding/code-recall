@@ -26,11 +26,7 @@ import { trackEvent } from '@/shared/config/analytics';
 import { useNavigationStore } from '@/shared/lib/navigationStore';
 import { useSubscription } from '@/features/subscription';
 import { getCurrentDate, shuffleArray } from '@/shared/lib/date';
-import {
-  regenerateCardQuestion,
-  REGENERATE_QUESTION_LIMIT_FREE,
-  REGENERATE_QUESTION_LIMIT_PRO,
-} from '@/features/subscription';
+import { regenerateCardQuestion, useRegenerateQuota } from '@/features/subscription';
 import { Shuffle } from 'lucide-react';
 import { Button } from '@/shared/ui/button';
 import { FlashCardKeyboardIndicator } from '@/shared/ui/FlashCardKeyboardIndicator';
@@ -122,13 +118,7 @@ const FlashCardViewer: React.FC = () => {
   }, [cards, t, i18n.language]);
 
   const tier = subscription?.subscriptionTier === 'pro' ? 'pro' : 'free';
-  const limit = tier === 'pro' ? REGENERATE_QUESTION_LIMIT_PRO : REGENERATE_QUESTION_LIMIT_FREE;
-  const todayStr = getCurrentDate();
-  const count =
-    subscription?.lastRegenerateDate === todayStr
-      ? (subscription?.regenerateCountToday ?? 0)
-      : 0;
-  const canRegenerateQuestion = count < limit;
+  const { canRegenerate: canRegenerateQuestion } = useRegenerateQuota(user, tier);
 
   const handleRegenerateQuestion = useCallback(
     async (index: number) => {

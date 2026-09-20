@@ -45,8 +45,6 @@ export interface UserSubscription {
   subscriptionTier: SubscriptionTier;
   subscriptionPeriodEnd?: string | null;
   stripeCustomerId?: string | null;
-  regenerateCountToday?: number;
-  lastRegenerateDate?: string | null;
   preferredPushHour?: number | null;
   /** IANA 타임존 (예: Asia/Seoul). 푸시 알림 "희망 시"가 이 시간대 기준. 없으면 서버 기본(Asia/Seoul) 사용. */
   preferredPushTimezone?: string | null;
