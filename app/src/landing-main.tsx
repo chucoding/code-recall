@@ -2,9 +2,11 @@ import '@/shared/config/i18n';
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { Toaster } from 'sonner';
+import { QueryClientProvider } from '@tanstack/react-query';
 import Clarity from '@microsoft/clarity';
 import './index.css';
 import LandingPage from './pages/LandingPage';
+import { queryClient } from '@/shared/api/query-client';
 import { trackEvent, trackScreen } from '@/shared/config/analytics';
 
 // Microsoft Clarity (랜딩 우선): 히트맵·세션 녹화
@@ -18,10 +20,12 @@ const root = document.getElementById('root');
 if (root) {
   ReactDOM.createRoot(root).render(
     <React.StrictMode>
-      <React.Suspense fallback={null}>
-        <Toaster position="bottom-center" richColors closeButton offset="12px" />
-        <LandingPage />
-      </React.Suspense>
+      <QueryClientProvider client={queryClient}>
+        <React.Suspense fallback={null}>
+          <Toaster position="bottom-center" richColors closeButton offset="12px" />
+          <LandingPage />
+        </React.Suspense>
+      </QueryClientProvider>
     </React.StrictMode>
   );
 }

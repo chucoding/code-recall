@@ -23,6 +23,12 @@ service cloud.firestore {
       allow read: if true;
     }
 
+    // 랜딩 데모 사전 생성 카드: 트렌딩 목록과 같은 이유로 비로그인 방문자도 읽어야 함
+    // 쓰기는 스케줄러(refreshTrendingRepos)의 Admin SDK만 수행하므로 규칙에서 허용하지 않음
+    match /demoFlashcards/{cacheId} {
+      allow read: if true;
+    }
+
     // 공지사항: 읽기 전용 (쓰기는 Firebase Console에서만)
     match /notices/{noticeId} {
       allow read: if request.auth != null;
