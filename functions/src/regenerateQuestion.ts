@@ -2,10 +2,10 @@ import {onRequest, HttpsError} from "firebase-functions/v2/https";
 import {getAuth} from "firebase-admin/auth";
 import {getFirestore} from "firebase-admin/firestore";
 import {getRegenerateQuestionPrompt} from "./prompts.js";
+import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
 import crypto from "crypto";
 
 const db = getFirestore();
-const OPENAI_MODEL = "gpt-4o-mini";
 const LIMIT_FREE = 3;
 const LIMIT_PRO = 20;
 const LIMIT_DEMO = 1;
@@ -69,7 +69,8 @@ const FLASHCARD_RESPONSE_SCHEMA = {
  * Body: { rawDiff, existingQuestion, existingAnswer, flashcardDate?, demoDeviceId? }
  */
 export const regenerateCardQuestion = onRequest(
-  {cors: true, region: "asia-northeast3", invoker: "public"},
+  // 추론 모델은 응답까지 시간이 더 걸려 기본 60초로는 모자람
+  {cors: true, region: "asia-northeast3", invoker: "public", timeoutSeconds: 120},
   async (req, res) => {
     if (req.method !== "POST") {
       res.status(405).json({error: "Method not allowed"});
@@ -137,22 +138,20 @@ export const regenerateCardQuestion = onRequest(
           : "";
         const userContent = `${rawDiff}\n\n---\n[질문 재생성]\n기존 질문: ${existingQuestion}\n기존 답변: ${existingAnswer}${otherSection}\n\n위 원문과 답변에 맞는, 기존 질문${otherList.length > 0 ? " 및 덱의 다른 질문들과도 다른" : "과 다른"} 새로운 면접 질문 1개를 작성해주세요. (답변은 그대로 두고, 질문과 하이라이트만 새로 작성)`;
 
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        const response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${apiKey}`,
           },
-          body: JSON.stringify({
-            model: OPENAI_MODEL,
-            messages: [
-              {role: "system", content: systemPrompt},
-              {role: "user", content: userContent},
-            ],
-            temperature: 0.75,
-            max_tokens: 2048,
-            response_format: FLASHCARD_RESPONSE_SCHEMA,
-          }),
+          body: JSON.stringify(buildOpenAIChatBody({
+            systemPrompt,
+            userContent,
+            responseFormat: FLASHCARD_RESPONSE_SCHEMA,
+            reasoningEffort: "low",
+            // 추론 토큰이 출력 상한을 함께 쓰므로 기존 2048에서 올림
+            maxCompletionTokens: 4096,
+          })),
         });
 
         if (!response.ok) {
@@ -227,22 +226,20 @@ export const regenerateCardQuestion = onRequest(
           : "";
         const userContent = `${rawDiff}\n\n---\n[질문 재생성]\n기존 질문: ${existingQuestion}\n기존 답변: ${existingAnswer}${otherSection}\n\n위 원문과 답변에 맞는, 기존 질문${otherList.length > 0 ? " 및 덱의 다른 질문들과도 다른" : "과 다른"} 새로운 면접 질문 1개를 작성해주세요. (답변은 그대로 두고, 질문과 하이라이트만 새로 작성)`;
 
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        const response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${apiKey}`,
           },
-          body: JSON.stringify({
-            model: OPENAI_MODEL,
-            messages: [
-              {role: "system", content: systemPrompt},
-              {role: "user", content: userContent},
-            ],
-            temperature: 0.75,
-            max_tokens: 2048,
-            response_format: FLASHCARD_RESPONSE_SCHEMA,
-          }),
+          body: JSON.stringify(buildOpenAIChatBody({
+            systemPrompt,
+            userContent,
+            responseFormat: FLASHCARD_RESPONSE_SCHEMA,
+            reasoningEffort: "low",
+            // 추론 토큰이 출력 상한을 함께 쓰므로 기존 2048에서 올림
+            maxCompletionTokens: 4096,
+          })),
         });
 
         if (!response.ok) {

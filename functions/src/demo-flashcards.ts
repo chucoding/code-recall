@@ -1,6 +1,7 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
 import {getFlashcardPrompt} from "./prompts.js";
 import {FLASHCARD_RESPONSE_SCHEMA} from "./openai.js";
+import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
 
 /**
  * 랜딩 데모 플래시카드 사전 생성
@@ -28,8 +29,6 @@ const MAX_PATCH_LENGTH = 4000;
 
 /** 이 크기를 넘는 문서는 저장하지 않고 건너뜀 (Firestore 문서 상한 1MB 대비 여유) */
 const MAX_DOCUMENT_BYTES = 900_000;
-
-const OPENAI_MODEL = "gpt-4o-mini";
 
 /** 앱 `FileChange`와 같은 형태 */
 interface DemoFileChange {
@@ -178,23 +177,21 @@ async function generateQuestionAnswer(
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  const response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       "Authorization": `Bearer ${apiKey}`,
     },
-    body: JSON.stringify({
-      model: OPENAI_MODEL,
-      messages: [
-        {role: "system", content: getFlashcardPrompt(lang)},
-        {role: "user", content: answerContent},
-      ],
-      temperature: 0.5,
-      max_tokens: 4096,
+    body: JSON.stringify(buildOpenAIChatBody({
+      systemPrompt: getFlashcardPrompt(lang),
+      userContent: answerContent,
       // 실시간 생성 경로(openaiChatCompletions)와 같은 스키마를 써서 카드 형태를 맞춤
-      response_format: FLASHCARD_RESPONSE_SCHEMA,
-    }),
+      responseFormat: FLASHCARD_RESPONSE_SCHEMA,
+      // 스케줄러 한 번에 저장소 10곳을 순차 처리해 실행 시간 540초 안에 들어와야 함
+      reasoningEffort: "low",
+      maxCompletionTokens: 8192,
+    })),
   });
 
   if (!response.ok) {

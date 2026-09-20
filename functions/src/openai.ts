@@ -1,5 +1,6 @@
 import {onRequest} from "firebase-functions/v2/https";
 import {getFlashcardPrompt} from "./prompts.js";
+import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
 
 /**
  * Clova와 동일한 형태로 앱에서 사용하는 정규화 응답 타입
@@ -24,8 +25,6 @@ interface NormalizedChatCompletionResponse {
     };
   };
 }
-
-const OPENAI_MODEL = "gpt-4o-mini";
 
 /**
  * 플래시카드 구조화 출력 스키마 (app types와 동기화)
@@ -74,6 +73,8 @@ export const openaiChatCompletions = onRequest(
     cors: true,
     region: "asia-northeast3",
     invoker: "public",
+    // 추론 모델은 응답까지 시간이 더 걸려 기본 60초로는 모자람
+    timeoutSeconds: 120,
   },
   async (req, res) => {
     try {
@@ -92,22 +93,20 @@ export const openaiChatCompletions = onRequest(
 
       const prompt = getFlashcardPrompt(lang);
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({
-          model: OPENAI_MODEL,
-          messages: [
-            {role: "system", content: prompt},
-            {role: "user", content: text},
-          ],
-          temperature: 0.5,
-          max_tokens: 4096,
-          response_format: FLASHCARD_RESPONSE_SCHEMA,
-        }),
+        body: JSON.stringify(buildOpenAIChatBody({
+          systemPrompt: prompt,
+          userContent: text,
+          responseFormat: FLASHCARD_RESPONSE_SCHEMA,
+          reasoningEffort: "low",
+          // 추론 토큰이 출력 상한을 함께 쓰므로 기존 4096에서 올림
+          maxCompletionTokens: 8192,
+        })),
       });
 
       if (!response.ok) {
