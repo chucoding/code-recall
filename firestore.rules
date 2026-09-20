@@ -103,26 +103,37 @@ service cloud.firestore {
     }
 
     // users 문서의 클라이언트 소유 필드 타입과 크기 검증
-    // 선택 필드이므로 존재할 때만 검사하고, 서버 전용 필드는 여기서 다루지 않는다
-    // (서버 전용 필드는 userWritableFields의 hasOnly 검사로 이미 거부됨)
-    function isValidUserData(data) {
-      return (!('repositories' in data)
+    //
+    // `changed`는 이번 쓰기가 실제로 건드리는 키 집합이고, 그 키만 검사한다. 문서에
+    // 이미 들어 있는 값까지 검사하면 과거 버전이 남긴 형태 하나 때문에 그 사용자의
+    // 모든 쓰기가 막힌다. 새로 쓰는 값만 보면 기존 문서는 그대로 두면서 앞으로 들어오는
+    // 값은 전부 규격을 지키게 된다.
+    //
+    // 서버 전용 필드는 여기서 다루지 않는다. userWritableFields의 hasOnly 검사로 이미
+    // 거부되기 때문이다.
+    function isValidUserData(data, changed) {
+      return (!changed.hasAny(['repositories'])
               || isValidRepositories(data.repositories))
-        && (!('onboardingCompleted' in data) || data.onboardingCompleted is bool)
-        && (!('onboardingSkipped' in data) || data.onboardingSkipped is bool)
-        && (!('githubToken' in data)
+        && (!changed.hasAny(['onboardingCompleted']) || data.onboardingCompleted is bool)
+        && (!changed.hasAny(['onboardingSkipped']) || data.onboardingSkipped is bool)
+        && (!changed.hasAny(['githubToken'])
             || (data.githubToken is string && data.githubToken.size() <= 500))
-        && (!('pushEnabled' in data) || data.pushEnabled is bool)
-        && (!('fcmToken' in data)
+        && (!changed.hasAny(['pushEnabled']) || data.pushEnabled is bool)
+        && (!changed.hasAny(['fcmToken'])
             || (data.fcmToken is string && data.fcmToken.size() <= 1024))
-        && (!('preferredPushHour' in data)
-            || (data.preferredPushHour is int
+        // 정수로만 좁히지 않는 이유는 배포된 번들이 브라우저에 캐시돼 남고, 과거 번들이
+        // 실수를 쓰더라도 서버가 "현재 시"와 비교할 때 맞지 않아 넘어갈 뿐이기 때문이다
+        && (!changed.hasAny(['preferredPushHour'])
+            || (data.preferredPushHour is number
                 && data.preferredPushHour >= 0
                 && data.preferredPushHour <= 23))
-        && (!('preferredPushTimezone' in data)
+        && (!changed.hasAny(['preferredPushTimezone'])
             || (data.preferredPushTimezone is string
                 && data.preferredPushTimezone.size() <= 64))
-        && (!('updatedAt' in data)
+        // 문자열과 timestamp를 모두 받는 이유는 과거 번들이 Date 객체를 그대로 쓰고,
+        // PWA 서비스 워커 캐시 때문에 그 번들이 배포 뒤에도 한동안 남기 때문이다
+        && (!changed.hasAny(['updatedAt'])
+            || data.updatedAt is timestamp
             || (data.updatedAt is string && data.updatedAt.size() <= 64));
     }
 
@@ -137,14 +148,17 @@ service cloud.firestore {
 
       allow create: if isOwner(userId)
         && request.resource.data.keys().hasOnly(userWritableFields())
-        && isValidUserData(request.resource.data);
+        && isValidUserData(request.resource.data, request.resource.data.keys());
 
       // 변경된 키만 검사해 Admin SDK가 넣어 둔 서버 전용 필드는 그대로 두고
       // 클라이언트가 그 값을 건드리는 것만 거부한다
       allow update: if isOwner(userId)
         && request.resource.data.diff(resource.data).affectedKeys()
              .hasOnly(userWritableFields())
-        && isValidUserData(request.resource.data);
+        && isValidUserData(
+             request.resource.data,
+             request.resource.data.diff(resource.data).affectedKeys()
+           );
 
       // 회원 탈퇴에서 본인 문서 삭제
       allow delete: if isOwner(userId);
