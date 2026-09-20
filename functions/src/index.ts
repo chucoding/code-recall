@@ -9,7 +9,6 @@ initializeApp();
 
 export * from "./github.js";
 export * from "./schedule.js";
-export * from "./clova.js";
 export * from "./openai.js";
 export * from "./regenerateQuestion.js";
 export * from "./translateFlashcards.js";

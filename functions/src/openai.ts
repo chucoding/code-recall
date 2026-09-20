@@ -1,9 +1,13 @@
 import {onRequest} from "firebase-functions/v2/https";
 import {getFlashcardPrompt} from "./prompts.js";
 import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
+import {consumeAiQuota, MAX_FLASHCARD_PROMPT_CHARS, truncateForPrompt} from "./ai-guard.js";
 
 /**
- * Clova와 동일한 형태로 앱에서 사용하는 정규화 응답 타입
+ * 앱에서 사용하는 정규화 응답 타입
+ *
+ * 형태는 초기 공급자였던 Clova의 응답에서 왔고, 앱이 이미 이 형태로 파싱하고 있어
+ * OpenAI 응답을 여기에 맞춰 옮긴다.
  */
 interface NormalizedChatCompletionResponse {
   status: {
@@ -66,7 +70,10 @@ export const FLASHCARD_RESPONSE_SCHEMA = {
 
 /**
  * OpenAI Chat Completions - 요청은 { text }, 프롬프트는 서버에서 조회
- * response_format으로 JSON 스키마 적용, 응답은 Clova와 동일한 형태로 정규화해 반환
+ * response_format으로 JSON 스키마 적용, 응답은 앱이 쓰는 형태로 정규화해 반환
+ *
+ * 랜딩 데모가 비로그인으로 호출하므로 `invoker: "public"`을 유지하고, 모델 호출 앞에
+ * `consumeAiQuota`로 호출자별 한도와 데모 전체 상한을 검사한다.
  */
 export const openaiChatCompletions = onRequest(
   {
@@ -91,6 +98,19 @@ export const openaiChatCompletions = onRequest(
         return;
       }
 
+      const guard = await consumeAiQuota(req);
+      if (!guard.allowed) {
+        res.status(guard.status).json(guard.body);
+        return;
+      }
+
+      const {text: promptText, truncated} = truncateForPrompt(text, MAX_FLASHCARD_PROMPT_CHARS);
+      if (truncated) {
+        console.warn(
+          `본문이 상한을 넘어 잘라서 호출: 원본 ${text.length}자 → ${MAX_FLASHCARD_PROMPT_CHARS}자`
+        );
+      }
+
       const prompt = getFlashcardPrompt(lang);
 
       const response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
@@ -101,7 +121,7 @@ export const openaiChatCompletions = onRequest(
         },
         body: JSON.stringify(buildOpenAIChatBody({
           systemPrompt: prompt,
-          userContent: text,
+          userContent: promptText,
           responseFormat: FLASHCARD_RESPONSE_SCHEMA,
           reasoningEffort: "low",
           // 추론 토큰이 출력 상한을 함께 쓰므로 기존 4096에서 올림

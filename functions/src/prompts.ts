@@ -1,5 +1,5 @@
 /**
- * 플래시카드용 AI 시스템 프롬프트 (Clova/OpenAI 공통)
+ * 플래시카드용 AI 시스템 프롬프트
  * 클라이언트에 노출되지 않도록 서버에서만 사용
  * 출력 형식은 OpenAI 호출 시 response_format(json_schema)으로 지정
  * @param lang - 출력 언어. 'en'이면 질문·답변을 영어로 작성

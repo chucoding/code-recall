@@ -1,6 +1,7 @@
 import {onRequest} from "firebase-functions/v2/https";
 import {getTranslateFlashcardsPrompt} from "./prompts.js";
 import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
+import {consumeAiQuota, MAX_TRANSLATE_CARDS, MAX_TRANSLATE_PROMPT_CHARS} from "./ai-guard.js";
 
 interface FlashCardInput {
   question: string;
@@ -41,6 +42,10 @@ const TRANSLATE_RESPONSE_SCHEMA = {
  * 플래시카드 Q&A 번역 (배치)
  * POST { cards: FlashCardInput[], targetLang: 'ko' | 'en' }
  * 반환: { cards: FlashCardInput[] } (question, answer만 번역, highlights/metadata 유지)
+ *
+ * 모델 호출 앞에 `consumeAiQuota`로 호출자별 한도를 검사하고, 카드 수와 본문 길이에
+ * 상한을 둔다. 결과를 색인으로 원본 카드에 되돌려 붙이므로 본문을 잘라 카드 수가
+ * 어긋나게 만들 수 없어, 상한을 넘으면 자르지 않고 거부한다.
  */
 export const translateFlashcards = onRequest(
   {
@@ -71,8 +76,30 @@ export const translateFlashcards = onRequest(
         return;
       }
 
+      if (cards.length > MAX_TRANSLATE_CARDS) {
+        res.status(413).json({
+          error: `cards는 한 번에 ${MAX_TRANSLATE_CARDS}건까지 번역합니다.`,
+          code: "PAYLOAD_TOO_LARGE",
+        });
+        return;
+      }
+
       const pairs = cards.map((c) => ({question: c?.question ?? "", answer: c?.answer ?? ""}));
       const userContent = JSON.stringify(pairs);
+
+      if (userContent.length > MAX_TRANSLATE_PROMPT_CHARS) {
+        res.status(413).json({
+          error: `번역할 본문이 ${MAX_TRANSLATE_PROMPT_CHARS}자를 넘습니다.`,
+          code: "PAYLOAD_TOO_LARGE",
+        });
+        return;
+      }
+
+      const guard = await consumeAiQuota(req);
+      if (!guard.allowed) {
+        res.status(guard.status).json(guard.body);
+        return;
+      }
 
       const prompt = getTranslateFlashcardsPrompt(targetLang);
 

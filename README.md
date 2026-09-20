@@ -40,7 +40,7 @@ https://coderecall.app/
 | **프론트엔드** | React 18, TypeScript, Vite, Tailwind CSS, Zustand |
 | **PWA** | vite-plugin-pwa (오프라인·설치 지원) |
 | **백엔드·인프라** | Firebase (Authentication, Firestore, Cloud Functions, FCM) |
-| **AI** | OpenAI gpt-5.6-luna (기본), 네이버 클라우드 HyperCLOVA X (HCX-007) (선택) |
+| **AI** | OpenAI gpt-5.6-luna |
 | **연동** | GitHub API (커밋·파일 조회) |
 | **기타** | Markdown 렌더링 (react-markdown, remark-gfm), 코드 하이라이트 (react-syntax-highlighter) |
 
@@ -86,10 +86,6 @@ VITE_MEASUREMENT_ID=...
 ```bash
 VITE_VAPID_KEY=...
 ```
-- **AI Provider** (선택): 미설정 시 OpenAI 사용. Clova 사용 시:
-```bash
-VITE_AI_PROVIDER=clova
-```
 - **Microsoft Clarity** (선택): 히트맵과 세션 녹화
 ```bash
 VITE_CLARITY_PROJECT_ID=...
@@ -98,13 +94,9 @@ VITE_CLARITY_PROJECT_ID=...
 `VITE_FIREBASE_*`와 `VITE_FUNCTIONS_URL_*`은 1.3에서 자동으로 채워지므로 직접 입력하지 않는다.
 
 ##### functions/.env
-- **OpenAI 사용 시** (기본): `functions/.env` 파일에 `OPENAI_API_KEY` 추가
+`functions/.env` 파일에 `OPENAI_API_KEY` 추가
 ```bash
 OPENAI_API_KEY=your_openai_api_key
-```
-- **Clova 사용 시**: `VITE_AI_PROVIDER=clova` 설정 후
-```bash
-CLOVA_API_KEY=your_clova_api_key
 ```
 
 ##### Firebase 프로젝트 연결

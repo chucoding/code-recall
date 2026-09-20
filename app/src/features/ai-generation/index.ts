@@ -1,4 +1,2 @@
-export { chatCompletions } from './api/aiApi';
-export { chatCompletions as openaiChatCompletions } from './api/openaiApi';
-export { chatCompletions as clovaChatCompletions } from './api/clovaApi';
+export { chatCompletions } from './api/openaiApi';
 export { translateFlashcards } from './api/translateApi';
