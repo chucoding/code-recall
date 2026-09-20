@@ -158,7 +158,7 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       await setDoc(userDocRef, {
         onboardingCompleted: true,
         onboardingSkipped: true,
-        updatedAt: new Date(),
+        updatedAt: new Date().toISOString(),
       }, { merge: true });
 
       onComplete();

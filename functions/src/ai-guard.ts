@@ -108,8 +108,9 @@ export type AiGuardResult =
  * 로그인 사용자의 일일 한도 차감
  *
  * 카운터를 `users/{uid}`가 아니라 서버 전용 컬렉션에 두는 이유는 firestore.rules가
- * `users/{uid}`를 본인 쓰기 허용으로 열어 두어, 거기 두면 사용자가 자기 한도를 직접
- * 지울 수 있기 때문이다.
+ * `users/{uid}`의 본인 쓰기와 삭제를 열어 두어, 거기 두면 사용자가 자기 한도를 직접
+ * 지울 수 있기 때문이다. 쓸 수 있는 필드를 좁혀도 문서를 통째로 지웠다가 다시 만드는
+ * 경로가 남아, 사용량은 애초에 사용자가 손댈 수 없는 컬렉션에 있어야 한다.
  *
  * @param {string} authHeader - `Bearer <ID 토큰>` 형식의 Authorization 헤더
  * @return {Promise<AiGuardResult>} 통과 여부와 막힌 경우의 응답

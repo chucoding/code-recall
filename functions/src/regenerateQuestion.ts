@@ -11,6 +11,16 @@ const LIMIT_FREE = 3;
 const LIMIT_PRO = 20;
 const LIMIT_DEMO = 1;
 
+/**
+ * 로그인 사용자의 재생성 사용량 컬렉션
+ *
+ * 비로그인 `demoRegenerateCounts`와 같은 이유로 users 문서 밖에 둔다. firestore.rules는
+ * users 문서의 본인 쓰기와 삭제를 열어 두므로, 카운터가 거기 있으면 문서를 지웠다가 다시
+ * 만드는 것만으로 하루 한도가 초기화된다. 규칙은 이 컬렉션에 본인 읽기만 열어 남은 횟수
+ * 표시에 쓰게 하고 쓰기는 열지 않는다.
+ */
+const REGENERATE_COUNTS_COLLECTION = "regenerateCounts";
+
 async function getUidFromRequest(req: { headers: { authorization?: string } }): Promise<string> {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -95,8 +105,7 @@ export const regenerateCardQuestion = onRequest(
       if (hasAuth) {
         // 로그인 사용자
         const uid = await getUidFromRequest(req);
-        const userRef = db.collection("users").doc(uid);
-        const userSnap = await userRef.get();
+        const userSnap = await db.collection("users").doc(uid).get();
         if (!userSnap.exists) {
           res.status(404).json({error: "User not found"});
           return;
@@ -104,8 +113,13 @@ export const regenerateCardQuestion = onRequest(
         const data = userSnap.data()!;
         const tier = data.subscriptionTier === "pro" ? "pro" : "free";
         const limit = tier === "pro" ? LIMIT_PRO : LIMIT_FREE;
-        let count = typeof data.regenerateCountToday === "number" ? data.regenerateCountToday : 0;
-        const lastDate = data.lastRegenerateDate as string | undefined;
+
+        const counterRef = db.collection(REGENERATE_COUNTS_COLLECTION).doc(uid);
+        const counterSnap = await counterRef.get();
+        const counterData = counterSnap.exists ? counterSnap.data() : undefined;
+        const savedCount = counterData?.count;
+        let count = typeof savedCount === "number" ? savedCount : 0;
+        const lastDate = counterData?.date as string | undefined;
 
         if (lastDate !== today) count = 0;
         if (count >= limit) {
@@ -171,12 +185,8 @@ export const regenerateCardQuestion = onRequest(
         const question = item?.question ?? "";
         const highlights = Array.isArray(item?.highlights) ? item.highlights : [];
 
-        await userRef.set(
-          {
-            regenerateCountToday: count + 1,
-            lastRegenerateDate: today,
-            updatedAt: new Date().toISOString(),
-          },
+        await counterRef.set(
+          {date: today, count: count + 1, updatedAt: new Date().toISOString()},
           {merge: true}
         );
 

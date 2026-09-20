@@ -31,8 +31,6 @@ export function useSubscription(user: User | null) {
           subscriptionTier: (data.subscriptionTier === 'pro' ? 'pro' : 'free') as SubscriptionTier,
           subscriptionPeriodEnd: data.subscriptionPeriodEnd ?? null,
           stripeCustomerId: data.stripeCustomerId ?? null,
-          regenerateCountToday: typeof data.regenerateCountToday === 'number' ? data.regenerateCountToday : 0,
-          lastRegenerateDate: data.lastRegenerateDate ?? null,
           preferredPushHour: typeof data.preferredPushHour === 'number' ? data.preferredPushHour : null,
           preferredPushTimezone: typeof data.preferredPushTimezone === 'string' ? data.preferredPushTimezone : null,
         });

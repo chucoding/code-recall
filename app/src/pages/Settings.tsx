@@ -282,14 +282,12 @@ const Settings: React.FC = () => {
     setMessage(null);
 
     try {
-      const userDoc = await getDoc(doc(store, 'users', user.uid));
-      const existingData = userDoc.exists() ? userDoc.data() : {};
-
+      // 등급과 사용량 같은 서버 전용 필드는 firestore.rules가 클라이언트 쓰기를 막으므로
+      // 문서 전체를 덮어쓰지 않고 이 화면이 소유한 필드만 merge로 쓴다
       await setDoc(doc(store, 'users', user.uid), {
-        ...existingData,
         repositories: reposToSave,
         updatedAt: new Date().toISOString(),
-      });
+      }, { merge: true });
 
       // 저장 후 Firestore에서 플래시카드 데이터 삭제하고 새로 생성
       try {
@@ -351,15 +349,15 @@ const Settings: React.FC = () => {
           return;
         }
         const userDoc = await getDoc(doc(store, 'users', user.uid));
-        const existingData = userDoc.exists() ? userDoc.data() : {};
-        const timeZone = existingData?.preferredPushTimezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const savedTimezone = userDoc.exists() ? userDoc.data()?.preferredPushTimezone : undefined;
+        const timeZone = savedTimezone ?? Intl.DateTimeFormat().resolvedOptions().timeZone;
+        // 저장소 저장과 같은 이유로 알림 관련 필드만 merge로 쓴다
         await setDoc(doc(store, 'users', user.uid), {
-          ...existingData,
           pushEnabled: true,
           fcmToken: token,
           preferredPushTimezone: timeZone,
           updatedAt: new Date().toISOString(),
-        });
+        }, { merge: true });
         setPushEnabled(true);
       } else {
         await updateDoc(doc(store, 'users', user.uid), {
