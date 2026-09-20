@@ -1,7 +1,6 @@
 import {onRequest} from "firebase-functions/v2/https";
 import {getTranslateFlashcardsPrompt} from "./prompts.js";
-
-const OPENAI_MODEL = "gpt-4o-mini";
+import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
 
 interface FlashCardInput {
   question: string;
@@ -48,6 +47,8 @@ export const translateFlashcards = onRequest(
     cors: true,
     region: "asia-northeast3",
     invoker: "public",
+    // 추론 모델은 응답까지 시간이 더 걸려 기본 60초로는 모자람
+    timeoutSeconds: 120,
   },
   async (req, res) => {
     if (req.method !== "POST") {
@@ -75,22 +76,20 @@ export const translateFlashcards = onRequest(
 
       const prompt = getTranslateFlashcardsPrompt(targetLang);
 
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      const response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({
-          model: OPENAI_MODEL,
-          messages: [
-            {role: "system", content: prompt},
-            {role: "user", content: userContent},
-          ],
-          temperature: 0.3,
-          max_tokens: 4096,
-          response_format: TRANSLATE_RESPONSE_SCHEMA,
-        }),
+        body: JSON.stringify(buildOpenAIChatBody({
+          systemPrompt: prompt,
+          userContent,
+          responseFormat: TRANSLATE_RESPONSE_SCHEMA,
+          // 번역은 정해진 문장을 옮기는 작업이라 추론을 켜도 결과가 달라지지 않음
+          reasoningEffort: "none",
+          maxCompletionTokens: 8192,
+        })),
       });
 
       if (!response.ok) {
