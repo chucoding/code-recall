@@ -176,7 +176,21 @@ firebase deploy --only hosting
 |v1.0|2023.11.19|[네이버클라우드 서비스를 활용한 알림(PUSH) 앱 배포하기](https://chucoding.tistory.com/130)|
 |v1.0|2023.10.15|[안드로이드, IOS 지식 없이 SENS로 알림(PUSH) 서비스 개발하기](https://chucoding.tistory.com/129)|
 
+## 기여하기
+
+버그 제보와 기능 제안, PR 모두 환영한다. 로컬 셋팅과 브랜치 명명, PR 전 확인 사항은 [CONTRIBUTING.md](.github/CONTRIBUTING.md)에 있다.
+
+PR을 보내면 그 기여는 Apache License 2.0 조건으로 제공하는 것으로 본다. 별도 기여자 라이센스 동의(CLA) 절차는 없다.
+
 ## 라이센스
 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
+이 저장소는 [Apache License 2.0](LICENSE)을 따른다. 출처와 라이센스 고지, 변경 사항 표시를 지키면 복제, 수정, 배포, 상업적 이용이 모두 가능하다.
+
+다만 라이센스 제6조에 따라 CodeRecall 이름과 로고 사용권은 부여되지 않는다. 포크하거나 파생 서비스를 운영할 때는 다른 이름과 로고를 쓴다. 자세한 내용은 [NOTICE](NOTICE)에 있다.
+
+라이센스 적용 대상은 소스 코드뿐이다. https://coderecall.app 운영 서비스와 그 데이터, 외부 제공자 계정은 포함되지 않는다.
+
 <a href="https://www.linkedin.com/in/chucoding/" target="_blank">Prod By. 외계공룡</a><br/>
-Copyright &copy; CodeRecall<br/>All Rights Reserved.</p>
+Copyright &copy; 2023-2026 chucoding
