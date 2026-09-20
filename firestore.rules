@@ -17,6 +17,12 @@ service cloud.firestore {
       allow read, create: if request.auth != null && request.auth.uid == userId;
     }
     
+    // GitHub Trending 캐시: 랜딩 데모는 비로그인 방문자도 읽어야 하므로 공개 읽기
+    // 쓰기는 Cloud Functions의 Admin SDK만 수행하므로 규칙에서 허용하지 않음
+    match /meta/trendingRepos {
+      allow read: if true;
+    }
+
     // 공지사항: 읽기 전용 (쓰기는 Firebase Console에서만)
     match /notices/{noticeId} {
       allow read: if request.auth != null;

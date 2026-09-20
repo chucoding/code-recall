@@ -80,7 +80,10 @@
     "fallbackQuestionSuffix": "이 커밋에서 어떤 변경이 있었나요?",
     "fallbackAnswerCommit": "커밋 메시지:",
     "fallbackAnswerFiles": "변경된 파일:",
-    "noFileInfo": "파일 정보 없음"
+    "noFileInfo": "파일 정보 없음",
+    "trendingTitle": "GitHub 트렌딩 Top 10",
+    "trendingListLabel": "GitHub 트렌딩 저장소",
+    "trendingUpdatedAt": "{{date}} 기준"
   },
   "settings": {
     "language": "언어",
