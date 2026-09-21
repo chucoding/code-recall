@@ -1,5 +1,5 @@
 import { initializeApp, getApps, getApp } from 'firebase/app';
-import { initializeAnalytics, type Analytics } from 'firebase/analytics';
+import { getAnalytics, type Analytics } from 'firebase/analytics';
 import { getAuth, GithubAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
@@ -17,12 +17,10 @@ const firebaseConfig = {
 export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 // Analytics 인스턴스 (measurementId가 있을 때만 초기화, SSR/미설정 환경 대비)
-// 개발 서버에서는 모든 이벤트에 debug_mode를 붙여 DebugView로만 확인하고,
-// GA4 개발자 트래픽 데이터 필터로 운영 보고서에서 제외되게 함.
-// gtag는 debug_mode: false도 디버그로 취급하므로 운영에서는 키 자체를 넣지 않음
+// 로컬 .env에도 운영 측정 ID가 있어 개발 서버 트래픽이 운영 속성에 섞이지 않도록 개발 모드에서는 제외
 export const analytics: Analytics | null =
-  typeof window !== 'undefined' && firebaseConfig.measurementId
-    ? initializeAnalytics(app, import.meta.env.DEV ? { config: { debug_mode: true } } : {})
+  typeof window !== 'undefined' && firebaseConfig.measurementId && !import.meta.env.DEV
+    ? getAnalytics(app)
     : null;
 
 // Auth 인스턴스 생성

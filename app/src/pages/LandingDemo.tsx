@@ -36,7 +36,7 @@ const LandingDemo: React.FC = () => {
   const [syncSlideIndex, setSyncSlideIndex] = useState<number | null>(null);
   const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
   const cardSectionRef = useRef<HTMLDivElement>(null);
-  // 뱃지가 입력란에 채운 URL. 그대로 다시 제출하면 검색이 아니라 뱃지 재요청으로 구분하기 위한 값
+  // 뱃지가 입력란에 채운 URL. 그대로 다시 제출했는지 판별하는 데 사용
   const badgeFilledUrlRef = useRef<string | null>(null);
   const demoDeviceId = useMemo(getOrCreateDemoDeviceId, []);
 
@@ -149,46 +149,26 @@ const LandingDemo: React.FC = () => {
     [cards, demoDeviceId, lang, replaceCards, t]
   );
 
-  /**
-   * 카드 요청과 GA4 이벤트 전송
-   *
-   * 검색과 뱃지를 한 탐색 보고서에서 비교할 수 있도록 두 경로 모두 `landing_demo_generate` 하나로 보내고
-   * `source`로 구분한다. 요청이 끝나면 `landing_demo_generate_result`로 성공 여부와 캐시 적중을 함께 보낸다.
-   *
-   * @param url - 요청할 저장소 URL
-   * @param params - `source`와 경로별 추가 파라미터
-   */
-  const runSubmit = async (
-    url: string,
-    params: { source: 'form'; prefilled_from_badge: boolean } | { source: 'badge'; rank: number }
-  ) => {
-    trackEvent('landing_demo_generate', {
-      ...params,
-      ...(params.source === 'badge' && { repo_url: url.slice(0, 100) }),
-    });
+  const runSubmit = (url: string) => {
     setSyncSlideIndex(null);
-
-    const outcome = await requestCards(url);
-    trackEvent('landing_demo_generate_result', {
-      source: params.source,
-      ...(outcome.ok
-        ? { result: 'success', cache: outcome.cache, card_count: outcome.cardCount }
-        : { result: 'failure', error_code: outcome.errorCode }),
-    });
+    requestCards(url);
   };
 
+  // 검색과 뱃지 사용량을 한 탐색 보고서에서 비교하도록 같은 이벤트에 source만 달리해 전송
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    void runSubmit(repoUrl, {
-      source: 'form',
-      prefilled_from_badge: repoUrl === badgeFilledUrlRef.current,
-    });
+    // 뱃지가 채운 URL을 그대로 다시 제출한 경우는 검색 사용으로 세지 않음
+    if (repoUrl !== badgeFilledUrlRef.current) {
+      trackEvent('landing_demo_generate', { source: 'form' });
+    }
+    runSubmit(repoUrl);
   };
 
-  const handleSelectTrendingRepo = (url: string, rank: number) => {
+  const handleSelectTrendingRepo = (url: string) => {
+    trackEvent('landing_demo_generate', { source: 'badge' });
     setRepoUrl(url);
     badgeFilledUrlRef.current = url;
-    void runSubmit(url, { source: 'badge', rank });
+    runSubmit(url);
   };
 
   return (

@@ -4,8 +4,8 @@ import { useTrendingRepositories } from '../model/use-repos';
 import { DEFAULT_BADGE_COLOR, readableTextColor } from '../lib/contrast';
 
 export interface TrendingRepoListProps {
-  /** 뱃지를 눌렀을 때 호출. 인자는 저장소 URL과 목록에서의 순위(1부터) */
-  onSelect: (repositoryUrl: string, rank: number) => void;
+  /** 뱃지를 눌렀을 때 호출. 인자는 저장소 URL */
+  onSelect: (repositoryUrl: string) => void;
   /** 카드 생성 중처럼 선택을 막아야 할 때 true */
   disabled?: boolean;
 }
@@ -38,14 +38,14 @@ const TrendingRepoList: React.FC<TrendingRepoListProps> = ({ onSelect, disabled 
       </p>
 
       <div className="flex flex-wrap items-center justify-center gap-2.5">
-        {repositories.map((repository, index) => {
+        {repositories.map((repository) => {
           const backgroundColor = repository.languageColor || DEFAULT_BADGE_COLOR;
 
           return (
             <button
               key={repository.fullName}
               type="button"
-              onClick={() => onSelect(repository.url, index + 1)}
+              onClick={() => onSelect(repository.url)}
               disabled={disabled}
               title={repository.description || repository.fullName}
               className="inline-flex items-center gap-2 h-11 min-h-[44px] w-[max-content] shrink-0 rounded-full border-0 pl-1.5 pr-4 text-[0.85rem] font-semibold transition-[opacity,filter] duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:opacity-90 focus:outline focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-bg"
