@@ -1,20 +1,11 @@
 import {onSchedule} from "firebase-functions/v2/scheduler";
 import {getMessaging} from "firebase-admin/messaging";
 import {getFirestore} from "firebase-admin/firestore";
+import {getHourInTimezone} from "./timezone.js";
 
 // 매시 정각 실행: pushEnabled && fcmToken 있는 사용자 중, 해당 사용자 타임존의 "현재 시"가 preferredPushHour와 같은 경우에만 FCM 발송
 const FCM_BATCH_SIZE = 500;
 const DEFAULT_PUSH_TIMEZONE = "Asia/Seoul";
-
-/** 주어진 시각을 특정 타임존의 시(0–23)로 반환. */
-function getHourInTimezone(date: Date, timeZone: string): number {
-  const formatter = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    hour: "numeric",
-    hour12: false,
-  });
-  return parseInt(formatter.format(date), 10);
-}
 
 export const sendDaily8amPush = onSchedule(
   {
