@@ -10,6 +10,12 @@ import { getCurrentDate } from '@/shared/lib/date';
 import { useNavigationStore } from '@/shared/lib/navigationStore';
 import { useSubscription } from '@/features/subscription';
 import type { FlashCardData } from '@/entities/flashcard';
+import {
+  FLASHCARD_DECK_BUDGET_BYTES,
+  MAX_FLASHCARD_DOC_BYTES,
+  fitFlashcardDeckToBudget,
+  measureFlashcardDeckBytes,
+} from '../lib/deck-size';
 
 const DATES_AGO_FREE = [1, 7];
 const DATES_AGO_PRO = [1, 7, 30];
@@ -83,7 +89,13 @@ export function useTodayFlashcards(user: User | null) {
         if (otherDeck && otherDeck.length > 0) {
           const translated = await translateFlashcardsApi(otherDeck, currentLang);
           if (translated.length > 0) {
-            await setDoc(flashcardDocRef, { [`data_${currentLang}`]: translated }, { merge: true });
+            // 예산 도입 전에 저장된 큰 덱이 같은 문서에 있어도 두 덱 합이 상한을 넘지 않도록 남은 크기로 제한
+            const budgetBytes = Math.min(
+              FLASHCARD_DECK_BUDGET_BYTES,
+              MAX_FLASHCARD_DOC_BYTES - measureFlashcardDeckBytes(otherDeck)
+            );
+            const fitted = fitFlashcardDeckToBudget(translated, budgetBytes);
+            await setDoc(flashcardDocRef, { [`data_${currentLang}`]: fitted }, { merge: true });
             setLastLoadedDateKey(todayDate);
             setHasData(true);
           } else {
@@ -96,7 +108,8 @@ export function useTodayFlashcards(user: User | null) {
 
         const list = await generateFlashcards(datesAgo, repositories, currentLang);
         if (list.length > 0) {
-          await setDoc(flashcardDocRef, { [`data_${currentLang}`]: list }, { merge: true });
+          const fitted = fitFlashcardDeckToBudget(list);
+          await setDoc(flashcardDocRef, { [`data_${currentLang}`]: fitted }, { merge: true });
           setLastLoadedDateKey(todayDate);
           setHasData(true);
         } else {
