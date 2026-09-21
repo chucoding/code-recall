@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, updateDoc, type DocumentData, type DocumentReference } from 'firebase/firestore';
 import { User } from 'firebase/auth';
 import { store } from '@/shared/config/firebase';
 import { chatCompletions, translateFlashcards as translateFlashcardsApi } from '@/features/ai-generation';
@@ -64,6 +64,10 @@ export function useTodayFlashcards(user: User | null) {
         }
 
         const currentLang = i18n.language.startsWith('ko') ? 'ko' : 'en';
+        syncPregenerationSettings(userDocRef, userDoc.data(), currentLang).catch((err) => {
+          console.warn('Flashcard pregeneration settings sync (best-effort) failed:', err);
+        });
+
         const todayDoc = await getDoc(flashcardDocRef);
         const docData = todayDoc.exists() ? todayDoc.data() : undefined;
 
@@ -129,6 +133,26 @@ export function useTodayFlashcards(user: User | null) {
   }, [user, flashcardReloadTrigger, tier, i18n.language]);
 
   return { loading, hasData };
+}
+
+/**
+ * 서버 사전 생성에 쓰는 타임존과 언어를 users 문서에 기록
+ *
+ * 서버 스케줄러는 이 두 값으로 사용자의 "오늘" 날짜와 카드 언어를 정한다.
+ * 앱을 열 때마다 쓰지 않도록 저장된 값과 다를 때만 쓴다.
+ *
+ * @param userDocRef - users 문서 참조
+ * @param userData - 이미 읽어 온 users 문서 내용
+ * @param language - 현재 앱 표시 언어
+ */
+async function syncPregenerationSettings(
+  userDocRef: DocumentReference,
+  userData: DocumentData | undefined,
+  language: 'ko' | 'en'
+): Promise<void> {
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  if (!timezone || (userData?.timezone === timezone && userData?.language === language)) return;
+  await updateDoc(userDocRef, { timezone, language });
 }
 
 async function generateFlashcards(

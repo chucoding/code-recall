@@ -9,6 +9,7 @@ initializeApp();
 
 export * from "./github.js";
 export * from "./schedule.js";
+export * from "./flashcard-pregeneration.js";
 export * from "./openai.js";
 export * from "./regenerateQuestion.js";
 export * from "./translateFlashcards.js";

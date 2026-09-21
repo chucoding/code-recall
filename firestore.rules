@@ -16,6 +16,9 @@ rules_version = '2';
 //   - fcmToken: string (선택, 최대 1024자) FCM 등록 토큰
 //   - preferredPushHour: int (선택, 0~23) 푸시 희망 시
 //   - preferredPushTimezone: string (선택, 최대 64자) IANA 타임존
+//   - timezone: string (선택, 최대 64자) 앱이 열린 기기의 IANA 타임존
+//   - language: "ko" | "en" (선택) 앱 표시 언어
+//     timezone과 language는 서버가 오늘의 플래시카드를 미리 만들 날짜와 언어를 정할 때 씀
 //   - updatedAt: string (선택, 최대 64자) ISO 8601 갱신 시각
 // 서버 전용 필드(Admin SDK만 쓰기, 본인 읽기만 허용)
 //   - subscriptionTier: "free" | "pro" (Stripe 웹훅)
@@ -72,6 +75,8 @@ service cloud.firestore {
         'fcmToken',
         'preferredPushHour',
         'preferredPushTimezone',
+        'timezone',
+        'language',
         'updatedAt'
       ];
     }
@@ -130,6 +135,9 @@ service cloud.firestore {
         && (!changed.hasAny(['preferredPushTimezone'])
             || (data.preferredPushTimezone is string
                 && data.preferredPushTimezone.size() <= 64))
+        && (!changed.hasAny(['timezone'])
+            || (data.timezone is string && data.timezone.size() <= 64))
+        && (!changed.hasAny(['language']) || data.language in ['ko', 'en'])
         // 문자열과 timestamp를 모두 받는 이유는 과거 번들이 Date 객체를 그대로 쓰고,
         // PWA 서비스 워커 캐시 때문에 그 번들이 배포 뒤에도 한동안 남기 때문이다
         && (!changed.hasAny(['updatedAt'])
@@ -193,7 +201,8 @@ service cloud.firestore {
       allow read: if true;
     }
 
-    // AI 호출 카운터(aiUsage), 데모 재생성 카운터(demoRegenerateCounts):
+    // AI 호출 카운터(aiUsage), 데모 재생성 카운터(demoRegenerateCounts),
+    // 플래시카드 사전 생성 완료 기록(flashcardPregeneration):
     // 규칙을 두지 않아 기본 거부 상태이며 Admin SDK만 읽고 쓴다.
     // 사용자가 자기 한도를 직접 지울 수 있으면 경계가 없는 것과 같으므로 여기에
     // match 블록을 추가해 클라이언트 접근을 열지 않는다

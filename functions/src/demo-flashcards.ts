@@ -1,7 +1,12 @@
 import {getFirestore, Timestamp} from "firebase-admin/firestore";
-import {getFlashcardPrompt} from "./prompts.js";
-import {FLASHCARD_RESPONSE_SCHEMA} from "./openai.js";
-import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
+import {
+  fetchCommitDetail,
+  fetchDefaultBranch,
+  fetchGitHub,
+  formatCommitDiff,
+  generateFlashcardItems,
+  GitHubCommit,
+} from "./flashcard-generation.js";
 
 /**
  * 랜딩 데모 플래시카드 사전 생성
@@ -54,61 +59,19 @@ interface DemoFlashcard {
   };
 }
 
-/** GitHub Commits API 응답의 커밋 한 건 */
-interface GitHubCommit {
-  sha: string;
-  commit: {
-    message: string;
-    author: { name: string; date: string };
-  };
-  files?: Array<{
-    filename: string;
-    status: string;
-    additions: number;
-    deletions: number;
-    patch?: string;
-    raw_url?: string;
-  }>;
-}
-
-const GITHUB_HEADERS = {
-  "Accept": "application/vnd.github.v3+json",
-  "User-Agent": "CodeRecall-DemoBot/1.0 (+https://coderecall.app)",
-};
-
-/** 저장소 기본 브랜치 조회. 실패하면 undefined */
-async function fetchDefaultBranch(owner: string, repo: string): Promise<string | undefined> {
-  const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
-    headers: GITHUB_HEADERS,
-  });
-  if (!response.ok) return undefined;
-
-  const data = await response.json() as { default_branch?: string };
-  return typeof data.default_branch === "string" && data.default_branch ? data.default_branch : undefined;
-}
-
-/** 최근 커밋을 파일 목록까지 포함해 조회 */
+/** 최근 커밋을 파일 목록까지 포함해 조회. 공개 저장소라 토큰 없이 조회 */
 async function fetchRecentCommits(owner: string, repo: string, branch?: string): Promise<GitHubCommit[]> {
+  const repoFullName = `${owner}/${repo}`;
   const shaParam = branch ? `&sha=${encodeURIComponent(branch)}` : "";
-  const listResponse = await fetch(
-    `https://api.github.com/repos/${owner}/${repo}/commits?per_page=${DEMO_COMMIT_COUNT}${shaParam}`,
-    {headers: GITHUB_HEADERS}
+  const commits = await fetchGitHub<GitHubCommit[]>(
+    `/repos/${repoFullName}/commits?per_page=${DEMO_COMMIT_COUNT}${shaParam}`
   );
-  if (!listResponse.ok) {
-    throw new Error(`GitHub 커밋 목록 조회 실패: ${listResponse.status}`);
-  }
-
-  const commits = await listResponse.json() as GitHubCommit[];
 
   return Promise.all(
-    commits.slice(0, DEMO_COMMIT_COUNT).map(async (commit) => {
-      const detailResponse = await fetch(
-        `https://api.github.com/repos/${owner}/${repo}/commits/${commit.sha}`,
-        {headers: GITHUB_HEADERS}
-      );
+    commits.slice(0, DEMO_COMMIT_COUNT).map((commit) =>
       // 상세 조회가 막히면 파일 정보 없는 목록 항목으로 카드를 만든다
-      return detailResponse.ok ? await detailResponse.json() as GitHubCommit : commit;
-    })
+      fetchCommitDetail(repoFullName, commit.sha).catch(() => commit)
+    )
   );
 }
 
@@ -132,28 +95,6 @@ function buildAnswerContent(commit: GitHubCommit): string {
   }`;
 }
 
-/** 카드 뒷면 Diff 보기에 쓰는 원문 diff 구성 */
-function buildRawDiff(commit: GitHubCommit): string | undefined {
-  if (!commit.files?.length) return undefined;
-
-  const parts: string[] = [
-    `## ${commit.commit.message.split("\n")[0]}\n`,
-    `Commit: ${commit.sha.substring(0, 7)}\n`,
-  ];
-
-  for (const file of commit.files.slice(0, MAX_FILES_PER_COMMIT)) {
-    parts.push(`\n### ${file.filename}`);
-    parts.push(`**Status**: ${file.status} | **Changes**: +${file.additions} -${file.deletions}\n`);
-    if (file.patch) {
-      parts.push("```diff");
-      parts.push(file.patch.slice(0, MAX_PATCH_LENGTH));
-      parts.push("```\n");
-    }
-  }
-
-  return parts.join("\n");
-}
-
 /** 카드 메타데이터에 담을 파일 변경 목록 구성 */
 function toFileChanges(commit: GitHubCommit, owner: string, repo: string): DemoFileChange[] {
   if (!commit.files?.length) return [];
@@ -169,45 +110,18 @@ function toFileChanges(commit: GitHubCommit, owner: string, repo: string): DemoF
   }));
 }
 
-/** OpenAI에서 질문·답변 1쌍 생성. 실패하면 null */
+/**
+ * 질문·답변 1쌍 생성. 카드가 하나도 나오지 않으면 null
+ *
+ * 실시간 생성 경로(openaiChatCompletions)와 같은 호출을 써서 카드 형태를 맞추고,
+ * 데모는 커밋당 카드 한 장만 보여 주므로 첫 쌍만 쓴다.
+ */
 async function generateQuestionAnswer(
   answerContent: string,
   lang: "ko" | "en"
 ): Promise<{ question: string; answer: string } | null> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
-
-  const response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(buildOpenAIChatBody({
-      systemPrompt: getFlashcardPrompt(lang),
-      userContent: answerContent,
-      // 실시간 생성 경로(openaiChatCompletions)와 같은 스키마를 써서 카드 형태를 맞춤
-      responseFormat: FLASHCARD_RESPONSE_SCHEMA,
-      // 스케줄러 한 번에 저장소 10곳을 순차 처리해 실행 시간 540초 안에 들어와야 함
-      reasoningEffort: "low",
-      maxCompletionTokens: 8192,
-    })),
-  });
-
-  if (!response.ok) {
-    throw new Error(`OpenAI 호출 실패: ${response.status}`);
-  }
-
-  const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
-  const content = data.choices?.[0]?.message?.content;
-  if (!content) return null;
-
-  const parsed = JSON.parse(content) as { items?: Array<{ question?: string; answer?: string }> };
-  const first = parsed.items?.[0];
-  if (typeof first?.question === "string" && typeof first?.answer === "string") {
-    return {question: first.question, answer: first.answer};
-  }
-  return null;
+  const [first] = await generateFlashcardItems(answerContent, lang);
+  return first ? {question: first.question, answer: first.answer} : null;
 }
 
 /** 커밋 목록에서 한 언어의 카드 목록 생성. 카드를 하나도 못 만들면 빈 배열 */
@@ -229,7 +143,12 @@ async function buildFlashcards(
       });
       if (!pair) return null;
 
-      const rawDiff = buildRawDiff(commit);
+      // 카드 뒷면 Diff 보기에 쓰는 원문 diff. 문서 크기를 맞추려고 파일 수와 patch 길이를 자름
+      const rawDiff = formatCommitDiff(commit, {
+        subjectOnly: true,
+        maxFiles: MAX_FILES_PER_COMMIT,
+        maxPatchLength: MAX_PATCH_LENGTH,
+      }) ?? undefined;
       const files = toFileChanges(commit, owner, repo);
 
       const card: DemoFlashcard = {
@@ -268,7 +187,7 @@ export function toDemoFlashcardCacheId(owner: string, repo: string, lang: "ko" |
  * @returns 저장에 성공한 문서 수
  */
 async function pregenerateRepository(owner: string, repo: string): Promise<number> {
-  const branch = await fetchDefaultBranch(owner, repo);
+  const branch = await fetchDefaultBranch(`${owner}/${repo}`);
   const commits = await fetchRecentCommits(owner, repo, branch);
 
   if (commits.length === 0) {
