@@ -36,6 +36,8 @@ const LandingDemo: React.FC = () => {
   const [syncSlideIndex, setSyncSlideIndex] = useState<number | null>(null);
   const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
   const cardSectionRef = useRef<HTMLDivElement>(null);
+  // 뱃지가 입력란에 채운 URL. 그대로 다시 제출하면 검색이 아니라 뱃지 재요청으로 구분하기 위한 값
+  const badgeFilledUrlRef = useRef<string | null>(null);
   const demoDeviceId = useMemo(getOrCreateDemoDeviceId, []);
 
   const { cards, isLoading, error, repositoryUrl, requestCards, replaceCards } =
@@ -147,24 +149,46 @@ const LandingDemo: React.FC = () => {
     [cards, demoDeviceId, lang, replaceCards, t]
   );
 
-  const runSubmit = (url: string, source: 'form' | 'example') => {
-    if (source === 'form') {
-      trackEvent('landing_demo_generate', { source: 'form' });
-    } else {
-      trackEvent('landing_demo_example_repo', { repo_url: url.slice(0, 80) });
-    }
+  /**
+   * 카드 요청과 GA4 이벤트 전송
+   *
+   * 검색과 뱃지를 한 탐색 보고서에서 비교할 수 있도록 두 경로 모두 `landing_demo_generate` 하나로 보내고
+   * `source`로 구분한다. 요청이 끝나면 `landing_demo_generate_result`로 성공 여부와 캐시 적중을 함께 보낸다.
+   *
+   * @param url - 요청할 저장소 URL
+   * @param params - `source`와 경로별 추가 파라미터
+   */
+  const runSubmit = async (
+    url: string,
+    params: { source: 'form'; prefilled_from_badge: boolean } | { source: 'badge'; rank: number }
+  ) => {
+    trackEvent('landing_demo_generate', {
+      ...params,
+      ...(params.source === 'badge' && { repo_url: url.slice(0, 100) }),
+    });
     setSyncSlideIndex(null);
-    requestCards(url);
+
+    const outcome = await requestCards(url);
+    trackEvent('landing_demo_generate_result', {
+      source: params.source,
+      ...(outcome.ok
+        ? { result: 'success', cache: outcome.cache, card_count: outcome.cardCount }
+        : { result: 'failure', error_code: outcome.errorCode }),
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    runSubmit(repoUrl, 'form');
+    void runSubmit(repoUrl, {
+      source: 'form',
+      prefilled_from_badge: repoUrl === badgeFilledUrlRef.current,
+    });
   };
 
-  const handleSelectTrendingRepo = (url: string) => {
+  const handleSelectTrendingRepo = (url: string, rank: number) => {
     setRepoUrl(url);
-    runSubmit(url, 'example');
+    badgeFilledUrlRef.current = url;
+    void runSubmit(url, { source: 'badge', rank });
   };
 
   return (

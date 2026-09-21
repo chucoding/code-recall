@@ -140,16 +140,23 @@ async function getDefaultBranch(owner: string, repo: string): Promise<string | u
   }
 }
 
+/** 데모 카드 생성 실패 사유 코드. 화면 문구와 달리 언어와 무관한 값이라 분석 이벤트에 사용 */
+export type DemoFlashcardsErrorCode =
+  | 'invalid_url'
+  | 'repo_not_found'
+  | 'github_api_failed'
+  | 'no_commits';
+
 export type GenerateDemoFlashcardsResult =
   | { ok: true; cards: FlashCard[] }
-  | { ok: false; error: string };
+  | { ok: false; error: string; code: DemoFlashcardsErrorCode };
 
 export async function generateDemoFlashcards(repoUrl: string, lang?: 'ko' | 'en'): Promise<GenerateDemoFlashcardsResult> {
   const lng = lang || (i18n.language.startsWith('ko') ? 'ko' : 'en');
 
   const parsed = parseGitHubRepositoryUrl(repoUrl);
   if (!parsed) {
-    return { ok: false, error: i18n.t('demo.invalidRepoUrl', { lng }) };
+    return { ok: false, error: i18n.t('demo.invalidRepoUrl', { lng }), code: 'invalid_url' };
   }
 
   const resolvedBranch = parsed.branch || await getDefaultBranch(parsed.owner, parsed.repo);
@@ -160,14 +167,14 @@ export async function generateDemoFlashcards(repoUrl: string, lang?: 'ko' | 'en'
   );
   if (!commitsRes.ok) {
     if (commitsRes.status === 404) {
-      return { ok: false, error: i18n.t('demo.repoNotFound', { lng }) };
+      return { ok: false, error: i18n.t('demo.repoNotFound', { lng }), code: 'repo_not_found' };
     }
-    return { ok: false, error: i18n.t('demo.githubApiFailed', { lng }) };
+    return { ok: false, error: i18n.t('demo.githubApiFailed', { lng }), code: 'github_api_failed' };
   }
 
   const commits: DemoCommitData[] = await commitsRes.json();
   if (commits.length === 0) {
-    return { ok: false, error: i18n.t('demo.noCommits', { lng }) };
+    return { ok: false, error: i18n.t('demo.noCommits', { lng }), code: 'no_commits' };
   }
 
   const detailedCommits = await Promise.all(
