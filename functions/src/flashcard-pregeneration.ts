@@ -3,11 +3,17 @@ import {onTaskDispatched} from "firebase-functions/v2/tasks";
 import {getAuth} from "firebase-admin/auth";
 import {getFirestore} from "firebase-admin/firestore";
 import {getFunctions} from "firebase-admin/functions";
-import {getFlashcardPrompt} from "./prompts.js";
-import {FLASHCARD_RESPONSE_SCHEMA} from "./openai.js";
-import {buildOpenAIChatBody, OPENAI_CHAT_COMPLETIONS_URL} from "./openai-model.js";
-import {MAX_FLASHCARD_PROMPT_CHARS, truncateForPrompt} from "./ai-guard.js";
 import {fitFlashcardDeckToBudget, FlashcardData, FlashcardFileChange} from "./flashcard-deck-size.js";
+import {
+  fetchCommitDetail,
+  fetchDefaultBranch,
+  fetchGitHub,
+  FlashcardLang,
+  formatCommitDiff,
+  generateFlashcardItems,
+  GitHubAuthError,
+  GitHubCommit,
+} from "./flashcard-generation.js";
 import {
   getDateInTimezone,
   getDayRangeInTimezone,
@@ -55,8 +61,6 @@ const MAX_CONCURRENT_TASKS = 5;
 const DATES_AGO_FREE = [1, 7];
 const DATES_AGO_PRO = [1, 7, 30];
 
-type FlashcardLang = "ko" | "en";
-
 /** 태스크 본문 */
 interface PregenerationTask {
   uid: string;
@@ -69,29 +73,6 @@ interface UserRepository {
   url: string;
   branch?: string;
 }
-
-/** GitHub Commits API 응답의 커밋 한 건 */
-interface GitHubCommit {
-  sha: string;
-  commit: {
-    message: string;
-  };
-  files?: Array<{
-    filename: string;
-    status: string;
-    additions: number;
-    deletions: number;
-    changes: number;
-    patch?: string;
-    raw_url?: string;
-  }>;
-}
-
-/** AI가 만든 질문과 답변 한 쌍 */
-type QuestionAnswer = Pick<FlashcardData, "question" | "answer" | "highlights">;
-
-/** 토큰이 만료되거나 권한이 없어 재시도해도 소용없는 GitHub 오류 */
-class GitHubAuthError extends Error {}
 
 /**
  * 사전 생성에 필요한 사용자 설정 추출
@@ -204,85 +185,6 @@ export const scheduleFlashcardPregeneration = onSchedule(
 );
 
 /**
- * GitHub API GET 요청
- *
- * @param {string} path - `https://api.github.com` 뒤에 붙일 경로
- * @param {string} githubToken - 사용자 GitHub 토큰
- * @return {Promise<T>} 응답 본문
- */
-async function fetchGitHub<T>(path: string, githubToken: string): Promise<T> {
-  const response = await fetch(`https://api.github.com${path}`, {
-    headers: {
-      "Authorization": `Bearer ${githubToken}`,
-      "Accept": "application/vnd.github.v3+json",
-      "X-GitHub-Api-Version": "2022-11-28",
-    },
-  });
-
-  if (response.status === 401) {
-    throw new GitHubAuthError("GitHub 토큰이 만료되었거나 유효하지 않음");
-  }
-  if (!response.ok) {
-    throw new Error(`GitHub API 호출 실패 (${response.status}): ${path}`);
-  }
-  return response.json() as Promise<T>;
-}
-
-/**
- * 저장소 브랜치 결정. 설정에 없으면 기본 브랜치를 조회하고, 조회가 실패하면 undefined
- *
- * @param {UserRepository} repository - 사용자 저장소 설정
- * @param {string} githubToken - 사용자 GitHub 토큰
- * @return {Promise<string | undefined>} 커밋을 조회할 브랜치
- */
-async function resolveBranch(
-  repository: UserRepository,
-  githubToken: string
-): Promise<string | undefined> {
-  const branch = repository.branch?.trim();
-  if (branch) return branch;
-
-  try {
-    const repo = await fetchGitHub<{ default_branch?: string }>(
-      `/repos/${repository.fullName}`,
-      githubToken
-    );
-    return repo.default_branch || undefined;
-  } catch (error) {
-    if (error instanceof GitHubAuthError) throw error;
-    console.warn(`기본 브랜치 조회 실패: ${repository.fullName}`, error);
-    return undefined;
-  }
-}
-
-/**
- * 커밋 상세를 AI 입력과 카드 뒷면에 쓰는 diff 마크다운으로 변환. 앱 `formatCodeDiff`와 같은 형식
- *
- * @param {GitHubCommit} commit - 파일 목록이 포함된 커밋 상세
- * @return {string | null} diff 마크다운. 변경 파일이 없으면 null
- */
-function formatCodeDiff(commit: GitHubCommit): string | null {
-  if (!commit.files?.length) return null;
-
-  const diffParts: string[] = [];
-  diffParts.push(`## ${commit.commit.message}\n`);
-  diffParts.push(`Commit: ${commit.sha.substring(0, 7)}\n`);
-
-  for (const file of commit.files) {
-    diffParts.push(`\n### ${file.filename}`);
-    diffParts.push(`**Status**: ${file.status} | **Changes**: +${file.additions} -${file.deletions}\n`);
-
-    if (file.patch) {
-      diffParts.push("```diff");
-      diffParts.push(file.patch);
-      diffParts.push("```\n");
-    }
-  }
-
-  return diffParts.join("\n");
-}
-
-/**
  * 하루치 커밋 중 변경 파일이 있는 첫 커밋 조회. 앱 `getGithubData`와 같은 선택 규칙
  *
  * @param {string} repoFullName - `owner/repo`
@@ -309,63 +211,12 @@ async function findCommitDiff(
   );
 
   for (const commit of commits) {
-    const detail = await fetchGitHub<GitHubCommit>(
-      `/repos/${repoFullName}/commits/${commit.sha}`,
-      githubToken
-    );
-    const content = formatCodeDiff(detail);
+    const detail = await fetchCommitDetail(repoFullName, commit.sha, githubToken);
+    const content = formatCommitDiff(detail);
     if (content) return {content, commit: detail};
   }
 
   return null;
-}
-
-/**
- * diff에서 질문과 답변 목록 생성. 실시간 생성 경로(`openaiChatCompletions`)와 같은 프롬프트와 스키마
- *
- * @param {string} content - diff 마크다운
- * @param {FlashcardLang} lang - 카드 언어
- * @return {Promise<QuestionAnswer[]>} 질문과 답변 목록
- */
-async function generateQuestionAnswers(
-  content: string,
-  lang: FlashcardLang
-): Promise<QuestionAnswer[]> {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY가 설정되지 않았습니다.");
-
-  const {text} = truncateForPrompt(content, MAX_FLASHCARD_PROMPT_CHARS);
-  const response = await fetch(OPENAI_CHAT_COMPLETIONS_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify(buildOpenAIChatBody({
-      systemPrompt: getFlashcardPrompt(lang),
-      userContent: text,
-      responseFormat: FLASHCARD_RESPONSE_SCHEMA,
-      reasoningEffort: "low",
-      maxCompletionTokens: 8192,
-    })),
-  });
-
-  if (!response.ok) {
-    throw new Error(`OpenAI 호출 실패: ${response.status}`);
-  }
-
-  const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
-  const parsed = JSON.parse(data.choices?.[0]?.message?.content ?? "{}") as {
-    items?: Array<{ question?: unknown; answer?: unknown; highlights?: unknown }>;
-  };
-
-  return (parsed.items ?? []).flatMap((item) => {
-    if (typeof item?.question !== "string" || typeof item?.answer !== "string") return [];
-    const highlights = Array.isArray(item.highlights) ?
-      item.highlights.filter((h): h is string => typeof h === "string" && h.length > 0) :
-      undefined;
-    return [{question: item.question, answer: item.answer, ...(highlights ? {highlights} : {})}];
-  });
 }
 
 /**
@@ -395,7 +246,8 @@ async function buildDeck(params: {
   let failedCount = 0;
 
   const perRepository = await Promise.all(repositories.map(async (repository) => {
-    const branch = await resolveBranch(repository, githubToken);
+    // 설정에 브랜치가 없으면 기본 브랜치를 조회하고, 조회가 실패하면 GitHub 기본값으로 조회
+    const branch = repository.branch?.trim() || await fetchDefaultBranch(repository.fullName, githubToken);
 
     const perDate = await Promise.all(datesAgo.map(async (daysAgo) => {
       try {
@@ -403,7 +255,7 @@ async function buildDeck(params: {
         const found = await findCommitDiff(repository.fullName, branch, range, githubToken);
         if (!found) return [];
 
-        const pairs = await generateQuestionAnswers(found.content, language);
+        const pairs = await generateFlashcardItems(found.content, language);
         const files: FlashcardFileChange[] | undefined = found.commit.files;
         return pairs.map((pair): FlashcardData => ({
           ...pair,
