@@ -17,8 +17,9 @@ const firebaseConfig = {
 export const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
 
 // Analytics 인스턴스 (measurementId가 있을 때만 초기화, SSR/미설정 환경 대비)
+// 로컬 .env에도 운영 측정 ID가 있어 개발 서버 트래픽이 운영 속성에 섞이지 않도록 개발 모드에서는 제외
 export const analytics: Analytics | null =
-  typeof window !== 'undefined' && firebaseConfig.measurementId
+  typeof window !== 'undefined' && firebaseConfig.measurementId && !import.meta.env.DEV
     ? getAnalytics(app)
     : null;
 

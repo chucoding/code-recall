@@ -36,6 +36,8 @@ const LandingDemo: React.FC = () => {
   const [syncSlideIndex, setSyncSlideIndex] = useState<number | null>(null);
   const [regeneratingIndex, setRegeneratingIndex] = useState<number | null>(null);
   const cardSectionRef = useRef<HTMLDivElement>(null);
+  // 뱃지가 입력란에 채운 URL. 그대로 다시 제출했는지 판별하는 데 사용
+  const badgeFilledUrlRef = useRef<string | null>(null);
   const demoDeviceId = useMemo(getOrCreateDemoDeviceId, []);
 
   const { cards, isLoading, error, repositoryUrl, requestCards, replaceCards } =
@@ -147,24 +149,26 @@ const LandingDemo: React.FC = () => {
     [cards, demoDeviceId, lang, replaceCards, t]
   );
 
-  const runSubmit = (url: string, source: 'form' | 'example') => {
-    if (source === 'form') {
-      trackEvent('landing_demo_generate', { source: 'form' });
-    } else {
-      trackEvent('landing_demo_example_repo', { repo_url: url.slice(0, 80) });
-    }
+  const runSubmit = (url: string) => {
     setSyncSlideIndex(null);
     requestCards(url);
   };
 
+  // 검색과 뱃지 사용량을 한 탐색 보고서에서 비교하도록 같은 이벤트에 source만 달리해 전송
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    runSubmit(repoUrl, 'form');
+    // 뱃지가 채운 URL을 그대로 다시 제출한 경우는 검색 사용으로 세지 않음
+    if (repoUrl !== badgeFilledUrlRef.current) {
+      trackEvent('landing_demo_generate', { source: 'form' });
+    }
+    runSubmit(repoUrl);
   };
 
   const handleSelectTrendingRepo = (url: string) => {
+    trackEvent('landing_demo_generate', { source: 'badge' });
     setRepoUrl(url);
-    runSubmit(url, 'example');
+    badgeFilledUrlRef.current = url;
+    runSubmit(url);
   };
 
   return (
