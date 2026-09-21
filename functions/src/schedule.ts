@@ -52,7 +52,8 @@ export const sendDaily8amPush = onSchedule(
         title: "오늘의 리마인더",
         body: "복습할 카드가 도착했어요!",
       };
-      const data = { type: "daily-reminder", url: "/" };
+      // url: 알림 클릭 시 서비스 워커가 여는 경로 (`/`는 랜딩이므로 앱 진입점 지정)
+      const data = { type: "daily-reminder", url: "/app" };
 
       let successCount = 0;
       let failureCount = 0;
