@@ -201,7 +201,8 @@ service cloud.firestore {
       allow read: if true;
     }
 
-    // AI 호출 카운터(aiUsage), 데모 재생성 카운터(demoRegenerateCounts):
+    // AI 호출 카운터(aiUsage), 데모 재생성 카운터(demoRegenerateCounts),
+    // 플래시카드 사전 생성 완료 기록(flashcardPregeneration):
     // 규칙을 두지 않아 기본 거부 상태이며 Admin SDK만 읽고 쓴다.
     // 사용자가 자기 한도를 직접 지울 수 있으면 경계가 없는 것과 같으므로 여기에
     // match 블록을 추가해 클라이언트 접근을 열지 않는다

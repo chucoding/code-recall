@@ -38,6 +38,10 @@ import {
  *
  * 비용은 최근 활동 사용자로 대상을 좁혀 막는다. 유휴 계정은 사전 생성하지 않고, 그 사용자가
  * 다시 앱을 열면 기존처럼 앱이 즉석에서 생성한다. 사전 생성이 실패한 경우도 같은 경로로 이어진다.
+ *
+ * 스케줄러가 한 시각을 놓쳐도 그날 사전 생성이 통째로 빠지지 않도록 대상을 자정 한 시각이
+ * 아니라 새벽 구간으로 잡고, 그날 처리를 마친 사용자는 서버 전용 컬렉션에 기록해 다음
+ * 시각부터 건너뛴다. 끝나지 않은 사용자는 구간 안의 다음 정각에 다시 태스크를 받는다.
  */
 
 const REGION = "asia-northeast3";
@@ -45,8 +49,27 @@ const REGION = "asia-northeast3";
 /** 태스크 함수 이름. 큐 경로에 그대로 쓰므로 export 이름과 같아야 함 */
 const TASK_FUNCTION_NAME = "pregenerateUserFlashcards";
 
-/** 사전 생성을 시작하는 사용자 로컬 시. 0시가 지나야 "어제 커밋"이 확정됨 */
-const PREGENERATION_LOCAL_HOUR = 0;
+/** 사전 생성 구간의 시작 시(로컬). 0시가 지나야 "어제 커밋"이 확정됨 */
+const PREGENERATION_START_HOUR = 0;
+
+/**
+ * 사전 생성 구간의 끝 시(로컬, 미포함)
+ *
+ * 스케줄러가 몇 시각 연속으로 실패해도 사용자가 일어나기 전에 따라잡을 수 있는 폭으로 잡는다.
+ * 넓힐수록 끝나지 않는 사용자의 재시도가 늘어난다.
+ */
+const PREGENERATION_END_HOUR = 6;
+
+/**
+ * 사용자별 사전 생성 완료 기록 컬렉션
+ *
+ * firestore.rules에 없어 클라이언트는 읽고 쓸 수 없다. 덱 문서만으로는 "커밋이 없어 만들
+ * 카드가 없음"과 "아직 안 만듦"을 구분할 수 없어 따로 둔다.
+ */
+const PREGENERATION_STATUS_COLLECTION = "flashcardPregeneration";
+
+/** Firestore `getAll` 한 번에 읽을 완료 기록 수 */
+const STATUS_LOOKUP_BATCH_SIZE = 100;
 
 /** 사전 생성 대상이 되는 최근 활동 기간 */
 const ACTIVE_WITHIN_MS = 7 * 24 * 60 * 60 * 1000;
@@ -65,7 +88,19 @@ const DATES_AGO_PRO = [1, 7, 30];
 interface PregenerationTask {
   uid: string;
   dateKey: string;
+  /** 태스크를 넣은 사용자 로컬 시. 태스크 ID에만 씀 */
+  localHour: number;
 }
+
+/**
+ * 그날 사전 생성을 끝낸 사유
+ *
+ * - `saved`: 덱을 저장함
+ * - `exists`: 앱이 먼저 덱을 만들어 둠
+ * - `empty`: 해당 날짜 커밋이 없어 만들 카드가 없음
+ * - `unavailable`: GitHub 토큰 무효 등 재시도해도 바뀌지 않는 설정 문제
+ */
+type PregenerationOutcome = "saved" | "exists" | "empty" | "unavailable";
 
 /** Firestore users.repositories 항목 */
 interface UserRepository {
@@ -125,15 +160,64 @@ async function filterActiveUids(uids: string[], now: Date): Promise<Set<string>>
 }
 
 /**
- * 매시 정각, 자정을 지난 타임존의 최근 활동 사용자마다 사전 생성 태스크 등록
+ * 완료 기록 문서 참조
  *
- * 태스크 ID를 `uid-날짜`로 고정해, 스케줄러가 재시도돼도 같은 날 덱을 두 번 만들지 않는다.
+ * @param {string} uid - 사용자
+ * @return {FirebaseFirestore.DocumentReference} 완료 기록 문서
+ */
+function statusRef(uid: string): FirebaseFirestore.DocumentReference {
+  return getFirestore().collection(PREGENERATION_STATUS_COLLECTION).doc(uid);
+}
+
+/**
+ * 그날 사전 생성을 이미 끝낸 사용자만 골라냄
+ *
+ * @param {PregenerationTask[]} tasks - 후보 태스크
+ * @return {Promise<Set<string>>} 이미 끝낸 사용자
+ */
+async function findCompletedUids(tasks: PregenerationTask[]): Promise<Set<string>> {
+  const completed = new Set<string>();
+
+  for (let i = 0; i < tasks.length; i += STATUS_LOOKUP_BATCH_SIZE) {
+    const batch = tasks.slice(i, i + STATUS_LOOKUP_BATCH_SIZE);
+    const snaps = await getFirestore().getAll(...batch.map((task) => statusRef(task.uid)));
+    snaps.forEach((snap, index) => {
+      if (snap.data()?.dateKey === batch[index].dateKey) completed.add(batch[index].uid);
+    });
+  }
+
+  return completed;
+}
+
+/**
+ * 그날 사전 생성을 끝냈다고 기록
+ *
+ * @param {string} uid - 사용자
+ * @param {string} dateKey - 사용자 타임존 기준 오늘
+ * @param {PregenerationOutcome} outcome - 끝낸 사유
+ */
+async function markCompleted(uid: string, dateKey: string, outcome: PregenerationOutcome): Promise<void> {
+  await statusRef(uid).set({dateKey, outcome, updatedAt: new Date().toISOString()});
+}
+
+/**
+ * 매시 정각, 로컬 새벽 구간에 든 최근 활동 사용자 중 그날 처리를 끝내지 않은 사용자마다 태스크 등록
+ *
+ * 태스크 ID는 `uid-날짜-h시각`이다. 같은 시각의 재시도는 ID가 겹쳐 중복 등록되지 않고,
+ * 다음 시각에는 새 ID로 다시 들어가 앞 시각에 놓친 사용자를 따라잡는다.
+ *
+ * 등록이 하나라도 실패하면 마지막에 예외를 던져 Cloud Scheduler가 이 시각을 다시 실행하게 한다.
+ * 이미 등록된 태스크는 ID가 같아 건너뛰므로 다시 실행해도 안전하다.
  */
 export const scheduleFlashcardPregeneration = onSchedule(
   {
     schedule: "0 * * * *", // 매시 정각 (24회/일로 전 타임존 커버)
     timeZone: "Asia/Seoul",
     region: REGION,
+    // 다음 정각 전에 끝나도록 짧은 간격으로 재시도
+    retryCount: 3,
+    minBackoffSeconds: 60,
+    maxRetrySeconds: 1800,
   },
   async (event) => {
     const now =
@@ -151,8 +235,13 @@ export const scheduleFlashcardPregeneration = onSchedule(
     snapshot.forEach((docSnap) => {
       const settings = readPregenerationSettings(docSnap.data());
       if (!settings) return;
-      if (getHourInTimezone(now, settings.timezone) !== PREGENERATION_LOCAL_HOUR) return;
-      candidates.push({uid: docSnap.id, dateKey: getDateInTimezone(now, settings.timezone)});
+      const localHour = getHourInTimezone(now, settings.timezone);
+      if (localHour < PREGENERATION_START_HOUR || localHour >= PREGENERATION_END_HOUR) return;
+      candidates.push({
+        uid: docSnap.id,
+        dateKey: getDateInTimezone(now, settings.timezone),
+        localHour,
+      });
     });
 
     if (candidates.length === 0) {
@@ -160,27 +249,36 @@ export const scheduleFlashcardPregeneration = onSchedule(
       return;
     }
 
-    const activeUids = await filterActiveUids(candidates.map((task) => task.uid), now);
-    const tasks = candidates.filter((task) => activeUids.has(task.uid));
+    const completedUids = await findCompletedUids(candidates);
+    const pending = candidates.filter((task) => !completedUids.has(task.uid));
+    const activeUids = await filterActiveUids(pending.map((task) => task.uid), now);
+    const tasks = pending.filter((task) => activeUids.has(task.uid));
 
     const queue = getFunctions().taskQueue(`locations/${REGION}/functions/${TASK_FUNCTION_NAME}`);
     let enqueuedCount = 0;
+    let failedCount = 0;
 
     for (const task of tasks) {
       try {
-        await queue.enqueue(task, {id: `${task.uid}-${task.dateKey}`});
+        await queue.enqueue(task, {id: `${task.uid}-${task.dateKey}-h${task.localHour}`});
         enqueuedCount += 1;
       } catch (error) {
         const code = (error as { code?: string }).code;
         if (code === "functions/task-already-exists") continue;
+        failedCount += 1;
         console.error(`플래시카드 사전 생성 태스크 등록 실패: ${task.uid}`, error);
       }
     }
 
     console.log(
       `플래시카드 사전 생성 태스크 ${enqueuedCount}건 등록 ` +
-      `(후보 ${candidates.length}명, 최근 활동 ${tasks.length}명)`
+      `(후보 ${candidates.length}명, 완료 ${completedUids.size}명, 최근 활동 ${tasks.length}명, ` +
+      `실패 ${failedCount}건)`
     );
+
+    if (failedCount > 0) {
+      throw new Error(`플래시카드 사전 생성 태스크 ${failedCount}건 등록 실패`);
+    }
   }
 );
 
@@ -287,8 +385,9 @@ async function buildDeck(params: {
  * 이미 오늘 문서에 덱이 있으면(사용자가 자정 직후 앱을 열어 앱이 먼저 만든 경우) 건너뛴다.
  * 생성 중 앱이 먼저 저장하는 경우도 있어 저장은 트랜잭션에서 다시 확인한다.
  *
- * 모든 조합이 실패하면 예외를 던져 태스크 큐가 재시도하게 하고, 커밋이 없어 카드가
- * 비었거나 토큰이 무효하면 재시도하지 않는다.
+ * 결과가 정해진 경우(저장, 이미 있음, 커밋 없음, 설정 문제)는 완료 기록을 남겨 스케줄러가
+ * 다음 시각부터 건너뛰게 한다. 일시 오류로 카드를 하나도 못 만들면 기록 없이 예외를 던져
+ * 태스크 큐가 재시도하게 하고, 그래도 실패하면 구간 안의 다음 정각에 새 태스크로 다시 시도한다.
  */
 export const pregenerateUserFlashcards = onTaskDispatched<PregenerationTask>(
   {
@@ -307,12 +406,19 @@ export const pregenerateUserFlashcards = onTaskDispatched<PregenerationTask>(
     const {uid, dateKey} = req.data;
     const db = getFirestore();
 
+    // 앞 시각의 태스크가 재시도 끝에 처리를 마친 뒤 다음 시각 태스크가 도착한 경우
+    if ((await statusRef(uid).get()).data()?.dateKey === dateKey) {
+      console.log(`사전 생성 건너뜀: ${uid} ${dateKey} 이미 처리함`);
+      return;
+    }
+
     const userSnap = await db.collection("users").doc(uid).get();
     const userData = userSnap.data();
     const settings = readPregenerationSettings(userData);
     const githubToken = userData?.githubToken;
     if (!settings || typeof githubToken !== "string" || !githubToken) {
       console.log(`사전 생성 건너뜀: ${uid} 설정 없음`);
+      await markCompleted(uid, dateKey, "unavailable");
       return;
     }
 
@@ -326,6 +432,7 @@ export const pregenerateUserFlashcards = onTaskDispatched<PregenerationTask>(
 
     if (hasDeck((await flashcardRef.get()).data())) {
       console.log(`사전 생성 건너뜀: ${uid} ${dateKey} 덱이 이미 있음`);
+      await markCompleted(uid, dateKey, "exists");
       return;
     }
 
@@ -344,18 +451,20 @@ export const pregenerateUserFlashcards = onTaskDispatched<PregenerationTask>(
     } catch (error) {
       if (error instanceof GitHubAuthError) {
         console.warn(`사전 생성 건너뜀: ${uid} GitHub 토큰 무효`);
+        await markCompleted(uid, dateKey, "unavailable");
         return;
       }
       throw error;
     }
 
     const {deck, failedCount} = result;
-    const attemptCount = settings.repositories.length * datesAgo.length;
     if (deck.length === 0) {
-      if (failedCount === attemptCount) {
-        throw new Error(`사전 생성 전체 실패: ${uid} ${dateKey}`);
+      // 일부만 실패했어도 실패한 조합에 커밋이 있었을 수 있어 "커밋 없음"으로 확정하지 않음
+      if (failedCount > 0) {
+        throw new Error(`사전 생성 실패: ${uid} ${dateKey} (실패 ${failedCount}건)`);
       }
       console.log(`사전 생성 결과 없음: ${uid} ${dateKey} 해당 날짜 커밋 없음`);
+      await markCompleted(uid, dateKey, "empty");
       return;
     }
 
@@ -366,6 +475,7 @@ export const pregenerateUserFlashcards = onTaskDispatched<PregenerationTask>(
       transaction.set(flashcardRef, {[deckField]: fitted}, {merge: true});
       return true;
     });
+    await markCompleted(uid, dateKey, saved ? "saved" : "exists");
 
     console.log(
       saved ?
