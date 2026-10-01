@@ -1,10 +1,9 @@
 import assert from "node:assert/strict";
-import {execFileSync} from "node:child_process";
 import {mkdirSync, mkdtempSync, rmSync, writeFileSync} from "node:fs";
 import {tmpdir} from "node:os";
 import {dirname, join} from "node:path";
 import {afterEach, beforeEach, describe, it} from "node:test";
-import {createGitLastChangeLookup, lintWiki} from "./wiki-lint.mjs";
+import {lintWiki} from "./wiki-lint.mjs";
 
 /** 테스트 기준 시각 */
 const NOW = new Date("2026-10-02T00:00:00Z");
@@ -43,7 +42,7 @@ describe("lintWiki", () => {
    *
    * @return {string[]} `파일: 메시지` 목록
    */
-  const errors = (getLastChange = null) => lintWiki(bundle, {now: NOW, getLastChange})
+  const errors = () => lintWiki(bundle, {now: NOW})
     .filter((issue) => issue.level === "error")
     .map((issue) => `${issue.file}: ${issue.message}`);
 
@@ -80,7 +79,7 @@ describe("lintWiki", () => {
     assert.ok(errors().some((message) => message.includes("stale_after") && message.includes("지남")));
 
     write("concept.md", VALID_FRONTMATTER.replace("2027-01-01", "2026-10-10"));
-    const warnings = lintWiki(bundle, {now: NOW, getLastChange: null}).filter((issue) => issue.level === "warning");
+    const warnings = lintWiki(bundle, {now: NOW}).filter((issue) => issue.level === "warning");
     assert.equal(warnings.length, 1);
   });
 
@@ -129,57 +128,6 @@ describe("lintWiki", () => {
 
     write("concept.md", external);
     assert.deepEqual(errors(), []);
-  });
-
-  it("출처가 문서보다 나중에 바뀌면 잡고, 같거나 이전이면 통과함", () => {
-    const lookup = (times) => (path) => (path.endsWith("code.ts") ? times.source : times.doc);
-
-    assert.equal(errors(lookup({source: 200, doc: 100})).length, 1);
-    assert.match(errors(lookup({source: 200, doc: 100}))[0], /출처 \.\.\/code\.ts가 이 문서보다 나중에 바뀜/);
-    assert.deepEqual(errors(lookup({source: 100, doc: 100})), []);
-    assert.deepEqual(errors(lookup({source: 100, doc: Infinity})), []);
-    assert.deepEqual(errors(lookup({source: 200, doc: null})), []);
-
-    write("concept.md", VALID_FRONTMATTER.replace("draft", "deprecated"));
-    assert.deepEqual(errors(lookup({source: 200, doc: 100})), []);
-  });
-
-  it("git 이력으로 출처 변경을 감지함", () => {
-    /**
-     * 임시 저장소에서 git 실행
-     *
-     * @param {string[]} args - git 인자
-     * @param {string} [date] - 커밋 시각. 초 단위 비교라 커밋마다 다르게 지정
-     */
-    const git = (args, date) => execFileSync("git", ["-c", "user.name=test", "-c", "user.email=test@example.com", ...args], {
-      cwd: root,
-      stdio: "ignore",
-      env: {...process.env, ...(date ? {GIT_AUTHOR_DATE: date, GIT_COMMITTER_DATE: date} : {})},
-    });
-    const commitAll = (message, date) => {
-      git(["add", "-A"]);
-      git(["commit", "-q", "-m", message], date);
-    };
-
-    git(["init", "-q"]);
-    commitAll("init", "2026-10-01T00:00:00Z");
-    assert.deepEqual(errors(createGitLastChangeLookup(bundle)), []);
-
-    writeFileSync(join(root, "code.ts"), "changed");
-    assert.equal(errors(createGitLastChangeLookup(bundle)).length, 1, "커밋 전 출처 변경");
-
-    commitAll("code only", "2026-10-02T00:00:00Z");
-    assert.equal(errors(createGitLastChangeLookup(bundle)).length, 1, "출처만 커밋");
-
-    write("concept.md", VALID_FRONTMATTER.replace("stale_after", "verified:\n  - { by: human:test, at: 2026-10-03T00:00:00Z }\nstale_after"));
-    commitAll("doc", "2026-10-03T00:00:00Z");
-    assert.deepEqual(errors(createGitLastChangeLookup(bundle)), [], "문서에 확인 기록 추가");
-  });
-
-  it("git 저장소가 아니면 출처 변경 감지를 건너뛰고 경고함", () => {
-    const issues = lintWiki(bundle, {now: NOW});
-    assert.deepEqual(issues.filter((issue) => issue.level === "error"), []);
-    assert.ok(issues.some((issue) => issue.level === "warning" && issue.message.includes("git 이력")));
   });
 
   it("log.md 날짜 형식과 순서를 검사함", () => {

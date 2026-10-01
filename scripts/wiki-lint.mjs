@@ -1,4 +1,3 @@
-import {execFileSync} from "node:child_process";
 import {existsSync, readdirSync, readFileSync, statSync} from "node:fs";
 import {dirname, join, relative, resolve, sep} from "node:path";
 import {fileURLToPath} from "node:url";
@@ -11,9 +10,8 @@ import {parse} from "yaml";
  * 도구로 옮겨도 신뢰 신호를 잃지 않도록 출처 필드를 처음부터 강제한다. 모순이나 오래된
  * 주장처럼 의미를 봐야 하는 점검은 LLM Lint가 맡고, 여기서는 기계적으로 판정할 수 있는 것만 본다.
  *
- * 문서가 낡았는지는 두 신호로 본다.
- * - 저장소 안 파일을 출처로 둔 문서: 출처 파일이 문서보다 나중에 커밋되면 낡은 것으로 봄
- * - 저장소 안 출처가 없는 문서: 바뀌어도 커밋이 생기지 않으므로 `stale_after` 날짜로만 판정
+ * 코드에서 나온 문서의 신선도는 같은 PR에서 함께 고치는 규칙(AGENTS.md의 Ingest)에 맡긴다.
+ * 저장소 안 출처가 없는 문서는 바뀌어도 이 저장소에 커밋이 생기지 않으므로 `stale_after`로 재확인한다.
  */
 
 /** OKF 예약 파일. 개념 문서가 아니라 목록과 이력이므로 frontmatter 검사에서 뺌 */
@@ -113,12 +111,11 @@ function resolveLocalTarget(target, file, bundleRoot) {
  * @param {string} file - 문서 경로
  * @param {string} bundleRoot - 번들 루트
  * @param {Date} now - 기준 시각
- * @return {{problems: {level: "error" | "warning", message: string}[], localSources: string[]}}
- *   발견한 문제와 저장소 안 출처의 절대 경로
+ * @return {{level: "error" | "warning", message: string}[]} 발견한 문제
  */
 function checkConcept(data, file, bundleRoot, now) {
   const problems = [];
-  const localSources = [];
+  let localSourceCount = 0;
   const error = (message) => problems.push({level: "error", message});
 
   for (const key of REQUIRED_KEYS) {
@@ -143,14 +140,14 @@ function checkConcept(data, file, bundleRoot, now) {
         }
         const local = resolveLocalTarget(resource, file, bundleRoot);
         if (!local) return;
-        if (existsSync(local)) localSources.push(resolve(local));
-        else error(`\`sources[${index}].resource\` 경로가 없음: ${resource}`);
+        localSourceCount += 1;
+        if (!existsSync(local)) error(`\`sources[${index}].resource\` 경로가 없음: ${resource}`);
       });
     }
   }
 
-  // 저장소 안 출처가 없으면 출처 변경 감지가 불가능해 날짜가 유일한 재확인 계기
-  if (Array.isArray(data.sources) && data.sources.length > 0 && localSources.length === 0 &&
+  // 저장소 안 출처가 없으면 바뀌어도 커밋이 생기지 않아 날짜가 유일한 재확인 계기
+  if (Array.isArray(data.sources) && data.sources.length > 0 && localSourceCount === 0 &&
     (data.stale_after === undefined || data.stale_after === null || data.stale_after === "")) {
     error("저장소 안 출처가 없는 문서는 `stale_after`가 필요함");
   }
@@ -190,47 +187,7 @@ function checkConcept(data, file, bundleRoot, now) {
     }
   }
 
-  return {problems, localSources};
-}
-
-/**
- * 파일의 마지막 변경 시각 조회 함수
- *
- * 반환값은 마지막 커밋의 커미터 시각(초)이다. 커밋하지 않은 변경이 있으면 `Infinity`로 보아
- * 작업 중인 문서와 출처를 가장 최근으로 취급한다. 추적하지 않는 무시 파일은 null이다.
- *
- * @typedef {(path: string) => number | null} LastChangeLookup
- */
-
-/**
- * git 이력으로 마지막 변경 시각을 조회하는 함수 생성
- *
- * @param {string} cwd - 저장소 안의 디렉터리
- * @return {LastChangeLookup | null} git 저장소가 아니거나 얕은 클론이라 이력이 없으면 null
- */
-export function createGitLastChangeLookup(cwd) {
-  const git = (args) => execFileSync("git", args, {cwd, encoding: "utf8", stdio: ["ignore", "pipe", "ignore"]}).trim();
-
-  try {
-    if (git(["rev-parse", "--is-shallow-repository"]) === "true") return null;
-  } catch {
-    return null;
-  }
-
-  const cache = new Map();
-  return (path) => {
-    if (!cache.has(path)) {
-      let value = null;
-      if (git(["status", "--porcelain", "--", path])) {
-        value = Infinity;
-      } else {
-        const committedAt = git(["log", "-1", "--format=%ct", "--", path]);
-        if (committedAt) value = Number(committedAt);
-      }
-      cache.set(path, value);
-    }
-    return cache.get(path);
-  };
+  return problems;
 }
 
 /**
@@ -241,32 +198,6 @@ export function createGitLastChangeLookup(cwd) {
  */
 function toIsoDate(date) {
   return date.toISOString().slice(0, 10);
-}
-
-/**
- * 출처 변경 감지. 문서보다 나중에 커밋된 저장소 안 출처를 찾음
- *
- * 같은 커밋에서 출처와 문서를 함께 고치면 시각이 같아 통과한다. 출처만 고친 커밋이 있으면
- * 문서를 고칠 때까지 계속 실패하므로, 머지 뒤에도 어긋남이 남지 않는다.
- *
- * @param {string} file - 문서 경로
- * @param {string[]} localSources - 저장소 안 출처의 절대 경로
- * @param {LastChangeLookup} lastChange - 마지막 변경 시각 조회 함수
- * @return {string[]} 발견한 문제
- */
-function checkSourceChanges(file, localSources, lastChange) {
-  const documentChangedAt = lastChange(file);
-  if (documentChangedAt === null) return [];
-
-  return localSources.flatMap((source) => {
-    const sourceChangedAt = lastChange(source);
-    if (sourceChangedAt === null || sourceChangedAt <= documentChangedAt) return [];
-    const sourcePath = relative(dirname(file), source).split(sep).join("/");
-    return [
-      `출처 ${sourcePath}가 이 문서보다 나중에 바뀜. ` +
-      "내용이 달라졌으면 본문을 고치고, 그대로면 `verified`에 확인 기록을 추가해야 함",
-    ];
-  });
 }
 
 /**
@@ -296,12 +227,10 @@ function checkLog(text) {
  * 위키 번들 전체 검사
  *
  * @param {string} bundleRoot - 번들 루트(`wiki/`)
- * @param {{now?: Date, getLastChange?: LastChangeLookup | null}} [options] - 기준 시각과
- *   변경 시각 조회 함수. 테스트에서 고정할 때 넘기고, 생략하면 현재 시각과 git 이력을 씀.
- *   조회 함수에 null을 넘기면 출처 변경 감지를 끔
+ * @param {{now?: Date}} [options] - 기준 시각. 테스트에서 고정할 때 씀
  * @return {WikiLintIssue[]} 발견한 문제
  */
-export function lintWiki(bundleRoot, {now = new Date(), getLastChange} = {}) {
+export function lintWiki(bundleRoot, {now = new Date()} = {}) {
   /** @type {WikiLintIssue[]} */
   const issues = [];
   const toBundlePath = (path) => relative(bundleRoot, path).split(sep).join("/");
@@ -310,12 +239,6 @@ export function lintWiki(bundleRoot, {now = new Date(), getLastChange} = {}) {
   if (!existsSync(bundleRoot)) {
     report("error", bundleRoot, "위키 디렉터리가 없음");
     return issues;
-  }
-
-  // null을 직접 넘기면 감지를 끈 것으로 보고, 자동 조회가 실패했을 때만 경고
-  const lastChange = getLastChange === undefined ? createGitLastChangeLookup(bundleRoot) : getLastChange;
-  if (getLastChange === undefined && !lastChange) {
-    report("warning", bundleRoot, "git 이력이 없어 출처 변경 감지를 건너뜀. CI에서는 전체 이력으로 체크아웃해야 함");
   }
 
   const files = listMarkdownFiles(bundleRoot);
@@ -338,12 +261,7 @@ export function lintWiki(bundleRoot, {now = new Date(), getLastChange} = {}) {
           report("error", file, `frontmatter YAML 해석 실패: ${parseError.message}`);
         }
         if (data && typeof data === "object") {
-          const {problems, localSources} = checkConcept(data, file, bundleRoot, now);
-          problems.forEach(({level, message}) => report(level, file, message));
-          if (lastChange && data.status !== "deprecated") {
-            checkSourceChanges(file, localSources, lastChange)
-              .forEach((message) => report("error", file, message));
-          }
+          checkConcept(data, file, bundleRoot, now).forEach(({level, message}) => report(level, file, message));
         } else if (data !== undefined) {
           report("error", file, "frontmatter가 키-값 형식이 아님");
         }

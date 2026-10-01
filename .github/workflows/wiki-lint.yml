@@ -1,10 +1,19 @@
 name: Wiki Lint
 
 on:
-  # 코드만 고친 PR도 위키 문서의 출처를 바꿀 수 있어 경로 필터를 두지 않음
   pull_request:
+    paths:
+      - "wiki/**"
+      - "scripts/wiki-lint*.mjs"
+      - "AGENTS.md"
+      - "package.json"
+      - "pnpm-lock.yaml"
+      - ".github/workflows/wiki-lint.yml"
   push:
     branches: [main]
+    paths:
+      - "wiki/**"
+      - "scripts/wiki-lint*.mjs"
   # 저장소 밖 사실에 기대는 문서는 커밋 없이도 낡으므로 stale_after 만료를 주기 실행으로 잡음
   schedule:
     - cron: "0 0 * * 1" # 매주 월요일 09시 KST
@@ -18,9 +27,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-        with:
-          # 출처 변경 감지가 파일별 마지막 커밋 시각을 비교하므로 전체 이력이 필요
-          fetch-depth: 0
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
