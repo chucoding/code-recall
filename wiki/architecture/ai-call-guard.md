@@ -9,7 +9,6 @@ sources:
   - resource: ../../functions/src/openai.ts
   - resource: ../../functions/src/translateFlashcards.ts
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-02T00:00:00Z }
-stale_after: 2027-01-02
 ---
 
 # 왜 필요한가
