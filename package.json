@@ -6,6 +6,11 @@
     "serve": "pnpm --filter functions build && firebase emulators:start --only functions",
     "dev": "pnpm --filter app dev",
     "build": "pnpm -r build",
-    "push": "firebase deploy"
+    "push": "firebase deploy",
+    "wiki:lint": "node scripts/wiki-lint.mjs",
+    "wiki:test": "node --test scripts/wiki-lint.test.mjs"
+  },
+  "devDependencies": {
+    "yaml": "^2.9.1"
   }
 }
