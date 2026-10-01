@@ -11,6 +11,7 @@ sources:
     title: "fix(82): 카드 덱을 문서 크기 예산 안으로 줄여 저장"
     resource: https://github.com/chucoding/code-recall/pull/83
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-02T00:00:00Z }
+stale_after: 2027-01-02
 ---
 
 # 규칙

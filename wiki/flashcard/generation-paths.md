@@ -11,6 +11,7 @@ sources:
   - resource: ../../functions/src/flashcard-pregeneration.ts
   - resource: ../../app/src/features/flashcard/model/useTodayFlashcards.ts
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-02T00:00:00Z }
+stale_after: 2027-01-02
 ---
 
 # 세 경로

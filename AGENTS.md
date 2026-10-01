@@ -53,16 +53,12 @@ sources:                          # 필수. 하나 이상
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-02T00:00:00Z }   # 필수. <도구>/<모델>
 verified:                         # 선택. stable이면 human: 항목 필수
   - { by: human:chucoding, at: 2026-10-03T00:00:00Z }
-stale_after: 2027-04-02           # 저장소 안 출처가 없는 문서만 필수. 이 날짜가 지나면 CI가 실패
+stale_after: 2027-01-02           # 필수. 이 날짜가 지나면 검사가 실패
 ---
 ```
 
-- 문서가 낡았는지는 출처 종류에 따라 다르게 다룹니다.
-
-| 출처 | 신선도 관리 |
-|------|------|
-| 저장소 안 파일이 하나라도 있음 | 아래 `Ingest` 규칙대로 코드를 고치는 PR에서 함께 고침. 자동 감지는 두지 않음 |
-| 외부 URL만 있음 (외부 스펙, 서비스 제한, 결정 기록) | `stale_after` 필수. 커밋 없이도 바뀌므로 날짜로 재확인. 작성일로부터 6개월을 기본으로 잡음 |
+- `stale_after`는 코드에서 파생한 문서는 작성일로부터 3개월, 결정 기록은 6개월을 기본으로 잡습니다.
+- 코드가 바뀌었는지 자동으로 감지하지는 않습니다. 코드 파생 문서는 아래 `Ingest` 규칙대로 코드를 고치는 PR에서 함께 고칩니다.
 - 사람이 PR 리뷰로 내용을 확인하면 `verified`에 `human:<GitHub 아이디>`를 추가하고 `status`를 `stable`로 올립니다. 에이전트는 사람 확인 없이 `stable`로 올리지 않습니다.
 - 더 이상 맞지 않지만 링크와 이력 때문에 남길 문서는 `status: deprecated`로 바꾸고 대체 문서를 본문에 링크합니다.
 
@@ -79,7 +75,7 @@ stale_after: 2027-04-02           # 저장소 안 출처가 없는 문서만 필
 코드나 규칙을 바꾸는 PR에서, 바뀐 사실을 다루는 위키 문서가 있으면 같은 PR에서 함께 고칩니다.
 
 1. `wiki/index.md`에서 영향받는 문서를 찾습니다.
-2. 본문과 `sources`, `generated`를 갱신합니다. 내용이 바뀌면 기존 `verified`는 지우고 `status`를 `draft`로 내립니다. `stale_after`가 있는 문서는 날짜를 다시 잡습니다.
+2. 본문과 `sources`, `generated`를 갱신하고 `stale_after`를 다시 잡습니다. 내용이 바뀌면 기존 `verified`는 지우고 `status`를 `draft`로 내립니다.
 3. 새 주제면 개념 문서를 만들고 디렉터리 `index.md`에 링크합니다.
 4. `wiki/log.md` 맨 위 날짜 아래에 `**Creation**`, `**Update**`, `**Deprecation**` 중 하나로 시작하는 한 줄을 추가합니다.
 5. `pnpm wiki:lint`를 통과시킵니다.
@@ -90,6 +86,6 @@ stale_after: 2027-04-02           # 저장소 안 출처가 없는 문서만 필
 
 ### Lint
 
-- 정적 검사: `pnpm wiki:lint`. frontmatter 필수 키, `sources` 경로 존재, 깨진 링크, `index.md` 누락, `log.md` 형식, `stale_after` 만료를 봅니다. CI는 위키와 검사 스크립트를 고친 PR, main 푸시에서 실행하고, `stale_after` 만료를 잡으려고 매주 월요일에도 실행합니다.
+- 정적 검사: `pnpm wiki:lint`. frontmatter 필수 키, `sources` 경로 존재, 깨진 링크, `index.md` 누락, `log.md` 형식, `stale_after` 만료를 봅니다. CI는 위키와 검사 스크립트를 고친 PR과 main 푸시에서 실행합니다. 정기 실행은 두지 않으므로, `stale_after` 만료는 위키를 고치는 PR이나 로컬 실행에서 드러납니다.
 - 의미 검사: 요청을 받으면 문서끼리의 모순, 코드와 어긋난 주장, 고아 개념, 빠진 상호 참조를 점검해 수정 PR을 올립니다.
 - `stale_after`가 지난 문서는 `sources`를 다시 읽어 내용을 확인한 뒤 날짜를 갱신합니다. 확인 없이 날짜만 미루지 않습니다.

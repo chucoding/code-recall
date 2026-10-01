@@ -64,7 +64,7 @@ describe("lintWiki", () => {
   it("frontmatter 필수 키 누락을 잡음", () => {
     write("concept.md", "---\ntype: Architecture\n---\n# 본문\n");
     const found = errors();
-    for (const key of ["title", "description", "status", "sources", "generated"]) {
+    for (const key of ["title", "description", "status", "sources", "generated", "stale_after"]) {
       assert.ok(found.some((message) => message.includes(`\`${key}\``)), key);
     }
   });
@@ -114,20 +114,6 @@ describe("lintWiki", () => {
     const found = errors();
     assert.ok(found.includes("orphan.md: index.md에 이 문서 링크가 없음"));
     assert.ok(found.includes("sub/child.md: sub/index.md가 없어 이 문서를 찾을 수 없음"));
-  });
-
-  it("저장소 안 출처가 있으면 stale_after가 없어도 통과함", () => {
-    write("concept.md", VALID_FRONTMATTER.replace("stale_after: 2027-01-01\n", ""));
-    assert.deepEqual(errors(), []);
-  });
-
-  it("저장소 안 출처가 없는 문서는 stale_after를 요구함", () => {
-    const external = VALID_FRONTMATTER.replace("../code.ts", "https://example.com/spec");
-    write("concept.md", external.replace("stale_after: 2027-01-01\n", ""));
-    assert.deepEqual(errors(), ["concept.md: 저장소 안 출처가 없는 문서는 `stale_after`가 필요함"]);
-
-    write("concept.md", external);
-    assert.deepEqual(errors(), []);
   });
 
   it("log.md 날짜 형식과 순서를 검사함", () => {

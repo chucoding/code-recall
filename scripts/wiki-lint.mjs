@@ -7,18 +7,15 @@ import {parse} from "yaml";
  * 위키 정적 검사
  *
  * `wiki/`는 OKF v0.2 번들이다. OKF 스펙은 `type`만 필수로 두지만, 이 저장소는 나중에 어떤
- * 도구로 옮겨도 신뢰 신호를 잃지 않도록 출처 필드를 처음부터 강제한다. 모순이나 오래된
+ * 도구로 옮겨도 신뢰 신호를 잃지 않도록 출처와 수명 필드를 처음부터 강제한다. 모순이나 오래된
  * 주장처럼 의미를 봐야 하는 점검은 LLM Lint가 맡고, 여기서는 기계적으로 판정할 수 있는 것만 본다.
- *
- * 코드에서 나온 문서의 신선도는 같은 PR에서 함께 고치는 규칙(AGENTS.md의 Ingest)에 맡긴다.
- * 저장소 안 출처가 없는 문서는 바뀌어도 이 저장소에 커밋이 생기지 않으므로 `stale_after`로 재확인한다.
  */
 
 /** OKF 예약 파일. 개념 문서가 아니라 목록과 이력이므로 frontmatter 검사에서 뺌 */
 const RESERVED_FILES = new Set(["index.md", "log.md"]);
 
 /** 개념 문서에 반드시 있어야 하는 frontmatter 키 */
-const REQUIRED_KEYS = ["type", "title", "description", "status", "sources", "generated"];
+const REQUIRED_KEYS = ["type", "title", "description", "status", "sources", "generated", "stale_after"];
 
 /** OKF v0.2 수명 상태 */
 const STATUS_VALUES = new Set(["draft", "stable", "deprecated"]);
@@ -115,7 +112,6 @@ function resolveLocalTarget(target, file, bundleRoot) {
  */
 function checkConcept(data, file, bundleRoot, now) {
   const problems = [];
-  let localSourceCount = 0;
   const error = (message) => problems.push({level: "error", message});
 
   for (const key of REQUIRED_KEYS) {
@@ -139,17 +135,11 @@ function checkConcept(data, file, bundleRoot, now) {
           return;
         }
         const local = resolveLocalTarget(resource, file, bundleRoot);
-        if (!local) return;
-        localSourceCount += 1;
-        if (!existsSync(local)) error(`\`sources[${index}].resource\` 경로가 없음: ${resource}`);
+        if (local && !existsSync(local)) {
+          error(`\`sources[${index}].resource\` 경로가 없음: ${resource}`);
+        }
       });
     }
-  }
-
-  // 저장소 안 출처가 없으면 바뀌어도 커밋이 생기지 않아 날짜가 유일한 재확인 계기
-  if (Array.isArray(data.sources) && data.sources.length > 0 && localSourceCount === 0 &&
-    (data.stale_after === undefined || data.stale_after === null || data.stale_after === "")) {
-    error("저장소 안 출처가 없는 문서는 `stale_after`가 필요함");
   }
 
   if (data.generated !== undefined) {
@@ -233,8 +223,7 @@ function checkLog(text) {
 export function lintWiki(bundleRoot, {now = new Date()} = {}) {
   /** @type {WikiLintIssue[]} */
   const issues = [];
-  const toBundlePath = (path) => relative(bundleRoot, path).split(sep).join("/");
-  const report = (level, file, message) => issues.push({level, file: toBundlePath(file), message});
+  const report = (level, file, message) => issues.push({level, file: relative(bundleRoot, file).split(sep).join("/"), message});
 
   if (!existsSync(bundleRoot)) {
     report("error", bundleRoot, "위키 디렉터리가 없음");
