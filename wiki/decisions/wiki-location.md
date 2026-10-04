@@ -26,7 +26,7 @@ stale_after: 2027-04-02T00:00:00Z
 
 # 결정
 
-LLM Wiki를 이 저장소의 `wiki/` 디렉터리에 OKF v0.2 번들로 둡니다. 에이전트 규칙(카파시 패턴의 schema 계층)은 루트 `AGENTS.md`가 정본이고, `CLAUDE.md`는 그 파일을 불러오기만 합니다.
+LLM Wiki를 이 저장소의 `wiki/` 디렉터리에 OKF v0.2 번들로 둡니다. 에이전트 규칙(카파시 패턴의 schema 계층)은 루트 `AGENTS.md`가 정본이고, `CLAUDE.md`는 그 파일을 불러오기만 합니다. `AGENTS.md`에는 항상 지킬 원칙과 이 저장소 전용 값만 두고, 위키를 쓸 때만 필요한 OKF 작성 절차는 다른 프로젝트에서도 쓸 수 있게 개인 스킬 `chucoding:okf-wiki`로 분리합니다. `AGENTS.md`는 위키와 관계없는 작업에서도 매번 읽히기 때문입니다.
 
 # 검토한 선택지
 
