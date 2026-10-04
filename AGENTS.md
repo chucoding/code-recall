@@ -53,10 +53,11 @@ sources:                          # 필수. 하나 이상
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-02T00:00:00Z }   # 필수. <도구>/<모델>
 verified:                         # 선택. stable이면 human: 항목 필수
   - { by: human:chucoding, at: 2026-10-03T00:00:00Z }
-stale_after: 2027-01-02           # 필수. 이 날짜가 지나면 검사가 실패
+stale_after: 2027-01-02T00:00:00Z # 필수. 이 시각이 지나면 검사가 실패
 ---
 ```
 
+- `generated.at`, `verified[].at`, `stale_after`처럼 시각을 담는 값은 모두 `2027-01-02T00:00:00Z`처럼 UTC 오프셋을 붙입니다. 날짜만 쓰면 타임존마다 다른 시각을 가리켜 OKF v0.2 스펙에 어긋납니다.
 - `stale_after`는 코드에서 파생한 문서는 작성일로부터 3개월, 결정 기록은 6개월을 기본으로 잡습니다.
 - 코드가 바뀌었는지 자동으로 감지하지는 않습니다. 코드 파생 문서는 아래 `Ingest` 규칙대로 코드를 고치는 PR에서 함께 고칩니다.
 - 사람이 PR 리뷰로 내용을 확인하면 `verified`에 `human:<GitHub 아이디>`를 추가하고 `status`를 `stable`로 올립니다. 에이전트는 사람 확인 없이 `stable`로 올리지 않습니다.

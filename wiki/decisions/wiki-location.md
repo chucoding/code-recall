@@ -21,7 +21,7 @@ sources:
     title: Docs-as-code topologies
     resource: https://passo.uno/docs-as-code-topologies/
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-02T00:00:00Z }
-stale_after: 2027-04-02
+stale_after: 2027-04-02T00:00:00Z
 ---
 
 # 결정

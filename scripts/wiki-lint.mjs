@@ -72,14 +72,23 @@ function stripCode(body) {
 }
 
 /**
- * 값이 날짜 또는 ISO 8601 문자열이면 Date로 바꿈
+ * OKF v0.2 시각 표기. UTC 오프셋이 명시된 ISO 8601 datetime
+ *
+ * 날짜만 쓰면 타임존마다 다른 시각을 가리켜, 같은 문서가 어디서는 만료되고 어디서는 유효해짐
+ */
+const OKF_DATETIME_PATTERN = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?(Z|[+-]\d{2}:\d{2})$/;
+
+/** 시각 형식 오류 안내 문구 */
+const DATETIME_HINT = "`2026-12-31T00:00:00Z`처럼 UTC 오프셋을 붙인 ISO 8601 시각이어야 함";
+
+/**
+ * 값이 오프셋을 명시한 ISO 8601 datetime 문자열이면 Date로 바꿈
  *
  * @param {unknown} value - frontmatter 값
- * @return {Date | null} 해석할 수 없으면 null
+ * @return {Date | null} 형식이 맞지 않거나 해석할 수 없으면 null
  */
 function toDate(value) {
-  if (value instanceof Date) return Number.isNaN(value.getTime()) ? null : value;
-  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}/.test(value)) return null;
+  if (typeof value !== "string" || !OKF_DATETIME_PATTERN.test(value)) return null;
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
 }
@@ -147,7 +156,7 @@ function checkConcept(data, file, bundleRoot, now) {
     if (typeof by !== "string" || !ACTOR_PATTERN.test(by)) {
       error("`generated.by`는 `<도구>/<버전>` 형식이어야 함");
     }
-    if (!toDate(at)) error("`generated.at`은 ISO 8601 시각이어야 함");
+    if (!toDate(at)) error(`\`generated.at\`은 ${DATETIME_HINT}`);
   }
 
   const verified = data.verified === undefined ? [] : [data.verified].flat();
@@ -155,7 +164,7 @@ function checkConcept(data, file, bundleRoot, now) {
     if (typeof entry?.by !== "string" || !ACTOR_PATTERN.test(entry.by)) {
       error(`\`verified[${index}].by\`는 \`human:<id>\`, \`process:<id>\`, \`<도구>/<버전>\` 중 하나여야 함`);
     }
-    if (!toDate(entry?.at)) error(`\`verified[${index}].at\`은 ISO 8601 시각이어야 함`);
+    if (!toDate(entry?.at)) error(`\`verified[${index}].at\`은 ${DATETIME_HINT}`);
   });
 
   // stable은 사람이 확인한 문서에만 붙임. 기계 확인만으로 올리면 신뢰 단계가 섞임
@@ -166,7 +175,7 @@ function checkConcept(data, file, bundleRoot, now) {
   if (data.stale_after !== undefined) {
     const staleAfter = toDate(data.stale_after);
     if (!staleAfter) {
-      error("`stale_after`는 ISO 8601 날짜여야 함");
+      error(`\`stale_after\`는 ${DATETIME_HINT}`);
     } else if (data.status !== "deprecated") {
       const daysLeft = (staleAfter.getTime() - now.getTime()) / (24 * 60 * 60 * 1000);
       if (daysLeft <= 0) {

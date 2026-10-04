@@ -12,7 +12,7 @@ sources:
     title: "fix(77): users 문서 쓰기를 소유 필드로 한정하고 사용량 카운터 분리"
     resource: https://github.com/chucoding/code-recall/pull/81
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-02T00:00:00Z }
-stale_after: 2027-01-02
+stale_after: 2027-01-02T00:00:00Z
 ---
 
 # 규칙 요약

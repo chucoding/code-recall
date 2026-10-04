@@ -17,7 +17,7 @@ status: draft
 sources:
   - resource: ../code.ts
 generated: { by: claude-code/claude-opus-5-5, at: 2026-10-02T00:00:00Z }
-stale_after: 2027-01-01
+stale_after: 2027-01-01T00:00:00Z
 ---
 `;
 
@@ -75,16 +75,28 @@ describe("lintWiki", () => {
   });
 
   it("만료된 stale_after를 오류로, 임박한 stale_after를 경고로 봄", () => {
-    write("concept.md", VALID_FRONTMATTER.replace("2027-01-01", "2026-10-01"));
+    write("concept.md", VALID_FRONTMATTER.replace("2027-01-01T", "2026-10-01T"));
     assert.ok(errors().some((message) => message.includes("stale_after") && message.includes("지남")));
 
-    write("concept.md", VALID_FRONTMATTER.replace("2027-01-01", "2026-10-10"));
+    write("concept.md", VALID_FRONTMATTER.replace("2027-01-01T", "2026-10-10T"));
     const warnings = lintWiki(bundle, {now: NOW}).filter((issue) => issue.level === "warning");
     assert.equal(warnings.length, 1);
   });
 
+  it("UTC 오프셋 없는 시각을 잡음", () => {
+    write("concept.md", VALID_FRONTMATTER
+      .replace("2027-01-01T00:00:00Z", "2027-01-01")
+      .replace("at: 2026-10-02T00:00:00Z", "at: 2026-10-02T00:00:00"));
+    const found = errors();
+    assert.ok(found.some((message) => message.includes("`stale_after`") && message.includes("UTC 오프셋")));
+    assert.ok(found.some((message) => message.includes("`generated.at`") && message.includes("UTC 오프셋")));
+
+    write("concept.md", VALID_FRONTMATTER.replace("2027-01-01T00:00:00Z", "2027-01-01T09:00:00+09:00"));
+    assert.deepEqual(errors(), []);
+  });
+
   it("deprecated 문서는 stale_after 만료를 보지 않음", () => {
-    write("concept.md", VALID_FRONTMATTER.replace("2027-01-01", "2026-01-01").replace("draft", "deprecated"));
+    write("concept.md", VALID_FRONTMATTER.replace("2027-01-01T", "2026-01-01T").replace("draft", "deprecated"));
     assert.deepEqual(errors(), []);
   });
 
