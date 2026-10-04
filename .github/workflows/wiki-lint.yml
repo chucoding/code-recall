@@ -5,15 +5,15 @@ on:
     paths:
       - "wiki/**"
       - "scripts/wiki-lint*.mjs"
-      - "AGENTS.md"
       - "package.json"
-      - "pnpm-lock.yaml"
       - ".github/workflows/wiki-lint.yml"
   push:
     branches: [main]
     paths:
       - "wiki/**"
       - "scripts/wiki-lint*.mjs"
+      - "package.json"
+      - ".github/workflows/wiki-lint.yml"
   workflow_dispatch:
 
 permissions:
