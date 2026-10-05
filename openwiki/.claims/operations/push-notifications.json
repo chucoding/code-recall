@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:a6fdd51743c7dd15a559b8b8dca9432bbf4547f8afde9a87236dbdbc0d608a6a",
+  "claims": [
+    {
+      "id": "claim_12421257b0e54f9fac4a18bd74f06a79",
+      "statement": "설정 화면에서 로그인 사용자가 푸시를 켜면 브라우저 알림 권한을 확인·요청하고, 허용된 경우 Firebase Messaging의 FCM 등록 토큰과 시간대를 users 문서에 병합 저장한다. 끌 때는 pushEnabled만 false로 갱신한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/pages/Settings.tsx#L317-L377",
+          "version": "repo-lines-v1:sha256:14a59af4e32688666b73805f631aa5538eb8c9ad395836a410d3708157bd0b74:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1ZTZmMTc1YTBkYzM0MTgwZDk5ZjU2N2VhMWJlZDk2MzA2ZjJlNjJlYTg3NDQ2Y2VhNTE1MDI1ZDVlZjQ5MjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAxNDU4ZWEwYjZkNzFhZWI1YWYxZTc2YWUzZjMwYmQ1MGE5M2MyYjc5ZmFhZTg0NTRmOTg5Y2U5ZmE4ZDI5YmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3Yzc1MGEzN2E2MzUxMGJjMjI3ZjljOTFhMzNkZjVkMWRhMDc1OTNkYjM5MjgwZTU2MjJjOTZhNjM2Y2M1ZjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_35c05df6f9094b80b0a1bb7868dc663f",
+      "statement": "푸시 선호 시각은 사용자 문서에 숫자로 없으면 클라이언트와 서버 모두 8시를 기본값으로 사용하며, 서버는 시간대가 없거나 비어 있으면 Asia/Seoul을 사용한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/pages/Settings.tsx#L188-L200",
+          "version": "repo-lines-v1:sha256:afc9c0bcf1f519f037fe293400b088ae06db0d573efef5a526f506085e4f62d5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1YTEzYzYyM2ZhOTJhMjAwNWExYTk1NjM5NTEyMjk4M2YxZTJiYmZlZGQ4YzkwYjQ4OGZmNTdlYjQwYmRhZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyNTFiZmFiY2ZiNmQ4OWZkOWY0ZTNiN2JjNGExNzRmZDkwYzk5ODE4NmU0ZmRlMmM4ZmEzNGU2ZDVjMjkzYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiN2Y3NGI1YmM3NjEwMmNkOTVlYTI5N2Q1MjU1NDQ3MGM4MTdiZjZmYjc1NWE1MGFkMWY2Yjg2ODk0NDgyN2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzZWQ5ODBhYTI0M2FlYWRmYmE4ZWFkNWFhYTc3YmJmNWEyMTM4NzJlODJmYWY4MGE3M2E2ZWFkZTgxZGY1MjYifQ"
+        },
+        {
+          "resource": "repo://functions/src/schedule.ts#L27-L38",
+          "version": "repo-lines-v1:sha256:e52fd609811654d9d7489adb9c0a35084fdbfe17f688085240604a9e1729c98c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwMmFjODMzNTZjNWFmNzM5ZTFlMTE2OTI3NzFjYTQ3MzUwODA1MzI3NDYyNWRiYjNkZDQzOWZlMTA1YTM1ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgyNTFiZmFiY2ZiNmQ4OWZkOWY0ZTNiN2JjNGExNzRmZDkwYzk5ODE4NmU0ZmRlMmM4ZmEzNGU2ZDVjMjkzYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkNTI2ZTVhYTFmYTk1YzhiYjM4MmI0NGM3MTNiYzQyOTgyNzQ5NjJhNjI1MGIwODk0ZmE0NzMwMjQ0ZDNiNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlM2M0ZTc0NmY3NWU4YjcwYjA2MzJiMTJkN2NhZjM5NWIzOTQ3NmEzYjM3ZDVmZTY0YTk3MDliMDAxNDVmNzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_33c59ee1f39b41538a5ef59f33425cf6",
+      "statement": "Firestore 규칙은 사용자 소유 문서에 대한 본인 접근만 허용하고, 클라이언트가 쓰는 FCM 토큰·푸시 사용 여부·선호 시각·시간대를 허용 필드 및 길이·범위 검증으로 제한한다.",
+      "evidence": [
+        {
+          "resource": "repo://firestore.rules#L119-L145",
+          "version": "repo-lines-v1:sha256:67077dabb85aa6f2826823cffc53fa95139cc45a24185f0e031ab4073063a5aa:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhNWNlYjYwYTlhYmU3NGNlNmI4ZTU3MDE3Mjk5OWQxNDkyYWFlOWYzYzFhNDNhNDc0MDE3YWRiYTQ4YzlhYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNTU1NzRhMGFiMGU3N2RkNTAzM2YzYWU4NWQxZjQxNGZiNWNhYzAwMDlhMjVhN2M2ZGEwYzQzN2M0NzU1YmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0ZWFiODE1YjA3MDJhZDM1ZWQ4ZmNiMzc1OGVlYjAxNTcxMDAxZWRhZmZlOGIwNWRiMWMwZjU5ZWE0NjVlNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjE1NjFkZmM4MjJiODI5Y2JlZWNmNjUyOTRjNDhkZjFjMGM1N2NhOWQxMTIxZjcxMWY2MDg2NjM1ZjU5NTEzOTYifQ"
+        },
+        {
+          "resource": "repo://firestore.rules#L152-L172",
+          "version": "repo-lines-v1:sha256:6d515938c95d532e2cede345f082879c4a45855c9260c99578b322aaa7b665dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNmNjNjRmYjIwZjNjOTIxMzVmMTU5NmM2MTBjZjFmYzJhOWI2OGRkZTg1Y2Q4OTFhNjI0NTJjYjUwZmM0ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5M2Q3Yzc2ZDBmNGE3ZmE0MDIyYjBhN2U1OWY5YjcyMTgxNjIwNDY1YTM4NTRlZGU2NzE1NjNjNzEzMWNjY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkODg4Y2UzNDIyMGIxZjQxMTIyZTk2Mjc1M2M5NTM0ZTQ4ZmJkN2IwYzAyZjhjNjIwNzA1ZmNkZjcxMzBkZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ4NjgxYmIyMjhlMWFhMDViZTczZWRhNWQ2OTNkODJlOWQxOWMxZTM2NWYzY2M5ZWIzN2RiM2M1ODI1NDNmNDYifQ"
+        },
+        {
+          "resource": "repo://firestore.rules#L66-L81",
+          "version": "repo-lines-v1:sha256:bf6ac151e8c45c24ad03a752afd59b3d116463c2cb2a7fdc1e6851d4b2dcc602:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0Zjg5YjY2OTk1ZDY4Nzg4YjNlNTIwZDI0NjUxMTkyM2VkMTA0Mzg1ZTRmNjNmNmE4ZmJhY2MzYTM0ZmM4MjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk0NTY2OTQzYzAzYThjZGQwODhjYjRjNDU0YzI3ODVlMTBiYmQ1ZTllY2EzY2RhMDc2MTgzYjVjYzA2OGQ2YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3Y2E2OWE0OTU2ZTQxMGUyNDRjYjZkNGZjY2RlODdkMGNhNzM2YmI3MWVlYzg5NjA1ZGU1MmFjNTNkYjI2NDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyNWNmYWZkMjk4MWVhNmU0ZjAxOWM3NjdmYzM2MDk3MTRiYjI3MTc2YWU5OWQ2MWMyOGI1NjcwODdkZTkxOTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c72abcd0b91944b0adbff280e5e76d97",
+      "statement": "sendDaily8amPush는 asia-northeast3에서 매시 정각 실행되어 pushEnabled 사용자를 조회하고, Scheduler 시각을 각 사용자의 IANA 시간대로 환산한 현지 시가 선호 시각과 같은 토큰만 전송 대상으로 고른다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/schedule.ts#L6-L39",
+          "version": "repo-lines-v1:sha256:e59e252410030ca4131c265a027c79b2ea357f27247365bae2b17cf0c6359646:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4MDUzZDZhMWU4NjZmMzJkOWU2NmQ0OTRjOGY3NGQ2Yjg0YWY4NGE3OTBhYzg5YWMwZjgzMTliNDU4MzU4OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0NjJmYTU3OTcxMGIzZmY1ZTQyYThlMTAwMDJjNWFlN2JmMDUwOTllN2Y0Yzk5NWE2ODVmNTc2YWM3ODc1OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjYzBhODRlZGNhNDJkNDQ4MjkyZGEzMTRlYjI0NWE3MThkMjg3MDIxNGQzODMzZWZhMzRlYjRjNzJiZTQzNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwMjQ0MDE5ZjA2YzRhYzQwM2VjMzZhMGJhNDVhY2IwZGEzZTQzYTBhMzcyZmU0ZDU4YzkxMTQyMWRmOWJmYTIifQ"
+        },
+        {
+          "resource": "repo://functions/src/timezone.ts#L9-L23",
+          "version": "repo-lines-v1:sha256:183c9b42d13e21ba6c2f335428777acd3afece01a45533bb5bebf2a68291220b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhYjliMmYyM2EwYTZjZmU4OGE3NDQ1NjlhZTM5ZTkxOTQzZTY1ZWQ3NGU5NmFjMDNkMGJlNjdmODIyYzNjMDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkZDdkMmNhMDY3OTBiNDNmNDEyZTVlYmVhNzk0OTA3NzRiYTY2ZGNjYjM3OTViMzkzZmE0NTU4MDIwODMxYWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhMDQxZWUzMDUyMzU1ZTVmYTMyZjRjNzhiNjdhYzJjNzNiMTYwY2M5NDYxNjZkZTQ1ZDFlYTJjODljODA2YzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0481a7b2ab5c4217abafef2b33889e63",
+      "statement": "푸시 발송은 동일한 notification 및 /app URL 데이터를 담아 최대 500개 토큰씩 sendEach로 순차 전송하며, /app은 Firebase Hosting에서 app.html로 rewrite된다.",
+      "evidence": [
+        {
+          "resource": "repo://firebase.json#L1-L1",
+          "version": "repo-lines-v1:sha256:82c5fb90764ebbeab45400b9b36618f6c8d11fe056a6043e902b6d2a889d4e2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://functions/src/schedule.ts#L50-L79",
+          "version": "repo-lines-v1:sha256:8bd34d5a903fcc743dbb2f70e062e2fe51c81736c82f04cd5849e0b34a126b20:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzZGVhYTY4MWMxYmU0M2Q0OWJjMjE1ODIxYWZkMzdkNDljZTBiNTlkOTlmMDhkZmVhNzhhNzg0OGFmMjg5MTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2NjhiMzgwMTU0OGY2NjFlYjI5NTVkMzYxMTM3Yjc5ZDA4NWQxZDdiOTc3OGEwYmM4MDAzYTI3MTRhNDM5OTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRiN2Y3NGI1YmM3NjEwMmNkOTVlYTI5N2Q1MjU1NDQ3MGM4MTdiZjZmYjc1NWE1MGFkMWY2Yjg2ODk0NDgyN2MiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiOTMxZjNiNjc2NDFiYjFiYjcwZDZhNjFhMDhiZDQ5YTU0ZmM3ZmU5NjhmNjE1MGU0ZTJhNzJlZWJlOTM2ZWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_50ca4d62a75940c1adea7789eebe849b",
+      "statement": "현재 발송 실패는 응답별 경고 로그와 성공·실패 집계 로그로만 관찰되며, 실패하거나 무효인 토큰을 Firestore에서 제거·비활성화하거나 영속적인 실패 기록과 재시도를 수행하지 않는다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/schedule.ts#L58-L82",
+          "version": "repo-lines-v1:sha256:6405897a370e31e861db8246472adec227b4aa8d857e069ec2dd1c6dfa5795b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2NTJjZWZlNjE5MmI4ODg5ZjgxZmI3YzY2YTk5ZWFmZGUzODUyY2IyODkzMTBhMjhiMzc5MGQzZGIyYmZhOTkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyNGFlODhjNTIxODk0MGVhNzMyMDFiYzk5ODRiMzk5NzEyN2IwOWIwODMwZThkYmNhMGNjYzkwMDYxYjJmNmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFkMzc3YzMwZmY4ZmIxMTc0M2Q4ZWJhMjJkN2Y4ZTliNDE5YmJlZTkxZWI5MGM0ZjY3YmJkOTVjYjRlNDM3OGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6e68a3627630457d8bc2ed36844e6bf5",
+      "statement": "앱은 로드 시 /firebase-messaging-sw.js를 등록하며, 예약 발송의 메시지 데이터는 알림 클릭 시 앱 진입점을 열기 위한 /app URL을 지정한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/main.tsx#L14-L19",
+          "version": "repo-lines-v1:sha256:88e7a9954c05ed68d7a4a4fc4c381d59d060268f6cdb9d0c33811a14c3c739cb:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTBmNGI5OTQ0Mjg2MTYzZWExZGQ1ZWEyNjEyZWU2ZmM5YTFmOGQwZGQ3MWFkZDUzZmRiZGFiYjAzZWIzMmIzNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTIyZmFhNTM1YmQyZWEzZDUyZTc0MWVkNDU0NDM1YjdmZTQ5ZTgzNTg2ZTk0M2Q5OGQ4MmJiZmIyNGQxZjVjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWVkZWFkYjRkYmQzOTdkNzY4NzE1Y2U4ZjA3NzY5NzU5MjM5YzkyYzY1NTI5MmZkMGU3YjIxNjljM2Y2ZTVjNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjNkOTNhYzY3NTgyN2ZkOWYyMTVhZGQ4ZGQ4YzVlNTk0YmNhNDMxOTVkNzUxYzI2NzgyZjZjNjllMjJmMTZhNiJ9"
+        },
+        {
+          "resource": "repo://functions/src/schedule.ts#L50-L56",
+          "version": "repo-lines-v1:sha256:0e2cd1c3ad0dd698994421085b430980cf422fbaaf99d169d329f52fcacb27bc:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTNkZWFhNjgxYzFiZTQzZDQ5YmMyMTU4MjFhZmQzN2Q0OWNlMGI1OWQ5OWYwOGRmZWE3OGE3ODQ4YWYyODkxOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWU2ZGY1NmNkYjYxOGFkMjdmYTNlODA3YTE0NjBhM2UxMjNhZjUwYTgwMmFlOTM1NGMxYzQ3NWI2MTM5Yzg4ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGI3Zjc0YjViYzc2MTAyY2Q5NWVhMjk3ZDUyNTU0NDcwYzgxN2JmNmZiNzU1YTUwYWQxZjZiODY4OTQ0ODI3YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjE2OTMzZjM0NzkxYmRjM2Q3ODQ4NWY5MzQ4MDExZjk1MzEzZjY1OTY5M2EzYjY4ZGI4ZjUwYWE0MzU3MzExYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_dfc7233f72fa43cb86e948b1158d1cc6",
+      "statement": "Functions 엔트리는 스케줄 모듈을 export하고 전역 최대 인스턴스 수를 10으로 설정하며, Firebase 배포 설정은 Functions 배포 전에 해당 코드베이스를 빌드한다.",
+      "evidence": [
+        {
+          "resource": "repo://firebase.json#L1-L1",
+          "version": "repo-lines-v1:sha256:82c5fb90764ebbeab45400b9b36618f6c8d11fe056a6043e902b6d2a889d4e2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://functions/src/index.ts#L1-L12",
+          "version": "repo-lines-v1:sha256:375d44df15136d4bb41d0fbc3986d9974ed0816cdfc11453121f9f35791721c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0MGU2MzU4MWIyYzUwMmRmNWE4MjcwODY2NDAwODk3NGUxYTBlNGJhNGJkMGVlNDk4YjgzNjRlZWMyZDQxYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExZTk3ZjNlNzM0NzA5YTc2N2FlNDZjYTYwMjhjNDJhMTgyOGUwNWM4NWVjYjA5OTU1MGY5NTIwMTA4YTI2MWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkNjcyZTRlYWE2NzU0MmMzMWMwMTM4YzVmMDkwNDMzM2UzZTc1NTZmMTBhMmZlMTc4MGY5ZTUxMWZlOWZiNDIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-05T07:59:19.883Z"
+  }
+}

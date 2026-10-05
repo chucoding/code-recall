@@ -28,7 +28,8 @@ pnpm dev     # FE (Vite)
 | `app` | React 18과 Vite 기반 프론트엔드. FSD 구조(`app`, `pages`, `widgets`, `features`, `entities`, `shared`) |
 | `functions` | Firebase Cloud Functions. GitHub 연동, AI 카드 생성, 알림 스케줄, 결제 |
 | `design-system` | 디자인 가이드 문서 |
-| `wiki` | 설계 의도와 제약을 모은 LLM Wiki. 작성 규칙은 루트 [AGENTS.md](../AGENTS.md) |
+| `openwiki` | OpenWiki로 생성하는 LLM Wiki. 운영 규칙은 루트 [AGENTS.md](../AGENTS.md) |
+| `docs/adr` | 사람이 쓰는 결정 기록(ADR) 원본. 작성 규칙은 [docs/adr/README.md](../docs/adr/README.md) |
 | `scripts` | 환경 변수 생성 등 보조 스크립트 |
 
 ## 코드 규칙

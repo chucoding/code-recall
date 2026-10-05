@@ -1,0 +1,72 @@
+name: OpenWiki Update
+
+# 공식 예시 langchain-ai/openwiki examples/openwiki-update.yml 기반
+on:
+  workflow_dispatch:
+  schedule:
+    # 매주 월요일 00:00 KST. 생성마다 API 비용이 들어 매일이 아닌 주 1회
+    - cron: "0 15 * * 0"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: true
+          # `openwiki code --update`가 직전 생성 커밋과 HEAD를 비교하므로 전체 이력 필요
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "22.22"
+
+      - name: Install OpenWiki
+        # mermaid와 jsdom은 Mermaid 다이어그램 검증용
+        run: npm install --global openwiki@0.7.0 mermaid@11.16.0 jsdom@29.1.1
+
+      - name: Run OpenWiki
+        id: openwiki
+        continue-on-error: true
+        run: openwiki code --update --print --language ko
+        env:
+          OPENWIKI_PROVIDER: openai
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENWIKI_MODEL_ID: gpt-5.6-terra
+
+      - name: Remove transient OpenWiki run state
+        if: ${{ !cancelled() }}
+        run: rm -f -- openwiki/.run.json
+
+      - name: Create OpenWiki update pull request
+        id: create-pr
+        if: ${{ !cancelled() }}
+        uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
+        with:
+          add-paths: |
+            openwiki
+            AGENTS.md
+            CLAUDE.md
+          branch: openwiki/update
+          commit-message: "docs(NO-ISSUE): OpenWiki 위키 정기 갱신"
+          title: "docs(NO-ISSUE): OpenWiki 위키 정기 갱신"
+          body: |
+            OpenWiki가 지난 생성 이후의 커밋을 반영해 위키를 갱신했습니다.
+
+            OpenWiki 실행 결과: ${{ steps.openwiki.outcome }}
+
+            결과가 `failure`이면 실패 전에 완성한 페이지만 담겨 있습니다. 머지하면 다음 정기 실행이 그 지점부터 이어서 갱신합니다.
+
+      - name: Annotate OpenWiki update pull request
+        if: ${{ !cancelled() && steps.create-pr.outputs.pull-request-url != '' }}
+        run: echo "::notice title=OpenWiki update pull request::${{ steps.create-pr.outputs.pull-request-url }}"
+
+      - name: Propagate OpenWiki failure
+        if: ${{ steps.openwiki.outcome == 'failure' }}
+        run: exit 1

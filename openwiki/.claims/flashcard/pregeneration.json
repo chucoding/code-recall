@@ -1,0 +1,154 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:1b6ad9d4377f71be59c406cea74092077267b59a22ddcd81dad8ef4ef33f64ba",
+  "claims": [
+    {
+      "id": "claim_78db2853bd6747b3a5d7ca3cc186f014",
+      "statement": "앱은 오늘 날짜 문서의 현재 언어 덱을 먼저 읽고, 없으면 반대 언어 덱 번역을 시도한 뒤에도 없을 때만 즉시 생성하며, 앱이 열릴 때 브라우저 시간대와 표시 언어를 사용자 문서에 best-effort로 동기화한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/features/flashcard/model/useTodayFlashcards.ts#L138-L156",
+          "version": "repo-lines-v1:sha256:39ed845b1040ce0f250fa65899d41b12b0080c4a018e72c33a516c5f32da1040:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5ZmE2NzA2YjRiNThhOTIzYjI0ZTQ2MGU0ZGM5MTY5ZjhkZTFkMTc0NDU4ZGJkYTc2YTZjMzA2YjM5N2FjMjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3Yjk1NDU5MDZkMGJiYjczZjZhZDJhNWExM2E3YzE4NzU2ZmNiZWNkOWJhY2MwZGFkMWVmYTgwYWQ5MmM2MGYifQ"
+        },
+        {
+          "resource": "repo://app/src/features/flashcard/model/useTodayFlashcards.ts#L50-L123",
+          "version": "repo-lines-v1:sha256:a6f2e57a4673b8b9cad4dc70893615ad3521a748b85bb0e0b20b30ad2f597312:eyJzZWxlY3RlZExpbmVDb3VudCI6NzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRmZGM3OWFkZTc4NmIzODE3ZTUwNDlmZjNmMDdiNmQ4Zjg5NTUwMDI1NWQzYjhjODU0ZmQxOGUwODVhZmQ2ZDYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRiYjBlOWEyYTI3NjE4NjE3NGI5ZTM1NThjMDc1YjNiNjFkMjhlZjUzMmQyOTY3NWE2N2M1YWUxMGUyOTEzMGQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMjg4ZDQ0N2I0YjcxYTIzN2U4OTRiM2NhOTQ4OTgyNjRjYmQ0N2MzMDI0OTBiNWFlYWYyOWM1YjU4ZWRlYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiNGRjZDAwYjE2ZDFhZGRkOWVmMjA3YzVhNGQ2OWZiMWM3MWM2Nzk3ZTZkODc1Mjc1Yjg2NjQxODI1ZmU3NzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a3f6a6f6516b4fafb5fefb178c72f34d",
+      "statement": "사전 생성 스케줄러는 매시 정각에 유효한 시간대·언어·저장소를 가진 사용자 중 현지 시각 0시 이상 6시 미만, 같은 날짜 완료 기록이 없음, 최근 7일 활동이라는 조건을 모두 만족한 사용자만 Cloud Tasks에 등록한다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L112-L160",
+          "version": "repo-lines-v1:sha256:6d28f5daa1fbf7294589c871ca35683eaa4eed1c2e7036881a437440df7ead21:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImViZDQ3YjA1NWIzYTY5ODJjODExZDQ2ZDQxN2Y3OTNjYjYwNjMxOGI5M2Q0NmU2MTRhZjA2MDQ5MGVjYzc0MGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZkYjI3OTlkYWQxYmQ3MDZlMGU2OTU2NzQ4NTk4ODY1NTRhM2I4NDI1NjkxY2MxNzZlNDUzNWFhNGZmNjNkNGMifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L203-L282",
+          "version": "repo-lines-v1:sha256:7b1f14e60a092802a8d27d2de674cd2781fa9f2c58aca3b00942b004e08437ee:eyJzZWxlY3RlZExpbmVDb3VudCI6ODAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4ODc5N2Y4YzJmNmU0Mzg5NGFkZGQ5MWFjNzUxZDdjNGYwMjk5M2NjNWMyMGZlOGY4YTcxYzViMmQ5OTI5ZWMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlNmQ5YTZhY2RlNDc0Yzc3MmExMWRiZDNiYTg1YmVmZmE2ODVjZjk2ODY0ZGY1ZDgyYjI4YjVhY2I0ODY5YmUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9b1cd065c52948638c69483747893be3",
+      "statement": "태스크 ID는 사용자·현지 날짜·현지 시각으로 결정되며, 같은 시각의 중복 enqueue는 이미 존재하는 태스크로 처리하고 다음 정각에는 미완료 사용자를 새 태스크로 다시 시도할 수 있다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L203-L210",
+          "version": "repo-lines-v1:sha256:3920ec27bf851bc2d4952c686b5fb3a182d5ef01bb9023e63f578308cb76383b:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzUxYjdjMzdmYTQ4NzVkYzJlZmMzMTYwZDdiNzFmZjIzOTI1ODRkM2FmNDc2ZmMzYTM1NTdlYjY1YWQ3ODJmZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjg4Nzk3ZjhjMmY2ZTQzODk0YWRkZDkxYWM3NTFkN2M0ZjAyOTkzY2M1YzIwZmU4ZjhhNzFjNWIyZDk5MjllYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzUzMjY0YzdiMzRiMjQ5ZGNkZjE3YWM0MWQxYjY3NjVmNzBkNDQ0NGM0YWEyODRlMzcwOWQyNzkxMDU5NjdlOSJ9"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L257-L281",
+          "version": "repo-lines-v1:sha256:690ab63615768e16a3ec566d0413aeb1905f47faec96361303c46b17768ed0ef:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU0OWFkMTEwZTEwMzIxZjY1YjBjYmU1Y2ZjMjI2ZDIzYmEzZmRiY2Q3MjA4ODBhOTA3MTYwNDc0ODQwNTE3NGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzOGFjODZmMmY0ZDBiMmVkMTI3MTM0ODUyZTVjMjgyOGU2MjNhNDcyNWUwNzU2NjVjNTZlNGZkNTM0MTg2YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFkMzc3YzMwZmY4ZmIxMTc0M2Q4ZWJhMjJkN2Y4ZTliNDE5YmJlZTkxZWI5MGM0ZjY3YmJkOTVjYjRlNDM3OGMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0ffee8524458400da1c56b501b92a8bf",
+      "statement": "사용자 태스크는 저장소와 복습 날짜 조합을 병렬로 생성하고, Free는 1일·7일 전, Pro는 1일·7일·30일 전을 대상으로 하며, 생성 결과는 문서 예산에 맞춘 뒤 사용자 날짜 덱의 선택 언어 필드에 저장한다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L320-L380",
+          "version": "repo-lines-v1:sha256:a060e0f5ef750942e958fe08fffdfc4b958762f9045faa2866c7e88ba723767f:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQwMDAwNDZlMzY2YzU5NDdhYTFkZGRiMDVjNTIyYjZmODE1NzU0NDEwZWQ1NWNhOTJlOGNmNWVhNGZlNGY0YmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2YzNkNWJjODIxYmVjNDI3NTAzNGQ0YTFhY2UzYzIzYzgxNjFiNDdhOWFmNjdhZTFiZDI3ZDFhZWU2NDgwMzgifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L439-L478",
+          "version": "repo-lines-v1:sha256:1a64a1d41e567e7547ece8ec86eba961fae1924c0c15f8e91b48b1926c11c074:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxNThkYjc5OTg3ZGI2NDQzNjM3ZGJiNDNjNThjNzU4YTAxN2FiMDVhZTQ4ZTY4MjgzODBlMDJlYmNhNjg2YWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzZmRmNTllMzQ3MDgzMDM5ZTA1ZjJmYmE0MmNhNWEyYjQ1YmFlNzczNGM0YzZiMTQ5MDI0MmViZGU4NGNiYjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMjg4ZDQ0N2I0YjcxYTIzN2U4OTRiM2NhOTQ4OTgyNjRjYmQ0N2MzMDI0OTBiNWFlYWYyOWM1YjU4ZWRlYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhZmUwZTljZmZjNDgyNjZlZDZhZTZjYzc5ZTMyNTcyZjAxMjJlNDA4ZjAyMjU2ZDhkNDZjYzQ2YjNmNTBiYWMifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L80-L85",
+          "version": "repo-lines-v1:sha256:8e4d8bb5a5e1ed07ee55ba52d16571b1478fba27511b3c0b652fb860148310fb:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA5NmIwYjg5MmZiNTI4YjYwYWFkMWUyNjIyNjEwNDU1MmRmMzFmNDc4MGE0YmRiMzU5ZWMzYTU0OGMyYzc3MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI5ZTY2MjMwNWQwMTdiOGVlNDBjMzNjMjJkOWIzYWRkN2ZmNGViNjJmOWFiNjE3MDExOTM5YWVkZTRkMTc0NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWUxYWYxMTkxNjAwMDE5ZTkyMGU5YzI5MmEwMWY3ODk4MmIzNWJhMmM4YjdiYzVjNTdlOTk5MWExYjI4NWFkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2I4MjJlNzA3MjI0NGJhOGIxN2U3YzEyODM1ZjY4N2Y2MGY3ZDNhMTlhOWU4ZDc3OGU1ODVlNjM4MWIzZDZiYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1bf2abb4f2924256bef066ab05863101",
+      "statement": "사전 생성은 기존 날짜 덱을 먼저 확인하고 저장 트랜잭션 안에서 다시 어느 언어든 비어 있지 않은 덱이 있는지 검사하므로, 앱이 먼저 생성해 저장한 덱을 서버가 덮어쓰지 않고 `exists`로 완료한다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L383-L390",
+          "version": "repo-lines-v1:sha256:4541dc3bba8152343a2ba95780c9f4bbfd033668f834d1b33b69ac10b8d775ab:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2E5MWQwMGRlMzE1MTBhOTViMmVhMzkwMGUwZmJlNTAzMDI2OWE5ZGRjZTcwNGZkYzUzYjlmMDk4NmE5MWFiMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkzYTEyZGQ1YTFjMGE1ZDUwMWI3ZmY2YTcyYmM2YTMyNTMyOTdlZjc2ZjM1Mzc3MzMxN2U3NTMzNmM1NjkzYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODYzNjNiOTM4OWQ0YzY5NDU1NTZiN2MwZTRjZjE2OWM3ZmFiMWVkZTk5M2VmYmUxNmUyM2JkYzllMTFjY2E4NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTRmNTE4MzQ5NTQxNzhhOGVlYjcxZGJiYWIxMzcxZWJiOGFhNWVjYjUwNDQzMDFkYTdhZjIxNzM0ZjNiZjViYSJ9"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L425-L437",
+          "version": "repo-lines-v1:sha256:bc3d4cb4893a1d5387be9eeab6e4381dd1d3c823a76f51f3c77c6dd97eece4c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmMzFhZjNjMTE0YjE0YTM5YzJmMjA4MGQ2ZTdhNmE2ZmVlZGJkYWI2YjdhNGJlNjliNDc1YjJiNmJmYjJjNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMjg4ZDQ0N2I0YjcxYTIzN2U4OTRiM2NhOTQ4OTgyNjRjYmQ0N2MzMDI0OTBiNWFlYWYyOWM1YjU4ZWRlYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzNzQzZmMxNDA0MGZkNGRiOTRmYmJkMDI5YTIwZWI2NTIwOWZkYmU2ODljYTg3Yjk2MGZmMjc4ODYzYTI3YTEifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L471-L478",
+          "version": "repo-lines-v1:sha256:931227f681609dcfdf2dd144bc628d70accc5cd73e56cd49fd95eed362bb5def:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzVhNTFjNWQ4MzNhMjE0ZWUwYTg2NDc3NDc4Mzk1ODNhNjNiNWJjMWU1NTE0ZmUxM2NiNzYyZjk3ZGMyMTAzNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjNmZGY1OWUzNDcwODMwMzllMDVmMmZiYTQyY2E1YTJiNDViYWU3NzM0YzRjNmIxNDkwMjQyZWJkZTg0Y2JiMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjMyODhkNDQ3YjRiNzFhMjM3ZTg5NGIzY2E5NDg5ODI2NGNiZDQ3YzMwMjQ5MGI1YWVhZjI5YzViNThlZGVhOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FmZTBlOWNmZmM0ODI2NmVkNmFlNmNjNzllMzI1NzJmMDEyMmU0MDhmMDIyNTZkOGQ0NmNjNDZiM2Y1MGJhYyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_978b52a7aad74377aff6cb452488b55b",
+      "statement": "`flashcardPregeneration/{uid}`의 서버 전용 완료 기록은 덱 부재가 커밋 없음인지 미처리인지 구분하며, `saved`, `exists`, `empty`, `unavailable`만 확정 완료로 기록한다; Firestore 규칙은 이 컬렉션에 클라이언트 접근을 허용하지 않는다.",
+      "evidence": [
+        {
+          "resource": "repo://firestore.rules#L204-L208",
+          "version": "repo-lines-v1:sha256:6211b4cf8028e2d67a824c3d7e49c76487cd2686eca9fba60d2c31660dbd157c:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWMwYzM1YjExYzQxZGJmOWJkMDRjNjgyZTYxOWU2NTlmNjAwOTQwN2Q5MTM4NTBkMGFiNmM0NWUxYzgxYWVmNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjM5NTFkYzQwYTI0MTIzODJmMjhkNjRiZGEwYmU1OWE3NzJkYTE0OTZmZGUyNWE5NzEyZjIyODkxMzhlMGQ3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTUyZDViYzM0ZDAzODY2ZGQzN2JhZjhhNTJjMzJmZWZhOTZhMzY5NjQ2ZTU2YTQwOWE1N2FkZDAwZmNjNGIwOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjkzMGRlMTcwODQxZDhlM2Q4ZTU3YmM0ZGUwOWY4ZWIxMjYwMWMxNzk5MDcwOGI0ZTdjNGQyY2Y1ODliYjQ1NSJ9"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L192-L200",
+          "version": "repo-lines-v1:sha256:529c0a3d47ab08856b5201f58f15cd4bcd22b7b381e01be89d7e39043a52d5af:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzM1ODM0YjdkZTg0ZDAzMmEwZjBmOTAyMGJiY2I4NWM0MjI0MDhmMjg5NzNiZTc5YjI5MWUxZDJhNDA3ZGI2NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGM0NWU0ODA2YjAzN2YwYzcwY2Y2MjJlYzZhNDZhZjM2YzdmYjAyMDI1NzdiYzgxMTFhZDMxMTU2YWE4MTAzYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODYzNjNiOTM4OWQ0YzY5NDU1NTZiN2MwZTRjZjE2OWM3ZmFiMWVkZTk5M2VmYmUxNmUyM2JkYzllMTFjY2E4NiJ9"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L63-L75",
+          "version": "repo-lines-v1:sha256:ccbe0cc4cb67e5d21c32d3baef5165e8f1b499d0050c78c6b080590668ade2cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEzZjgyMTg5MzQxN2IwODI2ODVjNzc5NmRmYmQ2MWYzN2UyNjcxZWJlYTQyZjQyNTI4NmM5ZTI2N2I4MWQwMTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhYmM4YWQ1ZmJhMjc0MjZhZTY4M2M4NjdjY2ZjZDJhZmUyMDY1MTQwYTk4ZGFhOGI2YWVmYThiOGU4OGYyM2IiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM1YmJiY2NmYzgzZTBkZDUxNTI5YjcxNGM5YmY5MzMyY2U3ZTA5NmFmMzViMTdhZGEyNTYyNjljZmRiNzVkOGIifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L95-L103",
+          "version": "repo-lines-v1:sha256:420307d0d11fba85b416099e4ebfc117dd157ad4bddba31b62aad3da163683a8:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2U4NmI1YWQzZGE0OTQ4MjFlNDY3MGIzZGM2NzBmYjY5NWZhMWM4ODVmOTVlMmZlYWE4ODcwNTJiYmE1MjA2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmJiYWUyNjZhMTNiM2NlYzRmOTIwNTEwYmQ4NTUzMmVkOGQ1NTRmMjY4YTVjMjJkMDI0ZThhMzIzNzQ3OTVkOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTBhMWI2OTQxNmQ1YjQ0ZTBkNDI4ZDFmZDUwMmMwNDhjMGU5NDBmOGQ4MzJjYTdkZjQwYjczZjRhMTNkMThjOSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_1170ddc5e60b45168a99e6356f4f7321",
+      "statement": "빈 결과는 실패한 조합이 없을 때만 `empty`로 완료되며, GitHub 인증 오류나 설정 누락은 `unavailable`으로 끝내는 반면, 일시 오류 또는 부분 실패 때문에 빈 덱이 되면 완료 기록 없이 예외를 던져 Cloud Tasks 재시도와 다음 정각 재등록 대상이 된다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L382-L390",
+          "version": "repo-lines-v1:sha256:1eb44070fb4199f766d3334c5fc6e84d9ebb4b6951f66f0ac62286cb754f8e2f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkzYTEyZGQ1YTFjMGE1ZDUwMWI3ZmY2YTcyYmM2YTMyNTMyOTdlZjc2ZjM1Mzc3MzMxN2U3NTMzNmM1NjkzYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzAwY2VlNzQ1ZWYyNDA5ZDdmNDU3M2RmMjY1Nzk1ODAyNWQ1YjIyYmYxMjIwZWZhZGYzMWJiMmIyMjdkOWQxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTRmNTE4MzQ5NTQxNzhhOGVlYjcxZGJiYWIxMzcxZWJiOGFhNWVjYjUwNDQzMDFkYTdhZjIxNzM0ZjNiZjViYSJ9"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L392-L404",
+          "version": "repo-lines-v1:sha256:bfaaa70b91c7eabb67dd6fd8fb29e5b849f48e0cecb558c51f7a2066dad0d7f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyYmMyZmRjNjExN2JkZjkyMDhhNmZmYmQwNTU3OTlmOTQ2NGQ3OGUxOTcyZTBkNjQ2NzliZmQyMTU4OWEzYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYzk0OTg1NTI2YzFjNTdlZjAwYzAwZDNmNGRjOTA2MTU2NzdhMGEzNmE4Yjc5NWRmZjlhZmZkNTBmZTlmNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkNjYyYWQwMWFiZmY4OWI3MGU4M2VkNzdkMTVmNTc2YTNiZjNkYzIyYjAwNjE1N2ZmN2YwODQyMzk4ZmMzMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2YmJkYzI2MTg0NWVlOTlkOTQzMmViOTAwNjkzN2JmY2I0ZmQyMTI5NmI4OTYxNWU1YTJmNDgyMzcxYWI5ODAifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L409-L423",
+          "version": "repo-lines-v1:sha256:a5b7d7411b98e4e49b579ffc936a133db181d6a9139d3391b06e73dd71ca585a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVlNzY5Y2FlMDEzOWYzZmM5NDE0MDkzMmZiMjUwZWQxNDNkNzkyZGY2ODdiYmEzYWZjN2FmMWM5MWFlMzhiZTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJkNWI5ZTMzZWQwZWRjYWFjMmY4NWVjM2E1N2Y2NTNkOWE0N2NlMWZhNGM2OTI4NWRjZmZmZjM0MzdlZTk0ZTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzNzI4YjhiYjliMjc3OGY1YmRhOGJmZTQzYjdjNGY2ZjU1ZjQyYjI0ZDkxOTcxNmJkYTYwYjZjNDJmZmIzMGIifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L451-L468",
+          "version": "repo-lines-v1:sha256:b7fbfbab2b196044979774fbebe08d381917182b944e3d95bbee39745d21a18e:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YzM1MzVlNmU2NjA1OWY0ZTVmZGIzM2I5MWYwZjA1ODA3YzA5MDJjYjU3Yzc2MGE3ODAxMzA5MmE4Y2UxYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4ZTU4NjU1M2QwNjI2MzNiMWUyMjBkYTlkNTVlNjU3MzUyMGRjYWUzYjg4OThkNzA3NjgxN2Y1YTZlZmUxZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkNTliOWEzYjc5MzFjMmY1NDVhYmVjNGI0NzU0M2Q4OWRkZDg2OTY3NWNlOTlkZDhlNzRmYTc0MDc1NzMwZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRmOTZhMjQ5MGQ5YWQyYjY1MWE1YjgwMzY3NTU0MmE0YzcyY2JiNDRlZTVhODU0MGUwMWQ2NWNjMjAyNGUwYzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6b2b1e5800f345349cdaf8e475f8d0c9",
+      "statement": "사전 생성 태스크는 `asia-northeast3`에서 최대 3회와 최소 120초 backoff로 재시도되고 동시 디스패치는 5개로 제한되며, Functions 전역 인스턴스 상한은 10개다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L392-L404",
+          "version": "repo-lines-v1:sha256:bfaaa70b91c7eabb67dd6fd8fb29e5b849f48e0cecb558c51f7a2066dad0d7f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyYmMyZmRjNjExN2JkZjkyMDhhNmZmYmQwNTU3OTlmOTQ2NGQ3OGUxOTcyZTBkNjQ2NzliZmQyMTU4OWEzYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYzk0OTg1NTI2YzFjNTdlZjAwYzAwZDNmNGRjOTA2MTU2NzdhMGEzNmE4Yjc5NWRmZjlhZmZkNTBmZTlmNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkNjYyYWQwMWFiZmY4OWI3MGU4M2VkNzdkMTVmNTc2YTNiZjNkYzIyYjAwNjE1N2ZmN2YwODQyMzk4ZmMzMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2YmJkYzI2MTg0NWVlOTlkOTQzMmViOTAwNjkzN2JmY2I0ZmQyMTI5NmI4OTYxNWU1YTJmNDgyMzcxYWI5ODAifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L47-L50",
+          "version": "repo-lines-v1:sha256:07bbcf2528db803363bbdca06743e6eb482edf16b86d1670d0939d42b889eab5:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMWNlNjkwMjI5MDJkMTQxY2Q3MjhkYWZmYTk3Zjg4NDc5NzVkNGU3YjMzYWM1NDUyMmMxOTA0NmRkMjg5YjA0OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWE5NjY3MWUwZDNjMzFmYjJjZWUyNjdlM2FiMmZkOWViODJlNzIwYTVhYzU2ZGE2NjY1NzlkOWE2ZTliMTQxMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQxZWVmNDBmZTA4MWU3NTI0YTljODA3YzdjN2Q0Y2FhY2JmMTA0MjRkMjhlZDdhYmRjYWRmNmJiMGEzNmVkMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzBmYzQ4MWJiNTIxMGE0Y2JhYzYxODk5YmIzNDQzZjc1YzQyMTRkMDBmNmU3ZjhjMGQ1MzE3MTY1ZGU3MzY4ZiJ9"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L80-L81",
+          "version": "repo-lines-v1:sha256:618eb4401f585ff3381038a4e5eeacadb0292d8ebb01be259cd69509f45906e5:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTA5NmIwYjg5MmZiNTI4YjYwYWFkMWUyNjIyNjEwNDU1MmRmMzFmNDc4MGE0YmRiMzU5ZWMzYTU0OGMyYzc3MCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRhODgzNThkOWQ0ZDIzZGM4M2RiYTMxZTk5ZjRhZTU2ZTc2MDkwMzdjMjQ1NWI0OGY4MmFiYWQ5NWRlN2QwYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWUxYWYxMTkxNjAwMDE5ZTkyMGU5YzI5MmEwMWY3ODk4MmIzNWJhMmM4YjdiYzVjNTdlOTk5MWExYjI4NWFkOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGFiYmZhMmIzYzM1NTc3ZmQyOTM1MTU2NjQxZWQ3ZGYxNmY1OTVkZjI0ZmQ0NzM4YzA5N2IzOGJlMDFlYTJlOCJ9"
+        },
+        {
+          "resource": "repo://functions/src/index.ts#L1-L12",
+          "version": "repo-lines-v1:sha256:375d44df15136d4bb41d0fbc3986d9974ed0816cdfc11453121f9f35791721c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0MGU2MzU4MWIyYzUwMmRmNWE4MjcwODY2NDAwODk3NGUxYTBlNGJhNGJkMGVlNDk4YjgzNjRlZWMyZDQxYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImExZTk3ZjNlNzM0NzA5YTc2N2FlNDZjYTYwMjhjNDJhMTgyOGUwNWM4NWVjYjA5OTU1MGY5NTIwMTA4YTI2MWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkNjcyZTRlYWE2NzU0MmMzMWMwMTM4YzVmMDkwNDMzM2UzZTc1NTZmMTBhMmZlMTc4MGY5ZTUxMWZlOWZiNDIifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-05T07:59:19.883Z"
+  }
+}
