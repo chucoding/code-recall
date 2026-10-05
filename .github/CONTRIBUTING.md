@@ -21,6 +21,8 @@ pnpm dev     # FE (Vite)
 
 `app/.env`와 `functions/.env`, `.firebaserc`는 저장소에 포함되지 않습니다. 각자 Firebase 프로젝트와 AI 제공자 키를 준비해 채웁니다. 키가 담긴 파일을 커밋에 포함하지 않도록 `git status`로 확인합니다.
 
+Orca로 워크트리를 만들면 루트의 `.worktreeinclude`에 적힌 `app/.env`와 `functions/.env`가 기본 체크아웃에서 자동으로 복사됩니다. 복사 규칙은 기본 체크아웃에 있는 `.worktreeinclude`를 따르므로 이 파일이 main에 머지된 뒤부터 적용됩니다. `.firebaserc`는 복사되지 않으니 워크트리마다 `firebase use --add`를 다시 실행합니다.
+
 ## 저장소 구조
 
 | 경로 | 내용 |
