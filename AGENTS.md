@@ -21,7 +21,6 @@
 
 - 위키의 범위와 우선순위는 사람이 쓰는 [openwiki/INSTRUCTIONS.md](openwiki/INSTRUCTIONS.md)가 정합니다. 위키 내용을 바꾸고 싶으면 페이지가 아니라 이 파일을 고치고 다시 생성합니다.
 - 위키를 바로 갱신해야 하면 `openwiki code --update --language ko`를 실행합니다. Node 22.22 이상이 필요하고, `~/.openwiki/.env`에 `OPENWIKI_PROVIDER=openai`와 `OPENAI_API_KEY`가 있어야 합니다. `--init`은 `INSTRUCTIONS.md`를 뺀 `openwiki/`를 비우고 새로 만들므로 평소에는 쓰지 않습니다.
-- 로컬에서 OpenWiki를 실행했으면 커밋 전에 `pnpm wiki:log`로 바뀐 페이지를 `openwiki/log.md`에 기록합니다. OpenWiki는 `log.md`를 쓰지 않고, 정기 워크플로는 이 단계를 자동으로 실행합니다.
 - 저장소가 public이므로 비밀 값, 비용과 매출 수치, 사용자 개인정보, 운영 계정 정보는 위키와 ADR에 쓰지 않습니다.
 
 ## 결정 기록

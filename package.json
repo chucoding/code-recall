@@ -6,8 +6,6 @@
     "serve": "pnpm --filter functions build && firebase emulators:start --only functions",
     "dev": "pnpm --filter app dev",
     "build": "pnpm -r build",
-    "push": "firebase deploy",
-    "wiki:log": "node scripts/openwiki-log.mjs",
-    "wiki:test": "node --test scripts/openwiki-log.test.mjs"
+    "push": "firebase deploy"
   }
 }

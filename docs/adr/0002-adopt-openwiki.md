@@ -20,7 +20,7 @@
 - 결정 기록은 `docs/adr/`에 번호를 붙인 원본 문서로 둡니다. OpenWiki는 이 디렉터리를 근거로 읽고 위키에서 링크합니다.
 - 생성 공급자는 OpenAI API 키(`OPENWIKI_PROVIDER=openai`)를 씁니다.
 - 위키 형식과 운영은 OpenWiki 규칙을 따릅니다. 0001에서 손으로 운영하려고 만든 장치는 실제로 쓴 적이 없어 제거합니다. 자체 검사 `pnpm wiki:lint`와 그 CI, frontmatter 필수 키와 `stale_after` 규칙, 사람 확인을 요구하던 `stable` 규칙, `chucoding:okf-wiki` 스킬이 해당합니다. 문서 구성과 OKF 검증은 OpenWiki가 맡습니다.
-- `log.md` 변경 이력은 유지합니다. OpenWiki는 `log.md`를 OKF 예약 파일로 인식만 하고 쓰지 않으므로, 갱신 워크플로가 OpenWiki 실행 직후 `scripts/openwiki-log.mjs`로 바뀐 페이지를 결정적으로 기록합니다. 손으로 쓰는 이력은 갱신이 끊기기 쉬워서 자동 기록을 택했습니다.
+- `log.md`는 두지 않습니다. OpenWiki는 `log.md`를 OKF 예약 파일로 인식만 하고 쓰지 않습니다. 코드 모드에서는 위키 변경이 git 커밋과 갱신 PR로 남고, 어디까지 반영했는지는 `.last-update.json`, 페이지별 생성 시점은 `.page-manifest.json`과 `generated`가 대신하므로 별도 이력은 같은 정보를 한 번 더 적는 일이 됩니다.
 
 ## 검토한 선택지
 

@@ -44,11 +44,6 @@ jobs:
         if: ${{ !cancelled() }}
         run: rm -f -- openwiki/.run.json
 
-      - name: Record OpenWiki changes in log.md
-        # OpenWiki는 log.md를 쓰지 않으므로 이번 실행에서 바뀐 개념 문서를 직접 기록
-        if: ${{ !cancelled() }}
-        run: node scripts/openwiki-log.mjs
-
       - name: Create OpenWiki update pull request
         id: create-pr
         if: ${{ !cancelled() }}
