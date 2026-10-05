@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:b076e923964debb3c7f6a85f61fa692cee4884b4c8d84083a4d59b888af2e76d",
+  "claims": [
+    {
+      "id": "claim_4794d17df3b742ee93280632f3f58628",
+      "statement": "사용자 날짜별 플래시카드 문서는 `data_ko`와 `data_en`을 함께 저장하며, 앱은 Firestore의 1 MiB 문서 상한을 피하기 위해 900,000-byte 안전 상한과 언어별 450,000-byte 기본 예산을 둔다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/features/flashcard/lib/deck-size.ts#L4-L25",
+          "version": "repo-lines-v1:sha256:ee5f81970a69a7556fb3b985a123d0036efca8c445759d56c7ece852cc879fc8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZDZlOTJkODc0NjJiNGRiMjE2ZDU0YTg3MDdmMGZiMTlkMjJmNDkwYzc3NjU4OTBjOGFjNGVhZTZjMzE3ZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwZTU4NTcwM2JlMzU3YmExZjg4NTc1ZTAxMTIxOTFmNTliZWVkNjhiMDI3YTM1MTRlMWY0NjNiMDdiMGNmMjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmZDU1Y2Y2OGI4N2Q3NWFlZDczNzUwYjJjOWM0NTBjY2E1MDE5ZTA5MzA2YWFiYTc5Yjc0MzMzZWU5Mjc1ZTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhMTE4MWFhNjBjNThlNzRlZjQ1YTI2Y2IxNjE2OGFkMTZhZGRkMzQzN2I1NWE1Y2NkYjczMjQ1NzlhMjE1YjUifQ"
+        },
+        {
+          "resource": "repo://firestore.rules#L33-L35",
+          "version": "repo-lines-v1:sha256:f02b33fdf90041c42972ee09803dfd4da6932895d5473cf0e4e1374a93ae357c:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjVlMDk0MTJiYTAyNDIwMGU1OThhNDViMjRkYzNjOTY5N2U0ZDFkODVkYTE4ZmE2OTM2MjJhZDRjZjE5OGVlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDkzMzg3NGY2OGRjYzE2M2RjYzQ4OWE4MTUyNjRmMDk3NzkzZjVjYTY4YjYyM2VhOWIwYzMyOGMzOTE2NTJlOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTI4YzNhMGFmZjVmNmNjODgyN2I3OThkNWZkNzU4YTY3YTVhM2ZhYjM0ZTEwNWQxOWRlOWIxZmE2NDhkZDg1MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDhlYjFmMTEyMjU2MTg3MzYwYjE2MmZhZmFhNGFhMjkxZmIwZTlmZDYzNzRjZjBjODdjNThlYTk5MDQyNWRhOCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f9f45704d1f746bcb01a0268e195286b",
+      "statement": "앱과 서버의 덱 축소기는 JSON 직렬화 UTF-8 바이트 수를 기준으로 `files[].patch` 제거, 파일 목록 20개 제한, 30,000자부터 1,000자까지 반감하는 `rawDiff` 절단, 최종 diff 생략 순서로 저장 표현을 줄인다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/features/flashcard/lib/deck-size.ts#L30-L41",
+          "version": "repo-lines-v1:sha256:b106aa0819437be35a5a0644a7205cbdf5bcff3e7c9bdb8a429e2d0ee7f15fa9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA3NDYxMjJkMzg3ZWM1OGZmYWEyNDY1ZWMwMWY5ZDYxZDJiYmVmNjA5OTYzNTIwZGJmYThhZGNkOGRiMjY3ZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk4NzAzNDEzZDc2NmFmNDFjY2UyMTg0ZGNhYmIxNTEyYjhmNDY0ZDk1MDRmNjAzNWFkMGFkMDU5MWQ4NmI2YTYifQ"
+        },
+        {
+          "resource": "repo://app/src/features/flashcard/lib/deck-size.ts#L58-L103",
+          "version": "repo-lines-v1:sha256:0046e90233939738fbc2e50358501fe0973db754697c1aca78bd017fda92fe8b:eyJzZWxlY3RlZExpbmVDb3VudCI6NDYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImVmMThmOTViMGNiOGZlNzRhYTUzMDAyY2Y3ODJhMzA2MTM4MjUyNWRhZDljNWZmZjU3NmY0NDE2Njk5ZWM4MWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-deck-size.ts#L52-L122",
+          "version": "repo-lines-v1:sha256:a3fb31c0cce004d71fa4c8addee83eaf6dc3718a4213246c2be0b53ebb175f50:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhODM4ZGNhNzg5NTcyY2ZhZGM4NzdjZmE1MjY2MmVmNzZmN2JmODIzZjUyZTMyMTg1NzcxMjllYmIzOTI4ZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFmZDE0NjE4MTZjM2M0MjcwNjNlM2Y4YWRjZjM0ODdiOWMzMzc4ZjdmNTU0MTc1YmIzNDMzYzliMmQyYTVhMWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e5e459d08137466b9420f4c6d92bb1ce",
+      "statement": "`rawDiff` 절단은 잘린 지점까지의 Markdown 코드 펜스 수가 홀수이면 닫는 펜스를 추가하고 `…(truncated)` 표식을 붙여 렌더링 가능한 Markdown을 유지한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/features/flashcard/lib/deck-size.ts#L43-L56",
+          "version": "repo-lines-v1:sha256:54cb54864515cb9e9f7af0bb289a95587722717347e8e95fe5a9aa70479c25be:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU1NGQzOTQyN2NlNjIzZTI5NDkwYjNkNzM0ZGMwNGIzMWU3MmYxN2IxMjMyZTYxMzQ5OTUxZjQ5ZjliM2JkN2UiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzNmYzOWMzNzJhNmVmZGNjYjg0MGNlYzNiMTY5MjRjMTEzOWU5ODg2MGQ4MmMyMTY3YWQwODE1YTc0MTdkYTIifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-deck-size.ts#L62-L75",
+          "version": "repo-lines-v1:sha256:18ca89fe8a3f341fb236a9e9814684e8969f1d6bc89ec77d0258a57800ae4ec8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRjY2I4NWU3MzExZGJiYzU1MjJhOGViOTI4YTA1NTI1ZGIyZGEyZGE3OTkyODVkNTIzYjA2ZTcxMmI0ZTkwMDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkMDQ3ZTU5ODUzMGY5NDVhNTYwZTMwNWVhY2MyZmU0N2RkZGUxN2JlMmVlNDZkOWYwZTQ5Njk1YjQzNzNmODMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c38138c07aee4c5ba6a70a955d880808",
+      "statement": "앱은 반대 언어 덱이 이미 있는 문서에 번역 덱을 추가할 때, 기본 언어별 예산과 900,000-byte 안전 상한에서 기존 덱 크기를 뺀 값 중 작은 값을 적용해 두 덱 합을 제한한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/features/flashcard/model/useTodayFlashcards.ts#L91-L102",
+          "version": "repo-lines-v1:sha256:762bed495329e8a048db152723405fa2075f4f05182a999cef3c7702bf16f6f3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA3NzU1YmZmZGRlZjFlMjlmZTFkNzQzNTgwMDhiNWJmY2U3MGZhNzE1Y2Y4ZTFmMWVlYjliYjk4MDY2NmVlYjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMWZkNjk4ZThkMDI4ZjVkZGI0ZjlhNGI2M2FkMTMxMzM5ZTJkNDNiYTk5MGI3YWRmYjI0MTE1N2M3N2RlMWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhODQ4NzFlZWQ5NzI0YmVmNDI0MjhiYmIwYzA4YWRiZTRkMzk2NDRmODZjN2Q5MzJmNTI1NGUyODM5YTI0ZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzNTQ1YzExMjJjMmNmMTJmZTQyZThjZjUyM2MzYjMxYTZhNjA2OWVmN2NjZjU3MGYzNzE1YzIyYWVkNzIxMzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d641e2394855457b91691cd12ad8fb70",
+      "statement": "서버 사전 생성은 축소한 덱을 트랜잭션에서 언어 필드로 병합 저장하며, 저장 전과 트랜잭션 안에서 기존 언어와 무관하게 어느 덱이든 존재하면 저장하지 않아 앱이 먼저 만든 문서를 덮어쓰지 않는다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L383-L390",
+          "version": "repo-lines-v1:sha256:4541dc3bba8152343a2ba95780c9f4bbfd033668f834d1b33b69ac10b8d775ab:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2E5MWQwMGRlMzE1MTBhOTViMmVhMzkwMGUwZmJlNTAzMDI2OWE5ZGRjZTcwNGZkYzUzYjlmMDk4NmE5MWFiMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkzYTEyZGQ1YTFjMGE1ZDUwMWI3ZmY2YTcyYmM2YTMyNTMyOTdlZjc2ZjM1Mzc3MzMxN2U3NTMzNmM1NjkzYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODYzNjNiOTM4OWQ0YzY5NDU1NTZiN2MwZTRjZjE2OWM3ZmFiMWVkZTk5M2VmYmUxNmUyM2JkYzllMTFjY2E4NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTRmNTE4MzQ5NTQxNzhhOGVlYjcxZGJiYWIxMzcxZWJiOGFhNWVjYjUwNDQzMDFkYTdhZjIxNzM0ZjNiZjViYSJ9"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L425-L478",
+          "version": "repo-lines-v1:sha256:82cca85006648923289ef81d0db7781500a9880f29ee268848a20bbcd43c6f06:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmMzFhZjNjMTE0YjE0YTM5YzJmMjA4MGQ2ZTdhNmE2ZmVlZGJkYWI2YjdhNGJlNjliNDc1YjJiNmJmYjJjNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIzZmRmNTllMzQ3MDgzMDM5ZTA1ZjJmYmE0MmNhNWEyYjQ1YmFlNzczNGM0YzZiMTQ5MDI0MmViZGU4NGNiYjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMjg4ZDQ0N2I0YjcxYTIzN2U4OTRiM2NhOTQ4OTgyNjRjYmQ0N2MzMDI0OTBiNWFlYWYyOWM1YjU4ZWRlYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhZmUwZTljZmZjNDgyNjZlZDZhZTZjYzc5ZTMyNTcyZjAxMjJlNDA4ZjAyMjU2ZDhkNDZjYzQ2YjNmNTBiYWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f7dd1384ea134e74a1d68a1451c2c377",
+      "statement": "앱과 Cloud Functions는 별도 패키지라 동등한 덱 크기 규칙을 각각 구현하며, 같은 날짜 문서의 언어별 덱을 함께 쓰므로 한쪽의 상한이나 축소 규칙을 바꾸면 다른 쪽도 함께 갱신해야 한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/features/flashcard/lib/deck-size.ts#L4-L25",
+          "version": "repo-lines-v1:sha256:ee5f81970a69a7556fb3b985a123d0036efca8c445759d56c7ece852cc879fc8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4ZDZlOTJkODc0NjJiNGRiMjE2ZDU0YTg3MDdmMGZiMTlkMjJmNDkwYzc3NjU4OTBjOGFjNGVhZTZjMzE3ZDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUwZTU4NTcwM2JlMzU3YmExZjg4NTc1ZTAxMTIxOTFmNTliZWVkNjhiMDI3YTM1MTRlMWY0NjNiMDdiMGNmMjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNmZDU1Y2Y2OGI4N2Q3NWFlZDczNzUwYjJjOWM0NTBjY2E1MDE5ZTA5MzA2YWFiYTc5Yjc0MzMzZWU5Mjc1ZTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNhMTE4MWFhNjBjNThlNzRlZjQ1YTI2Y2IxNjE2OGFkMTZhZGRkMzQzN2I1NWE1Y2NkYjczMjQ1NzlhMjE1YjUifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-deck-size.ts#L1-L25",
+          "version": "repo-lines-v1:sha256:1cdabd86968a48dabda336c559ffb1e27a11643eccef17c7c224f164e7e3ceea:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYwZDkzZTVjMWI1YTIzNmQzMDQzNTVhNzlhNjMwYjFhZmI2OTQxMzhkZDUyNTVmNjZiMjBkY2JhZWM4OTVkMDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzZGJiNWNiZWJmNjIzNzgxNTQwYzQ5OGJjYjUwNTZlMTExZjUxMzFlZDY4Mzk1Y2YwNzEwM2NkMjU2MGEyMWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9594f7b2656b42c9946653a0f330dc2d",
+      "statement": "공개 데모 카드 캐시는 사용자 날짜 덱과 별개로 언어별 문서를 만들고, 파일 수와 patch 길이를 제한한 뒤 전체 문서 JSON이 900,000 bytes를 넘으면 저장을 건너뛴다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/demo-flashcards.ts#L20-L36",
+          "version": "repo-lines-v1:sha256:1147651fb86816c45a39547445776c82dc9af77bcc29a309851e41ab1a592e48:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyNDgwOGM1YjMyMjdmMDQzYTcxZGZlOTE5NmRjODA3MGJiNDg0OGFlYTEyMDUyNWExZWZkMDVkOGJmM2FiZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliZWQzZGNjYzI1NThlOWIxMjc1ZDhjYmE0ZmY3N2M4NTQwZTEyNGNlM2EwMjJkMTEzMTliZTFlOTQ2YzU4N2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijk5NjBmNDI5YjMxZDM0MDJmZjg1Y2M3ZWViNTIzMmUwYzQ2Y2E3ZmNlMGJlNmQxZTUyYjRhYmQwZDc2YzdmMGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE2MzQyMWI0N2ZmNGFjNTc3NWY5ZTFmZTE5ZmMyYjU0ODIzMzdjNDY2OWIxMTQ1YTY2OTdiMjNlMjkwMjU2Y2UifQ"
+        },
+        {
+          "resource": "repo://functions/src/demo-flashcards.ts#L201-L227",
+          "version": "repo-lines-v1:sha256:c1d99d4d4d5ee42f4698c5d7a0ef3a44d49ed60dce4de439036783fa44977455:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwZTA2OGE1Mzc3NjUyMDJkNGMyNWEwOTQ1OWY1Y2FhMjkyOTJjMDVjYzdlNWI0MzAyZGU5YTdlOTU1ODE1YTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlN2JlZDQ1ZjI0YjAxZTM1YjQwYTcyODMwMzYxMTIzMmE4MGYwY2E2NDc0YmZhM2NhNDdlZDNiMzk3YTNiYTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ5YzA2Y2U4MWVkZDRhZWQ1ODhjYzc5NTYxYzc3OTlmYzJkZjJhMzRlNzljZWQ4M2RhNTNkZDUwYjdkOWFjZDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1NjY1MWMwNWU4ZjZhYjgxMzA2M2E3NDE1NGM5ZDA3OTcxZWQxMDQyMGZlMTE4Nzk1YzhjZWI1ZmI2ZWRhZTMifQ"
+        },
+        {
+          "resource": "repo://functions/src/demo-flashcards.ts#L98-L110",
+          "version": "repo-lines-v1:sha256:17c24bf996ba43deea209e953875a27452d020fd071d66699ab5cbb7a6751d91:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhZjNiNzNlOTQ0NWY5MTNkOTg3OTE1MzYxM2EzMGRkNWFiMDdkMzY1N2IzMWY4YjAyOGVjZmM5MjhlNTZhMjUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIxNTYxNjRlZTQ0ODlmZThlMTNhMDIwYWZkOGZkOTY5ZWVlZTc4NjllY2M3ZTkyMzNhYTI1NjA5MGZlNGE3ODIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE3Y2ExZjI0YjliODE3MGY0ZTUyODIyZjBjOWFiMDMwNTViYjgzNzhhMjVjODU1OWVjYTI5M2E5MmNkZGViMWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-05T07:59:19.883Z"
+  }
+}

@@ -1,0 +1,19 @@
+# 의존성과 빌드 산출물
+node_modules/
+app/dist/
+functions/lib/
+pnpm-lock.yaml
+
+# 환경 변수와 Firebase 로컬 상태. 예시 파일은 읽음
+.env*
+!.env.example
+.firebase/
+.firebaserc
+
+# 이미지와 정적 자산
+assets/
+app/public/
+*.png
+*.jpg
+*.svg
+*.ico

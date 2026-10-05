@@ -1,0 +1,162 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f68c387d3d9e656ede37a11670c3466edaac6d63b70455abdde9b1ff6a5e224f",
+  "claims": [
+    {
+      "id": "claim_a3ac97b682204be4a9b3684e24674171",
+      "statement": "루트 워크스페이스는 `app`과 `functions` 두 패키지로 구성되며, 루트 `serve`는 Functions를 빌드한 뒤 Functions Emulator만 시작하고 `dev`는 app의 Vite 개발 서버를 실행한다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/package.json#L8-L16",
+          "version": "repo-lines-v1:sha256:481cf794d6bf47509b857ed801f9f383817e27091b4310e0214ae4fd6fa3a191:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZThiNmU4ZDU2YjYyNzZiNDljZDFlYTBjNmRjNGExNDExMGU3N2U0YWQ4MzgzODZiMTQ5N2E5OWY3MDQ0ODc1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzM1YzhiMzc4NWQzODQ0M2JhZDUzYjNlZjA2Y2M3MTkyMTFhYzI2MWY4NDk2NGM0YTFjYzE1YjI3ZTM5YTg4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGExMGE3NDkyYzljMDVjYjk4NTY0MDg3MmU4ZjQ5YTI3YTA3NTk4MTA2ZmRjMjYxZTJlZmZlM2QxMzUxM2I1MSJ9"
+        },
+        {
+          "resource": "repo://package.json#L4-L9",
+          "version": "repo-lines-v1:sha256:9c9d9d435983af6616eade1087d5cbecdd36c91702d053582cf71c5f862d9b1a:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZiNDNkZmZjOWZmNjQ5MWFlMTU3N2Q3OTQzZDk0OTIwMmVlZmM4ODc1NWFkNGM5OTQzMTA0M2JhYzlhZWZjZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODY5NGM3NjYzNjFjN2ZlNjFmYTQ2NmYzZDdiZTg1M2U1Yzc2OWRiZTgwMGI0NmQzNGIyZmJhNGU4Njc4NmFkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzgzZWE4MTliMTE3NWJhYmZmMTc0NDQ4N2ZhYjkzMTM3Y2MyYjEyOGUwZjFjZDBlNzFiMjM2NzNmYjRhMjk3MSJ9"
+        },
+        {
+          "resource": "repo://pnpm-workspace.yaml#L1-L3",
+          "version": "repo-lines-v1:sha256:d05124e929f00496c6bb4c6c79818b97f10cd018e11691c7dc1c61a45f5a1308:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmVjMDllNWYzYTFmZmVjM2NkMzlhNmM4ZDFmZGQyOTBjMGRjYjRhZGJkYzk3YjI0NDBjMTk5M2IwMGQ3ZjQzMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODBmNmJkZTFhYTA0YzU1ZDEzOTUwMWI2NDhkMjhmZDgxMmFiNjQwMTljYTcyYTI1MWU3YWNhMTI3MmQxZWVlNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_7d15ca4a1adc4ef5b6c78a8c7713a731",
+      "statement": "Vite 개발 서버는 `/api` 요청을 `VITE_FUNCTIONS_URL_LOCAL`로 프록시하면서 `/api` 접두사를 제거하고, production 모드에서는 `VITE_FUNCTIONS_URL_PROD`를 선택한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/vite.config.ts#L62-L72",
+          "version": "repo-lines-v1:sha256:1bde636fce8038266fc8e6fc1990ab37d61611853f3a117e53ea011e3d0e7c88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5ZmE0ZjZiN2I1MTkzOWYwOTQ2NDVhMDNiMWZmOTRhNGRlNjgwMmU5NGQ5NjhlMzZiZjNiZjY3NGRmNzgxNmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0MTlhNmRjYzA0ZTIxM2EzYzdhNzdhNDU2YjAxZTc2ZDFlZjc4Y2QwMGJiZWMxZDhmODE0NThmZTkzZWRjNTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3ZmE3MzY2MzAxZDYzMmRjMzZkYjk4MTVjNGNlMWFiMmY0YTZkOTZkODA5ZTJlYzE3YmM5Yjc4OGExZGU2YzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3ZjhkODZiN2E3YzUzMWI2ODEzNTQyZGFmZjNiMjkxMjM4MWQ4MjE2YmRmNWRjY2U5ZTg3M2QxNDI4ZDFiYjIifQ"
+        },
+        {
+          "resource": "repo://app/vite.config.ts#L7-L10",
+          "version": "repo-lines-v1:sha256:40aa21af069a8af312e7c232473bfdac632d503a93ce5210632d6f3961de4d35:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGRkMTg3ZDBiNGQ4MTlmYjM3NTI2YWIxZmNmZmJkOWNmZDE4ZGRjMTZiYjA1MjkzMjlkZjJjYmRiZTIwMmE1NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODgxNDA5MDczZmYwYTdiN2RjNjlkZjFmNjQ5ZTU5MTBhZjA5ZTk4MzllMDBhYmEzM2RkNDBlNjU2ZjIzNzUxNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmFiNDliM2RmMjkzOWI1ZGExZmEwZTczOTliODBjZGJiNjA4OGE1NmZkNzkyMGI4Nzg0OWJlMDllZDY3MjY2NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMTIxYzhiNmFjZTQ2M2QyYmRhYzdlMmE5MDA2NWYyZjJhN2Y4ODMxYzIzNDYyZTZiMzY1MzBjNTE4MmI0NDc3MCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fcec5b4a41e541d2ad17c8367a85e5ee",
+      "statement": "브라우저 API 모듈은 개발 시 `/api`를 사용하지만 production에서는 `VITE_FUNCTIONS_URL_PROD`를 기본 URL로 사용해 함수 이름을 붙여 호출하므로, Functions URL은 배포된 브라우저 번들에 포함되는 빌드 시점 계약이다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/features/ai-generation/api/openaiApi.ts#L18-L22",
+          "version": "repo-lines-v1:sha256:cda51b66bf4729b751fb7519077e23cb6706caf4901db603b1556d8a37941797:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDE2YzI2MmYyMTNhZGI2OWQ3OTkzNDhmOGMzOGY1ZDJmNjhiZTNiYWRmZjFjODQxOWM3NTNiOTM1YzgwOGIyZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDI3MGM0MzUzMDcyMTVkNTg4ODI2ZjkyZDA3ZTMyZTA3MTFiMzdlMTY0MmUwZWVmYzY1MDdjMTI4Y2UzOGM1NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmM0NTYwNmIyMzcxMDg4Mjk3NDBhN2MyY2M0ZmRiYzUzMWYyMjNmZTM0M2IwY2I3NmRmYTFjN2I4NDk4ZDIyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjc5MmZkYTI2MDcxMTk3NjQ3NTU0Yzk3N2M5OWFjNDM3N2JmZGViZTdlYTU4M2Q4MWVhMjlkNzc1YjU0Njc4OCJ9"
+        },
+        {
+          "resource": "repo://app/src/features/ai-generation/api/openaiApi.ts#L5-L7",
+          "version": "repo-lines-v1:sha256:f7074d3428e407ee63e05930b7881fe7ccc0df53c5144eff0a1df7c72c32442b:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTQ1N2NiNjgzNjk3YTgwMGY3ZjdlNjhmYWUyMmUwYWJhOGE3OTE3Mzk4Y2FiNGVhYTk1ZWI3NTA0OWE5YmI2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGE4Yzc1ZjE1MmE4OWZhNDlmZTgwYTBhZTlhY2M2M2QxNDJhZmFmOTliZDRiZjI2MTZlMzYxM2M5ZjEwZTliMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTMwY2ZiNjdlN2ZmY2JkZDA5MmFiYmEwOTEwNWMyNjhiMTU0N2Y3NjBhMDEwZWZkZGNmYjU1YTFmNDg2M2U3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzg0MDQzYmNiN2U2MGQwMmMxMDZlY2FhMzNlNmVkNWU3MzQ1ODFmNjIwNTlkZWQ0OGU5MDVlNTQwODY5ZjYyZiJ9"
+        },
+        {
+          "resource": "repo://app/src/shared/api/apiClient.ts#L4-L12",
+          "version": "repo-lines-v1:sha256:6c13525ca81dbbef15f4f4792f87ed90d1ce4135cd9b218b98c087e9cad8a47c:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWI3ZTRiMjg3NTE5Y2Y3M2YxMDk4NzBmM2I0Y2VmZGUyMmM4OTg5NTcwZGE0NTI2NzBlOGJmMjZmODA2ZTg4OCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWEwNzczZDcwNGMyMmUyNWI0YWJhNWZmYWU1Yjc3OWU5MzVkYTJjZDA2ODM2MDRiOWZjYjM5NTU2ZTY0MWJlNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTE2YzA3Y2RhNTRlNTU3MTY3MjAxMTg2N2M1MDc0ZTczYzE1NWRkMWI2MDFmODNjMjA1YmFiOTBlZGQxZGU3NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2E1ZjU3ZDQ3N2YxN2RkZThmZWM2YTRkMjI3YjI1NzJiMzJiNzNlMGY0YTQ4NjMwODg2MjgxZGI5NDZlYTUzYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_89a23fa01ea6404087298a50bbce21c6",
+      "statement": "`pnpm proxy`는 `app/.env`의 `VITE_PROJECT_ID`가 있어야 하며, 이를 바탕으로 Firebase 프로젝트·리전과 로컬·프로덕션 Functions URL 변수를 만든다; 기존의 비어 있지 않은 키는 덮어쓰지 않고 빈 값만 채운다.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/setup-proxy.js#L22-L44",
+          "version": "repo-lines-v1:sha256:40cb6ea3bb1ce3296fd958582666064da3abb539025c4fc39cdab6594a85efd4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3NjlkNDFkMTc1N2NhYjE3NmY1YjNmN2Q0YzI5ZDRkNzkxY2I2NWU2YmNiN2EzZTM3MjI4YTUxZmM5Y2E1NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzNmM1ZDZlMDhjMWI3MWQyNzNiMTM0MTYxMzJhZGE1NmU4ZGRmYjhkYTJhYmYxMGE0MmM0ZmEzNDlkMzUzNDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlNDg5YjY0ZjU4YTg0Zjk2NTlhZWQ4MzY3MjY4OGQ0YzJlYzIyZjRkYmZhOWZiMzNjMDQyMmZiNjBhNjAwMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2NmE2MWUwYWUyNmQ0NzdhMDg5OGMyY2QxNmM5M2YxYWY0ZDU1MTdkNTZmYTRkZTQ5MDIxOGE1ZGU3ZDVmOTcifQ"
+        },
+        {
+          "resource": "repo://scripts/setup-proxy.js#L47-L77",
+          "version": "repo-lines-v1:sha256:fe948c4c3aca29ea42cc93e03caf267674f37b665e614da845281b82891b133a:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiZTlmOGFlZjc5OTdhZjFmYTUyZTRmNjMwNTM1MDUyMjgxZWY5MTA3MmEzNDMwOTYyYTRmMmRkMGI5ZmEwYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2NWI1ZDg1ODFmZjk5MTBhNmUwZDI1NTBiN2RhOGNkOTE5MGU1MDNkMDFiYjM5Y2FmN2RkMTE0N2FlYTk1MWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2N2U1YTlmNGIyY2U2ZTdiNzg0YjhjZDE0ZTZiNTdiYjQwYzcwMjdlMDNlNmY0ZWNiM2U4MTM4NzBjNzUzMjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJlNTkzZWNhNzAyMGIxNjg0MWUyZThkMTg2ZjA3NjhmZTZkNTg0YTQ2MDdmMjc5YWMwMTczOGMwNjVmNzM4ZGYifQ"
+        },
+        {
+          "resource": "repo://scripts/setup-proxy.js#L80-L90",
+          "version": "repo-lines-v1:sha256:96f4fd5f964d9ddf88317039b6a779ed2b125251e856ad83be436013f64c7c58:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBmNWYyZTNmNWM3MTc1MWFmMjMyYzQyZDRkMDRjODQzNDRiMmJjMzgxNjcyZjA1Y2ZlMTUwNDUyMmU3YjYxOWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4YTBmNmU5ZDk5OTU5MTc2OTc3MTIwZmMyZjIzYjMzYzkwN2ZkODkwMzY5NWJiMjllNDYyZDU0ZTRhNGRhNDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0ZmJkOGYyZDM5Yjc2NGJjZjQ4ODVkN2M5OTVlMTdjOWFmMTI4ZjY3ZjIwMDNkZDEwM2M1ZjUyZmZlZTNlZTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_72ba3a5720024bd187745aae2e694c2c",
+      "statement": "앱은 Firebase 웹 설정 환경 변수로 Auth와 Firestore 클라이언트 인스턴스를 만들며 Emulator 연결 코드는 없고, 로컬 실행 명령은 Functions만 대상으로 한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/shared/config/firebase.ts#L6-L30",
+          "version": "repo-lines-v1:sha256:254800a7a5ec12e13b124c533e54e06fb67f6474eb6210d6ebd48a246d8897f9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNiYmRmNDI2YzgxZmY5ZGEzZjQ1ODQ2M2JhZmRkNzVhODM0YzUwMzYzNGM1OGFlNzY2MTJiYjllNTU0MTEwMzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MTVkZDIyZjBiNGM0OTVmMzdlMzk1ZDNlNzkzNDRhZDNhMjQ1ZGQ0NzllZjU5OTA0OTBjMDgzZmUzNDRmY2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwZTdkYmQ3ODE3ZjFiMjgwZjMzYmVlODE0N2I4MTE0ZmZhYTM3MjExM2FhN2NhYTMwYmU0NDQ1MzYxZDkyMTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdjMzFmMGJjNWFjOTY5Yjk0NDk5M2I3MjZiYWE1ZDU2NWQ0M2VlZWNmNDM4ODQxOTg0MjM2MzQxOTJjZDU1ZTQifQ"
+        },
+        {
+          "resource": "repo://package.json#L5-L7",
+          "version": "repo-lines-v1:sha256:31ae4a97940c638fdeb218f620ecb27f34a411fdbdf84b3aeeda287fb0ef1519:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdiYzIyMTM1NGUxMzgzMjM4NjJkNDdiMWY3NjEzZjA4NGZiZjEyYjJmZmUxM2ZhMGY5NDRiZjQ4Y2JiMzc0MSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGRkYTNkMDk0MmM3MTJhZTUyZDYxYWE1ZmZkMTA0Yjg2OTUwNjAwYWZiNDE5ZWY4ODhhMjYwMmQ4OTJiYTgzZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTcxZTQ2YzIzNWMxZjU4MGI5NDczNzBmMjAwMzYyZTI2OTllNzNiM2EzNGI3ODdjMTY5ZmYxZGFlYjQ0MzdmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGNkODJiZGRlOGQ2YzdkNWE2MzFkMmYzOTc3ZDIxYWE4NjBiNjliOWQ0OGNjMTYzZDc3NDQ5OTk4YjVlYjQyYiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_ce112b3c3a7e4b50ae00042e9468bdfb",
+      "statement": "Firebase 설정에서 Functions는 배포 전 TypeScript 빌드를 수행하고 Firestore 규칙 파일을 배포하지만, Hosting은 `app/dist`를 public 디렉터리로 지정할 뿐 predeploy 명령이 없다.",
+      "evidence": [
+        {
+          "resource": "repo://app/package.json#L6-L9",
+          "version": "repo-lines-v1:sha256:17d652cc98b1332c73ee7e4d8406984c168e3241cfbf416cf890607755444ccb:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjBjOTQ5ODU1MjZjMWM1N2VmMDBjMDBkM2Y0ZGM5MDYxNTY3N2EwYTM2YThiNzk1ZGZmOWFmZmQ1MGZlOWY1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzljYTEwMGUwOGYxMzk0YzhlYmI3NzFmZmI3YTkwZDc4MDIxYWVlZjM3MjYxNzY0ZjJiMjgwMmZhYzE1MmY2YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMxZTRhYTU1NjE1YWQ2NmI4NzE5ZjgwZThjZTIzNzRlOWY3YmZiZDQ2OGRlY2Q3ODgxNDc3ODNlM2QwMmU5NSJ9"
+        },
+        {
+          "resource": "repo://firebase.json#L1-L1",
+          "version": "repo-lines-v1:sha256:82c5fb90764ebbeab45400b9b36618f6c8d11fe056a6043e902b6d2a889d4e2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://functions/package.json#L8-L16",
+          "version": "repo-lines-v1:sha256:481cf794d6bf47509b857ed801f9f383817e27091b4310e0214ae4fd6fa3a191:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZThiNmU4ZDU2YjYyNzZiNDljZDFlYTBjNmRjNGExNDExMGU3N2U0YWQ4MzgzODZiMTQ5N2E5OWY3MDQ0ODc1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzM1YzhiMzc4NWQzODQ0M2JhZDUzYjNlZjA2Y2M3MTkyMTFhYzI2MWY4NDk2NGM0YTFjYzE1YjI3ZTM5YTg4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGExMGE3NDkyYzljMDVjYjk4NTY0MDg3MmU4ZjQ5YTI3YTA3NTk4MTA2ZmRjMjYxZTJlZmZlM2QxMzUxM2I1MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0478f497d1af416da3b38ce27c9c73d3",
+      "statement": "`.env`와 `.firebaserc`는 Git에서 무시되며, 앱 예시 환경 파일은 Firebase 웹 설정, 선택적 VAPID·Clarity 설정, 그리고 자동 생성되는 Functions URL 키를 구분한다.",
+      "evidence": [
+        {
+          "resource": "repo://.gitignore#L21-L35",
+          "version": "repo-lines-v1:sha256:4f461cc7ff23b92298d06b2c45d288c3f55f24b221e1ece9c5b6c837d1378991:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU0OGQ2OTQwNjk3OWY2OTMwYTlhNjEzNWY3OTVjNDgyZDViNzhhYWE5OWNjZTZiMzE3YWI0MDc4NmZmNDFlY2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0MzRkOGFiNjc1ZGNhMjljMzAxZjdmYmE4ZjM2NDQ1NGZkNGY1MTcxNDgwNGVjMmY3YTI0MWQ5OTkxMjc4YTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhZWZmM2Y1MWRlODc5NmU1ZjcxZmY1YmUwNGZjMjI5ZDRjYTU3YjNkMTU5YjY5OWNjNmZmMWYxYjNlZTUzNDAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA3NDRmZTM1NGE2ZjRjMzRjNzkwNzYxNDg4Y2RkNWNkZmJkY2UzZjYyZWYwMTAwMDZlMDBhOWI1YzdjZDIxM2MifQ"
+        },
+        {
+          "resource": "repo://app/.env.example#L1-L20",
+          "version": "repo-lines-v1:sha256:537d3249e7cbbd310e916e1c906f8dd463bd1b66f2cd6fa7227647f3d2dcdd4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM1YjI3N2JiNmEyNWYyY2ExNzI5YTJiMzE3M2M5ZjBhMzk5NzlmOGJlYmNmY2E4NmExZDg0NjdhMmFjZjE2YTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBjMzk5YzQyOGFkY2JmODUwZGU5OWYzMjUwZThlNTI1NzdiZjk5YWM0NGQwYjkwZjg5YzI4MjA1YjU3OTUyMjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_01b6e07ad8f543a990862995ce0d363d",
+      "statement": "`firebase init` 대신 Firebase 로그인과 `firebase use --add`로 프로젝트를 연결해야 하며, 기존 `firebase.json`, Firestore 규칙, Functions 설정을 초기화로 덮어쓰지 않도록 한다.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L102-L109",
+          "version": "repo-lines-v1:sha256:e8fa074868be18eb77f40c28950a80024fedc3ea8aeba022354ebc493583c331:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQ2MzU2YWJiYTlhYWJiYjYzMjg5NGY2ZjRhYzdiYzU5ZTljZjM3ZjVmMTYyZTIwMjE2YmYzODA5ODZiYjJjMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmY2MzNhNDhlYzllM2I3MTA5OGQyMTNjNDViZjgxZWQyZGYxMGI2OTM2NzY3NTBkZDY1MWY1MWMzNTk4OTMyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2I1OWZjMmUzYjE0MjQwZTRlYTFmYjk5ZjAyYWJhMTkzMDhmMjE3OGRmYTM4ZjQ0MjA2MjIxYjZiYzI4OWFiNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmRmOWM5YzZiZjE4ZmMxMzBkNmYyYjMzYzFiNWE2ODI0NGVmYWVlMTJlYTllZWRmNzY1OWY0NTYyM2M3ZTkwZiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_32696172c87a46ac8d10fd65fa93ebb6",
+      "statement": "Functions 배포 단위는 Node.js 22를 선언하고, 진입점에서 Admin 앱을 초기화한 뒤 HTTP·스케줄·태스크 트리거 모듈을 export하며 전역 최대 인스턴스 수를 10으로 설정한다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/package.json#L4-L16",
+          "version": "repo-lines-v1:sha256:2e43e2bca7c93f098c17da19dbdf7cc0142052eb0d83c62b6c00d03e5128248d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MmJkMGFiMjJkNDUwNzAxMDFjYTU3MDU4YTdmZTBjMzAyMGExMzZmODgwYWNiMTY5Y2UwM2MwOGQ4MDRhYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4YjZlOGQ1NmI2Mjc2YjQ5Y2QxZWEwYzZkYzRhMTQxMTBlNzdlNGFkODM4Mzg2YjE0OTdhOTlmNzA0NDg3NTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5ZjU5Y2IyZDBmNDRhM2MxMTZiZTUzN2E1YTNhMWU3NDVkZjY0YmI2OGQ4ZjVhMDMwYzgwOTE3NWEwZDY5MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhMTBhNzQ5MmM5YzA1Y2I5ODU2NDA4NzJlOGY0OWEyN2EwNzU5ODEwNmZkYzI2MWUyZWZmZTNkMTM1MTNiNTEifQ"
+        },
+        {
+          "resource": "repo://functions/src/index.ts#L1-L18",
+          "version": "repo-lines-v1:sha256:79e402e8be6e450ca0087d5c392bbb88f652a196eb82f65a032d52ade8102419:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0MGU2MzU4MWIyYzUwMmRmNWE4MjcwODY2NDAwODk3NGUxYTBlNGJhNGJkMGVlNDk4YjgzNjRlZWMyZDQxYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3ZmJiZDUyNDI4MGQzNTdkMGE4MzViY2Q5ZGIyNjUxYWY0MzhiYmVlNzMzNzY4Y2ExNzlmZjJkM2E4ZDgwZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_104fa2040bfd4caaba28d67cfa72363e",
+      "statement": "Hosting은 `/app`과 `/app/**`를 `app.html`로 rewrite하고 `/terms`와 `/privacy`를 해당 정적 문서로 보내며, Vite는 랜딩·앱·약관·개인정보 HTML을 다중 입력으로 빌드한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/vite.config.ts#L50-L60",
+          "version": "repo-lines-v1:sha256:f27413ad59fd61fa1420fb608e08ee00ede4022f03896d57dacb34ee7acef3e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyNWUwM2MxNjI0OWI0ODQyYWI0MWYyNTc5NTU1ZTY1MmI4NWYxMDU3Y2JjN2I1NjlhN2U3N2NlZGQ3ODVhMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkM2NmYjZhYmQzN2U0ZTg0NDg1NGRhY2Q2ZjRmODE5NGE5YTQzYTFmN2VmM2NmNzY2Zjk2ZDk4MGQ4YjE0OTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4NjQ1ZDhhNTEwYzNkNjkxZjhlMzllM2Y4Y2NkMjdjNzNiMDU1M2RlOGM4ZTJjZmQ3YjljNDA5NmFkZTliY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2Nzc5YjljYjFiZGJlZDQwZTBiNjc5NWY3NzFlZGIwYTk3Nzg3NGUwYjYxMjJkYmE2N2JmZjc4YjU1ZmVkMzEifQ"
+        },
+        {
+          "resource": "repo://firebase.json#L1-L1",
+          "version": "repo-lines-v1:sha256:82c5fb90764ebbeab45400b9b36618f6c8d11fe056a6043e902b6d2a889d4e2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-05T07:59:19.883Z"
+  }
+}

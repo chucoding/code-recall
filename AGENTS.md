@@ -9,29 +9,38 @@
 | `app` | React 18과 Vite 기반 프론트엔드. FSD 구조 |
 | `functions` | Firebase Cloud Functions |
 | `firestore.rules` | Firestore 접근 경계 |
-| `wiki` | LLM Wiki. 코드만 읽어서는 알기 어려운 설계 의도와 제약 |
+| `openwiki` | OpenWiki로 생성하는 LLM Wiki. 코드만 읽어서는 알기 어려운 설계 의도와 제약 |
+| `docs/adr` | 사람이 쓰는 결정 기록(ADR) 원본 |
 | `design-system` | 디자인 가이드 |
 
 로컬 셋팅과 코드 규칙, 브랜치와 커밋 규칙은 [CONTRIBUTING.md](.github/CONTRIBUTING.md)를 따릅니다.
 
 ## 위키
 
-`wiki/`는 [OKF v0.2](https://github.com/GoogleCloudPlatform/open-knowledge-format) 형식의 LLM Wiki입니다.
+`openwiki/`는 [OpenWiki](https://github.com/langchain-ai/openwiki) 코드 모드가 생성하고 갱신하는 LLM Wiki입니다. 위키를 읽고 다루는 방식은 아래 OpenWiki 관리 블록을 따릅니다. 배경은 [ADR 0002](docs/adr/0002-adopt-openwiki.md)에 있습니다.
 
-### 항상 지키는 원칙
+- 위키의 범위와 우선순위는 사람이 쓰는 [openwiki/INSTRUCTIONS.md](openwiki/INSTRUCTIONS.md)가 정합니다. 위키 내용을 바꾸고 싶으면 페이지가 아니라 이 파일을 고치고 다시 생성합니다.
+- 위키를 바로 갱신해야 하면 `openwiki code --update --language ko`를 실행합니다. Node 22.22 이상이 필요하고, `~/.openwiki/.env`에 `OPENWIKI_PROVIDER=openai`와 `OPENAI_API_KEY`가 있어야 합니다. `--init`은 `INSTRUCTIONS.md`를 뺀 `openwiki/`를 비우고 새로 만들므로 평소에는 쓰지 않습니다.
+- 로컬에서 OpenWiki를 실행했으면 커밋 전에 `pnpm wiki:log`로 바뀐 페이지를 `openwiki/log.md`에 기록합니다. OpenWiki는 `log.md`를 쓰지 않고, 정기 워크플로는 이 단계를 자동으로 실행합니다.
+- 저장소가 public이므로 비밀 값, 비용과 매출 수치, 사용자 개인정보, 운영 계정 정보는 위키와 ADR에 쓰지 않습니다.
 
-- 작업과 관련된 문서를 [wiki/index.md](wiki/index.md)에서 먼저 찾아 읽습니다. 원본 코드 전체를 다시 훑기 전에 위키부터 봅니다.
-- 위키 내용과 코드가 다르면 코드가 현재 동작의 정본입니다. 어긋남을 작업 보고에 적고 위키를 고칩니다.
-- `status: draft`이거나 `verified`가 없는 문서는 사람이 확인하지 않은 내용입니다. 근거(`sources`)를 직접 열어 확인한 뒤 의존합니다.
-- 코드나 규칙을 바꾸는 PR에서, 바뀐 사실을 다루는 위키 문서가 있으면 같은 PR에서 함께 고칩니다. 코드 변경을 자동으로 감지하지는 않습니다.
+## 결정 기록
 
-### 위키를 쓰거나 고칠 때
+설계 결정의 이유는 위키가 아니라 사람이 쓰는 원본 문서로 [docs/adr](docs/adr/README.md)에 둡니다. 결정을 내리거나 바꾸면 새 ADR을 쓰고, 채택한 ADR 본문은 고치지 않습니다. OpenWiki는 ADR을 근거로 읽기만 합니다.
 
-frontmatter 형식, 신뢰 규칙, Ingest와 Query와 Lint 절차는 `chucoding:okf-wiki` 스킬을 따릅니다. 이 저장소에서는 아래 값을 씁니다.
+<!-- OPENWIKI:START -->
 
-| 항목 | 값 |
-|------|------|
-| 문서 유형(`type`) | `Architecture`, `Workflow`, `Data Rule`, `Security Boundary`, `Decision` |
-| `stale_after` 기본 기간 | 코드 파생 문서는 작성일로부터 3개월, 결정 기록은 6개월 |
-| 정적 검사 | `pnpm wiki:lint`. CI는 위키와 검사 스크립트를 고친 PR과 main 푸시에서 실행 |
-| 쓰지 않는 내용 | 저장소가 public이므로 비밀 값, 비용과 매출 수치, 사용자 개인정보, 운영 계정 정보. 배경은 [위키를 코드 저장소에 두는 결정](wiki/decisions/wiki-location.md) |
+## OpenWiki
+
+This repository has a generated `openwiki/` evidence index. It is optional just-in-time context, not required startup reading.
+
+- Do not enumerate, preload, or search wikis at task start. Use retrieval when the user asks for it, when unfamiliar architecture or dependency behavior materially affects the task, or when source inspection leaves an important uncertainty. Stop once the question is grounded.
+- When those conditions apply and OpenWiki retrieval tools are available, use `openwiki_search` for just-in-time context and `openwiki_read` for the relevant complete sections. If search returns `workspace_required`, ask which listed workspace to use and retry with its ID.
+- Use `openwiki_list_workspaces` or `openwiki_list_wikis` when workspace membership itself needs to be discovered.
+- If the retrieval tools are unavailable, read `openwiki/quickstart.md` and follow its links to the relevant pages.
+- Treat source code and tests as authoritative. A brief's unknowns and review items are verification gaps, not automatic requirements.
+- Prefer the narrowest quiet validation that proves the changed behavior. Preserve complete failure output.
+
+The scheduled OpenWiki GitHub Actions workflow refreshes the repository wiki. Do not hand-edit generated OpenWiki pages unless explicitly asked; prefer updating source code/docs and letting OpenWiki regenerate.
+
+<!-- OPENWIKI:END -->

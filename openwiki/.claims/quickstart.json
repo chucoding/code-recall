@@ -1,0 +1,126 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:844b33cc25ffc2f8e655b04cddd61e9de11aea1a71ee25c7699e939199afe17e",
+  "claims": [
+    {
+      "id": "claim_a5e673999aee47d4a7a8c46f202f6873",
+      "statement": "CodeRecall은 Vite 기반 `app`과 Firebase Cloud Functions `functions`를 별도 패키지로 두며, 루트 `pnpm build`는 워크스페이스 전체 build를 실행한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/package.json#L6-L9",
+          "version": "repo-lines-v1:sha256:17d652cc98b1332c73ee7e4d8406984c168e3241cfbf416cf890607755444ccb:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjBjOTQ5ODU1MjZjMWM1N2VmMDBjMDBkM2Y0ZGM5MDYxNTY3N2EwYTM2YThiNzk1ZGZmOWFmZmQ1MGZlOWY1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzljYTEwMGUwOGYxMzk0YzhlYmI3NzFmZmI3YTkwZDc4MDIxYWVlZjM3MjYxNzY0ZjJiMjgwMmZhYzE1MmY2YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMxZTRhYTU1NjE1YWQ2NmI4NzE5ZjgwZThjZTIzNzRlOWY3YmZiZDQ2OGRlY2Q3ODgxNDc3ODNlM2QwMmU5NSJ9"
+        },
+        {
+          "resource": "repo://functions/package.json#L8-L16",
+          "version": "repo-lines-v1:sha256:481cf794d6bf47509b857ed801f9f383817e27091b4310e0214ae4fd6fa3a191:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZThiNmU4ZDU2YjYyNzZiNDljZDFlYTBjNmRjNGExNDExMGU3N2U0YWQ4MzgzODZiMTQ5N2E5OWY3MDQ0ODc1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzM1YzhiMzc4NWQzODQ0M2JhZDUzYjNlZjA2Y2M3MTkyMTFhYzI2MWY4NDk2NGM0YTFjYzE1YjI3ZTM5YTg4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGExMGE3NDkyYzljMDVjYjk4NTY0MDg3MmU4ZjQ5YTI3YTA3NTk4MTA2ZmRjMjYxZTJlZmZlM2QxMzUxM2I1MSJ9"
+        },
+        {
+          "resource": "repo://package.json#L4-L11",
+          "version": "repo-lines-v1:sha256:596672964fb89d7d8bf1eb1f52dd7b5da500a6cc26dbcd6dba1a9115d11c7195:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRiMjcyYTc0NGExZTA5YWUyMjhmMmQzZjYyYjE4MDBlNGNlNmRmMWJhZGM1ZDRkMjFkOGNkZmU3YWUyMjIwZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODY5NGM3NjYzNjFjN2ZlNjFmYTQ2NmYzZDdiZTg1M2U1Yzc2OWRiZTgwMGI0NmQzNGIyZmJhNGU4Njc4NmFkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTQ3NGEzYjAxNWQyZDI0ODY2NjFhZWU1NzcwZmFhYjdkOGZlZDgzYzA4M2EyMWJiMjNjMjhkZjg3ZTY3MDE3YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_38671f7e10fc40d8b71e41030e9c627b",
+      "statement": "로컬 시작에는 Node.js 22 이상, pnpm, Firebase CLI가 필요하며, Firebase 프로젝트 연결에는 `firebase use --add`를 사용하고 기존 배포 설정을 보존하기 위해 `firebase init`을 실행하지 않는다.",
+      "evidence": [
+        {
+          "resource": "repo://.github/CONTRIBUTING.md#L11-L22",
+          "version": "repo-lines-v1:sha256:d5607450ec60ac92d2859bdaf7ce5af5e3a8d22665df244bb29fd0cbbe5ad5a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5M2I1YWM3OWM5M2FkZDJiNGEzNWE4YTUwNzA3MGE5NWJlMTljOGVmZjNkMDNjYjRmZjczOGIwOTQ3YWJhYzIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1ZTcyZmRiZDljNmU4ZWQyNjgzNGI1ODMxOGE3OGQwNDA2MmNlODUyMzk4NTU0ZDM5ODUwZDY5ZTA2NDE2MWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2NTY5NWMzNzQxMzkxNDIzM2IwZGMxOTdkMTcwYmUwZjBjMzI2ZDJiODc4Mzg2YWRmMDg0MTkyMWUwODdjNTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmZjI5N2E0OGE2NDlmNjk0YjJjYTkzNDRjMmQwNDAwMDg2YWJjNDQ4ZmZiMjdkYTgyYTViYWE0ZTFjMGYwMWMifQ"
+        },
+        {
+          "resource": "repo://README.md#L102-L109",
+          "version": "repo-lines-v1:sha256:e8fa074868be18eb77f40c28950a80024fedc3ea8aeba022354ebc493583c331:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQ2MzU2YWJiYTlhYWJiYjYzMjg5NGY2ZjRhYzdiYzU5ZTljZjM3ZjVmMTYyZTIwMjE2YmYzODA5ODZiYjJjMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmY2MzNhNDhlYzllM2I3MTA5OGQyMTNjNDViZjgxZWQyZGYxMGI2OTM2NzY3NTBkZDY1MWY1MWMzNTk4OTMyMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2I1OWZjMmUzYjE0MjQwZTRlYTFmYjk5ZjAyYWJhMTkzMDhmMjE3OGRmYTM4ZjQ0MjA2MjIxYjZiYzI4OWFiNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmRmOWM5YzZiZjE4ZmMxMzBkNmYyYjMzYzFiNWE2ODI0NGVmYWVlMTJlYTllZWRmNzY1OWY0NTYyM2M3ZTkwZiJ9"
+        },
+        {
+          "resource": "repo://README.md#L56-L64",
+          "version": "repo-lines-v1:sha256:4bbb70c313e661949c0d07b924637ba6eee48e8e964fcfd1b57c9ff068d347e6:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmU1MGU4YmRkZjllMGUyYjA3NjJhMDlkYjU4ZWY4MzY3ZTFhMDA4M2E3MWY1NDk3Y2VlNTQ4NzE4ZDU5MmY5NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2VjNTY4ZWFkZGNjNDg0MDI2ZjFlMzJhZjIyYzc1ZjM4NTM2MmNmMmM1YzFkZDk2OGMwNTkyZjU3MTk1ODMzMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWNlMmJjOTE4YTBhMmU0ZGM2ZjQ0NjMyNGRiM2M3NWNhZGFmYmJkMmQzYWIzYWY4YzliM2U5ODQ5MjE3YjE3OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzNjMzYzMzFiZDdhMDEyYzQ5MmRiMmZiZWJlNmFiNDNjNjUwNTRjNzg3MWNkMGIxYWNiOTc4NzQ5ZDE3Mjg4MSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_e4693b40481e4286aa001ac5bb8028a7",
+      "statement": "`pnpm proxy`는 `app/.env`의 `VITE_PROJECT_ID`에서 Functions 관련 URL과 리전을 보완하고, 기존의 비어 있지 않은 값은 덮어쓰지 않는다.",
+      "evidence": [
+        {
+          "resource": "repo://scripts/setup-proxy.js#L22-L44",
+          "version": "repo-lines-v1:sha256:40cb6ea3bb1ce3296fd958582666064da3abb539025c4fc39cdab6594a85efd4:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ3NjlkNDFkMTc1N2NhYjE3NmY1YjNmN2Q0YzI5ZDRkNzkxY2I2NWU2YmNiN2EzZTM3MjI4YTUxZmM5Y2E1NGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAzNmM1ZDZlMDhjMWI3MWQyNzNiMTM0MTYxMzJhZGE1NmU4ZGRmYjhkYTJhYmYxMGE0MmM0ZmEzNDlkMzUzNDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFlNDg5YjY0ZjU4YTg0Zjk2NTlhZWQ4MzY3MjY4OGQ0YzJlYzIyZjRkYmZhOWZiMzNjMDQyMmZiNjBhNjAwMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2NmE2MWUwYWUyNmQ0NzdhMDg5OGMyY2QxNmM5M2YxYWY0ZDU1MTdkNTZmYTRkZTQ5MDIxOGE1ZGU3ZDVmOTcifQ"
+        },
+        {
+          "resource": "repo://scripts/setup-proxy.js#L47-L84",
+          "version": "repo-lines-v1:sha256:ae03788d9cfec6135291850a098f4801ff5745bef632b0a53ea956f5201627e3:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJiZTlmOGFlZjc5OTdhZjFmYTUyZTRmNjMwNTM1MDUyMjgxZWY5MTA3MmEzNDMwOTYyYTRmMmRkMGI5ZmEwYWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0NWEzNzUxODE0Yjc0ZjI2NzljMTFlMDc1ODcwM2RiYWRiOTM1YzJiZjNjNmNiNWYzNmJiOTRhNDFjYzc5MmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ2N2U1YTlmNGIyY2U2ZTdiNzg0YjhjZDE0ZTZiNTdiYjQwYzcwMjdlMDNlNmY0ZWNiM2U4MTM4NzBjNzUzMjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5MTVkZjQ3OTAxOGMyYjQ2NzI5ZmNmYjNhODVhOTZhNzIwMzdhNjYyZDg0Yjc2YmYyMTZhOTAxZTc2YTQ2ZTAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2d3528bae31b46f386d9404587f5932c",
+      "statement": "`pnpm serve`는 Functions를 빌드한 뒤 Functions Emulator만 시작하며, `pnpm dev`는 별도로 앱 Vite 개발 서버를 시작한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/package.json#L6-L9",
+          "version": "repo-lines-v1:sha256:17d652cc98b1332c73ee7e4d8406984c168e3241cfbf416cf890607755444ccb:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjBjOTQ5ODU1MjZjMWM1N2VmMDBjMDBkM2Y0ZGM5MDYxNTY3N2EwYTM2YThiNzk1ZGZmOWFmZmQ1MGZlOWY1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzljYTEwMGUwOGYxMzk0YzhlYmI3NzFmZmI3YTkwZDc4MDIxYWVlZjM3MjYxNzY0ZjJiMjgwMmZhYzE1MmY2YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMxZTRhYTU1NjE1YWQ2NmI4NzE5ZjgwZThjZTIzNzRlOWY3YmZiZDQ2OGRlY2Q3ODgxNDc3ODNlM2QwMmU5NSJ9"
+        },
+        {
+          "resource": "repo://functions/package.json#L8-L16",
+          "version": "repo-lines-v1:sha256:481cf794d6bf47509b857ed801f9f383817e27091b4310e0214ae4fd6fa3a191:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZThiNmU4ZDU2YjYyNzZiNDljZDFlYTBjNmRjNGExNDExMGU3N2U0YWQ4MzgzODZiMTQ5N2E5OWY3MDQ0ODc1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzM1YzhiMzc4NWQzODQ0M2JhZDUzYjNlZjA2Y2M3MTkyMTFhYzI2MWY4NDk2NGM0YTFjYzE1YjI3ZTM5YTg4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGExMGE3NDkyYzljMDVjYjk4NTY0MDg3MmU4ZjQ5YTI3YTA3NTk4MTA2ZmRjMjYxZTJlZmZlM2QxMzUxM2I1MSJ9"
+        },
+        {
+          "resource": "repo://package.json#L4-L11",
+          "version": "repo-lines-v1:sha256:596672964fb89d7d8bf1eb1f52dd7b5da500a6cc26dbcd6dba1a9115d11c7195:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTg0MDY5ODRiZGVmY2EzNGRkNmJjOTAwMjdmMWQxMWFiY2IxNzAzNGM1MjVjOWE1Y2VmYTFkODRmY2NkODFkMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRiMjcyYTc0NGExZTA5YWUyMjhmMmQzZjYyYjE4MDBlNGNlNmRmMWJhZGM1ZDRkMjFkOGNkZmU3YWUyMjIwZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODY5NGM3NjYzNjFjN2ZlNjFmYTQ2NmYzZDdiZTg1M2U1Yzc2OWRiZTgwMGI0NmQzNGIyZmJhNGU4Njc4NmFkYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTQ3NGEzYjAxNWQyZDI0ODY2NjFhZWU1NzcwZmFhYjdkOGZlZDgzYzA4M2EyMWJiMjNjMjhkZjg3ZTY3MDE3YyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_9e4eaecad8d447daa118c131657a81c9",
+      "statement": "Firebase 배포 설정은 Functions 배포 전에 Functions build를 실행하고, Hosting에는 `app/dist`를 배포하며 `/app`과 `/app/**`를 `app.html`로 rewrite한다.",
+      "evidence": [
+        {
+          "resource": "repo://firebase.json#L1-L1",
+          "version": "repo-lines-v1:sha256:82c5fb90764ebbeab45400b9b36618f6c8d11fe056a6043e902b6d2a889d4e2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_26f6bfe7bd37470187071de31cceb55e",
+      "statement": "기여 전에는 `pnpm build`와 `pnpm --filter functions lint`가 요구되며, 자동화된 테스트 스위트가 없으므로 화면 변경은 수동 확인 결과를 PR에 남겨야 한다.",
+      "evidence": [
+        {
+          "resource": "repo://.github/CONTRIBUTING.md#L64-L75",
+          "version": "repo-lines-v1:sha256:cbba53c96bd33676cf32acce0faf9cb434d7a41d3daf3d88e3dbcf53f18bf856:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxN2I3ZWMzNTUyYzA1OTU3NmU3MzU5MTY5ZDEwZTMxYTdkZWM0MzQzOGI0MjUyMzY4OTgzMjdhY2MwOTA4MGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEwNTAwZTBlNDU5ODAwNWI2M2JhMTAwOGRhZDRlMTU5OTViNWU3ZTJhZjE4MjI2NDc1MTUxMjIyMjk4YmM2NTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2ZmRmMTkwZGNlZWM3MDQxMmIxNmFiMTBmOWZmOWM4YmI0MjMwYWU2MTNhYzI0OWFiZGEyNmM4NTIxNjQ4M2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3ZmVlMmQxZDg5YTgwNmYzZTg5ZjQ1ZTMyMjE4OTNlN2NiOTc2Y2VkMDNjMzJlZDgwYTE1ZmIyNTc1MzhjYjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_2c308b9d18df4b7991deff4bc4dc6b04",
+      "statement": "저장소의 OpenWiki 운영 규칙은 코드와 위키가 다르면 코드를 현재 동작의 정본으로 보고, 코드·규칙 변경으로 위키 사실이 바뀌면 같은 PR에서 관련 위키를 고치며, 설계 결정은 `docs/adr/`에 기록하도록 정한다.",
+      "evidence": [
+        {
+          "resource": "repo://AGENTS.md#L22-L28",
+          "version": "repo-lines-v1:sha256:70543553d611c8a970c405a0240c6f4e84981de90e5b9d5ad48e29f78f3570ff:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjc4MzljMzhjNmU2YzgxMDM5NWFmNjA5YzE1MDA1NDYwOGYxYjNlYWYyMDUxYzEwMjUyYTg4Yjc1ZTAxMDZmZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzhmZTljNzJhM2JkMDY0NTViZDVlYTA3NDE3MjY3MTMwNjNmMzM1YWJiNDYwYTI2NDM4YjI5ZDQxY2NkNjRlNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjNhZDM5NWJmZDYxYmQ3YmQyNzgwNGE2NTI5ZmQ2NGQxNWViNjM4YWUzYzVkMTRmNDI0ZDU3OTg1NGY5NTEyNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWExZjdmYTE1YmMzNmMyYmRhMjczNzg2ZjQ1OTM2ZWUyZGYwZTFiZDkyN2JiOTcyODQ0MGYyNjVmNzExZDI4NCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_3acc2399ce9c4b2cb2624575a63f838d",
+      "statement": "기여 규칙은 큰 변경 전 이슈에서 방향을 맞추고, 한 PR에는 한 가지 목적만 담으며, 비밀이 담긴 로컬 환경 파일을 커밋하지 않도록 요구한다.",
+      "evidence": [
+        {
+          "resource": "repo://.github/CONTRIBUTING.md#L21-L22",
+          "version": "repo-lines-v1:sha256:ce5a2b9acc528486126646cb2d19969f7aa5388c3b6805965e11bf593630da21:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2ViNzAyNTc1OTNkYTA2ZjY4MmEzZGRkYTU0YTlkMjYwZDRmYzUxNGY2NDUyMzdmNWNhNzRiMDhmOGRhNjFhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzVlNzJmZGJkOWM2ZThlZDI2ODM0YjU4MzE4YTc4ZDA0MDYyY2U4NTIzOTg1NTRkMzk4NTBkNjllMDY0MTYxYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWUzNDFmZjQwYzU5Yzk1NTJmMWI0ZGEzMzQxYjU3ZTAzY2IwOTBmYjc1ZGU0OGQ2NjFmOGVmODlmNjFmYjhkYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZWZmMjk3YTQ4YTY0OWY2OTRiMmNhOTM0NGMyZDA0MDAwODZhYmM0NDhmZmIyN2RhODJhNWJhYTRlMWMwZjAxYyJ9"
+        },
+        {
+          "resource": "repo://.github/CONTRIBUTING.md#L5-L9",
+          "version": "repo-lines-v1:sha256:c082b7c6bbe0ebf445bdb212f6a21865bdb4e33ef70a08a998ffc431313b1286:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGQ0YjAyZGNiN2NlZDI3NDFlNjIxYzNlNTk5MzQwODczZjEyNDc0NDIwYzc1MDcyYjkxMGJlNzg3NmRhNjhlZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGJlMDNhOWNmNmZiZTJlMTM1Yzc4YjhlNzM0ODllNTZjMDFmNGEzZjVlMTQ5OTE4NzE1M2RiOWQ3Mjg0NGY3ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGQ5ZDA0MWJiYTNkOGI5YWRmNzQ4OThhMjk2ZmRlYTFkMDE2ZjU4YmZiNjA5Y2I3MTllMzEzYjU4ZDUxOTEyYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTM2NzY0NDAzOTZlODE2YzY0YTU0Mjk3MjIzNjhkM2ExMmEzYjc3NmI0MzdmYTZkZDY2MmY3N2YwZjcxNGM4MiJ9"
+        },
+        {
+          "resource": "repo://.github/CONTRIBUTING.md#L73-L75",
+          "version": "repo-lines-v1:sha256:660d2930b5218dd3254aca1dfe35baa2a3efaca4c15633ca18bcc740db140951:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI2ZGI3NmJhZGZiZmZhMGIwMzYyZDQzYmFmNmYyYzMwNzQ1OTZlMjk0MmZiNDc5NzU0YmEzNmM4M2JlOTEzMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTA1MDBlMGU0NTk4MDA1YjYzYmExMDA4ZGFkNGUxNTk5NWI1ZTdlMmFmMTgyMjY0NzUxNTEyMjIyOThiYzY1NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAyNzU0MjYxMDg5NTE1ZTc5OGU0OTU4NzM3NWVlZGY1N2ExYmJhMWM4NTMzZWNmY2E1NDMyNmZlOGVjZjRhZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDdmZWUyZDFkODlhODA2ZjNlODlmNDVlMzIyMTg5M2U3Y2I5NzZjZWQwM2MzMmVkODBhMTVmYjI1NzUzOGNiNSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.7.0",
+    "at": "2026-10-05T07:59:19.883Z"
+  }
+}
