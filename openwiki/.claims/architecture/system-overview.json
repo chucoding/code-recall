@@ -1,22 +1,22 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ca1cbefdaef430762b39e2b27104b104dd57047f1dde8c3b17c67c4add07853c",
+  "pageVersion": "sha256:1f7458966a71f96574e0cc341af85e40591f4d19e7f48fe016e9e0399e875d4f",
   "claims": [
     {
       "id": "claim_ddc6c22f72e04b0cbf0ec5e8647d9cde",
       "statement": "Vite는 랜딩 `index.html`과 앱 `app.html`을 별도 Rollup 입력으로 빌드하며, 랜딩은 `landing-main.tsx`, 앱은 `main.tsx`를 각각 진입점으로 사용한다.",
       "evidence": [
         {
-          "resource": "repo://app/app.html#L20-L23",
-          "version": "repo-lines-v1:sha256:e3fa054165c61ab20601d28e09b2a720b14b0f5226ba36acb96c602f03da9eb4:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGZhYmQ3MDc1ZjIxODE1ZTBhYWU5ZjljOWVkOGQ3YjI2N2Q4NTU1ZTQzYTU0ZWJlZjY0YjdjNmEzMTM5YWVhMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzhhMzk5ZTFmNjI2ZmYwZDI3Y2IxYzViMmJmMjBiZWRkODVjNjQ3ZmI3ZWRjODA1YzNjZTk5NTdmODYzMGNjMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWNmZDE1M2IyZmU1NzM1YmM0NzdmNTkwMzNlNTk5ZGU0ZGRlYzY2MzJlZDJkNGE0ZjgxM2Y5MTYxZTBiZWVjNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzZhOTlkYWFhNWI5ZDJmYzMzMDEwZTE4Yjg1NWVmZjA0Yzg3NGNiMTk0ZjJiYWY2NjQzMjAxMWM3NzRkOTc0MCJ9"
+          "resource": "repo://app/app.html",
+          "version": "repo-file-v1:sha256:12d6b0494cc9e5ecb84a19f7002a5299635042289f87f0fee672ea529509ea51"
         },
         {
-          "resource": "repo://app/index.html#L70-L73",
-          "version": "repo-lines-v1:sha256:8753d05e3426c3e9396cd02c94bb0991f198c5bfb075515d8b907b19e79dd47e:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFlNTYxZGUzYmE3YTM4YzkyYjY3N2VmNDdmZjkwMGM5ZDMxZDNlNmE1ZjQ4MzE2MjY0ZWM2NTQ2ODU2NjFjMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzhhMzk5ZTFmNjI2ZmYwZDI3Y2IxYzViMmJmMjBiZWRkODVjNjQ3ZmI3ZWRjODA1YzNjZTk5NTdmODYzMGNjMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWRiOGY4MjEwMWM5ZWJlODk2MmE0OTJiYjgwNmVmMGUyM2M2NzRmY2ZhMzEyODBiYTdmNmVjZDIyNGJhYmEzZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzZhOTlkYWFhNWI5ZDJmYzMzMDEwZTE4Yjg1NWVmZjA0Yzg3NGNiMTk0ZjJiYWY2NjQzMjAxMWM3NzRkOTc0MCJ9"
+          "resource": "repo://app/index.html",
+          "version": "repo-file-v1:sha256:c562581005e0bc0d27db4f38ad18430f0f32cf6cb10fca5aba58a0a96c0ea191"
         },
         {
-          "resource": "repo://app/vite.config.ts#L50-L60",
-          "version": "repo-lines-v1:sha256:f27413ad59fd61fa1420fb608e08ee00ede4022f03896d57dacb34ee7acef3e9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyNWUwM2MxNjI0OWI0ODQyYWI0MWYyNTc5NTU1ZTY1MmI4NWYxMDU3Y2JjN2I1NjlhN2U3N2NlZGQ3ODVhMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVkM2NmYjZhYmQzN2U0ZTg0NDg1NGRhY2Q2ZjRmODE5NGE5YTQzYTFmN2VmM2NmNzY2Zjk2ZDk4MGQ4YjE0OTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM4NjQ1ZDhhNTEwYzNkNjkxZjhlMzllM2Y4Y2NkMjdjNzNiMDU1M2RlOGM4ZTJjZmQ3YjljNDA5NmFkZTliY2YiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijk2Nzc5YjljYjFiZGJlZDQwZTBiNjc5NWY3NzFlZGIwYTk3Nzg3NGUwYjYxMjJkYmE2N2JmZjc4YjU1ZmVkMzEifQ"
+          "resource": "repo://app/vite.config.ts",
+          "version": "repo-file-v1:sha256:6424ff0c3b8c78395a825344541d48f3537a0545c81b50c2cf203ceae2edbdd5"
         }
       ]
     },
@@ -25,12 +25,12 @@
       "statement": "Firebase Hosting은 `app/dist`를 제공하고 `/app` 및 `/app/**`를 `app.html`로 rewrite하며, Functions는 `functions` 코드베이스를 배포 전 TypeScript로 빌드한다.",
       "evidence": [
         {
-          "resource": "repo://firebase.json#L1-L1",
-          "version": "repo-lines-v1:sha256:82c5fb90764ebbeab45400b9b36618f6c8d11fe056a6043e902b6d2a889d4e2d:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODJjNWZiOTA3NjRlYmJlYWI0NTQwMGI5YjM2NjE4ZjZjOGQxMWZlMDU2YTYwNDNlOTAyYjZkMmE4ODlkNGUyZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+          "resource": "repo://firebase.json",
+          "version": "repo-file-v1:sha256:5747a02a51914bc9c2698da5aad8be981d84722d34d881bf10108b9434d90911"
         },
         {
-          "resource": "repo://functions/package.json#L4-L16",
-          "version": "repo-lines-v1:sha256:2e43e2bca7c93f098c17da19dbdf7cc0142052eb0d83c62b6c00d03e5128248d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MmJkMGFiMjJkNDUwNzAxMDFjYTU3MDU4YTdmZTBjMzAyMGExMzZmODgwYWNiMTY5Y2UwM2MwOGQ4MDRhYTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU4YjZlOGQ1NmI2Mjc2YjQ5Y2QxZWEwYzZkYzRhMTQxMTBlNzdlNGFkODM4Mzg2YjE0OTdhOTlmNzA0NDg3NTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU5ZjU5Y2IyZDBmNDRhM2MxMTZiZTUzN2E1YTNhMWU3NDVkZjY0YmI2OGQ4ZjVhMDMwYzgwOTE3NWEwZDY5MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRhMTBhNzQ5MmM5YzA1Y2I5ODU2NDA4NzJlOGY0OWEyN2EwNzU5ODEwNmZkYzI2MWUyZWZmZTNkMTM1MTNiNTEifQ"
+          "resource": "repo://functions/package.json",
+          "version": "repo-file-v1:sha256:df958e438ae06c318d5fb523899abe3624f588289d5eb2bf3cf8ca30338419be"
         }
       ]
     },
@@ -39,12 +39,12 @@
       "statement": "Functions 진입점은 Admin 앱을 초기화하고 전역 `maxInstances: 10`을 설정하며, 런타임은 Node.js 22이다.",
       "evidence": [
         {
-          "resource": "repo://functions/package.json#L4-L7",
-          "version": "repo-lines-v1:sha256:4fdf7b7df06919c0777da36ca86046625d81dc656f6493cd3044fe5a7910e545:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQyYmQwYWIyMmQ0NTA3MDEwMWNhNTcwNThhN2ZlMGMzMDIwYTEzNmY4ODBhY2IxNjljZTAzYzA4ZDgwNGFhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYjBjOTQ5ODU1MjZjMWM1N2VmMDBjMDBkM2Y0ZGM5MDYxNTY3N2EwYTM2YThiNzk1ZGZmOWFmZmQ1MGZlOWY1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTlmNTljYjJkMGY0NGEzYzExNmJlNTM3YTVhM2ExZTc0NWRmNjRiYjY4ZDhmNWEwMzBjODA5MTc1YTBkNjkyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmE4ODQ4ODZjMjM0ZGYxY2Y2ZjM5NDk4ZGM5MjM0YjhmNjQzMThlODJiMjIzNDYwMjhkODg1NDQ2OWZkN2U3MiJ9"
+          "resource": "repo://functions/package.json",
+          "version": "repo-file-v1:sha256:df958e438ae06c318d5fb523899abe3624f588289d5eb2bf3cf8ca30338419be"
         },
         {
-          "resource": "repo://functions/src/index.ts#L1-L18",
-          "version": "repo-lines-v1:sha256:79e402e8be6e450ca0087d5c392bbb88f652a196eb82f65a032d52ade8102419:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM0MGU2MzU4MWIyYzUwMmRmNWE4MjcwODY2NDAwODk3NGUxYTBlNGJhNGJkMGVlNDk4YjgzNjRlZWMyZDQxYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3ZmJiZDUyNDI4MGQzNTdkMGE4MzViY2Q5ZGIyNjUxYWY0MzhiYmVlNzMzNzY4Y2ExNzlmZjJkM2E4ZDgwZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://functions/src/index.ts",
+          "version": "repo-file-v1:sha256:cb0921bdf8501f3f4cf8c70a26503376448f47ffa9a4c7ba052043e7f904820f"
         }
       ]
     },
@@ -53,8 +53,8 @@
       "statement": "Firestore 규칙은 사용자 소유 문서와 공개 읽기 캐시를 클라이언트에 제한적으로 열고, `aiUsage`와 `flashcardPregeneration` 같은 서버 상태는 규칙을 두지 않아 Admin SDK 전용으로 만든다.",
       "evidence": [
         {
-          "resource": "repo://firestore.rules#L152-L208",
-          "version": "repo-lines-v1:sha256:26a94ef77df6b75566497ef53b13b813dce3e5c7e0ba9af26bb6e1f279b7f0a0:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlNmNjNjRmYjIwZjNjOTIxMzVmMTU5NmM2MTBjZjFmYzJhOWI2OGRkZTg1Y2Q4OTFhNjI0NTJjYjUwZmM0ZmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzOTUxZGM0MGEyNDEyMzgyZjI4ZDY0YmRhMGJlNTlhNzcyZGExNDk2ZmRlMjVhOTcxMmYyMjg5MTM4ZTBkNzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJkODg4Y2UzNDIyMGIxZjQxMTIyZTk2Mjc1M2M5NTM0ZTQ4ZmJkN2IwYzAyZjhjNjIwNzA1ZmNkZjcxMzBkZWYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI5MzBkZTE3MDg0MWQ4ZTNkOGU1N2JjNGRlMDlmOGViMTI2MDFjMTc5OTA3MDhiNGU3YzRkMmNmNTg5YmI0NTUifQ"
+          "resource": "repo://firestore.rules",
+          "version": "repo-file-v1:sha256:f1f7d6804fbafc5c48c541c82632a7c5679e343c570debe0d222fba8a1aba47e"
         }
       ]
     },
@@ -63,16 +63,12 @@
       "statement": "공개 AI HTTP 함수는 `invoker: \"public\"` 및 CORS를 사용하지만 모델 호출 전에 서버 전용 사용량 guard를 실행하며, GitHub HTTP 함수는 Firebase ID 토큰을 검증해 사용자의 Firestore 설정에서 GitHub 토큰과 허용 저장소를 가져온다.",
       "evidence": [
         {
-          "resource": "repo://functions/src/github.ts#L107-L139",
-          "version": "repo-lines-v1:sha256:bc03ae03e75059b9ec9b341e37b57e6981adb1acc91eccda670b0eab08364726:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ0ZTcyODc1ZDk4OTgzMjY2ZjYzMjY0YjExNTRiYWI1NDNjOGJiMmEyMjg0YzYwZTE5MzM1YjE4YzUxZDExYTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0NjJmYTU3OTcxMGIzZmY1ZTQyYThlMTAwMDJjNWFlN2JmMDUwOTllN2Y0Yzk5NWE2ODVmNTc2YWM3ODc1OTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0N2YyMjAzZGUzYWNhNjVhNjVhNjFmYjU3MmVmOTRkMTA5YzQ3OWZiNDQzMjZkMThhZWEzNGU2YjhiNTM5YjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5ZWUzMzIyZTA0YWRhNGYwMmYyOTYzMWU1MDg2YzU0MzQ2ZTJkYjI4ZTFjZjMzZjM0ZTNjNTkwZDg5MmE2MTMifQ"
+          "resource": "repo://functions/src/github.ts",
+          "version": "repo-file-v1:sha256:de5ca9742334b4ed2a7c1a265e62d93181bace61aec7ec5dcc396958da4407a2"
         },
         {
-          "resource": "repo://functions/src/github.ts#L29-L70",
-          "version": "repo-lines-v1:sha256:14010cf18421e53594e3e5ef8f9bc03b6601e28b994ff78227157a449d130588:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAwZTUzNTJjZGRmNjAzMGE3Y2E3YWI2YWNiNTRjNjZlNDlkYmFmYTM3YzEzMDBmNjdhNmQyYzYxZThhMGI3MGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjUwNjIwZjI3NjdlN2U2YTQ2NGJkNjgyNWM4ZTk1MTBkYjNmMzVlZTRmYjkyY2U5OTM0MjliZjM4YTgxNzZkZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRhNTYyOTBlYjQ3MWE1NWM3ZDNhYjU1MDZlMTBkZjU3Y2Y4Yzg4ZGQxYTU1MGI1ZWNhODY4YzU4NTVkYTM0YWIifQ"
-        },
-        {
-          "resource": "repo://functions/src/openai.ts#L36-L69",
-          "version": "repo-lines-v1:sha256:b783275d40a545cfe85c3ac36b19207ca2cadbf01c71ef99fa54a43554d60069:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQyYzVhZWZlYzE2MWE2ZjRhMTRlYmI3YzlkNmIyMDcyOWMwYTQ3OTQxOTUwMjY3ZGY0ZTJlZjI0NzFiNzgxMzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlM2ZlYTk2ZDdkNmEyZWE2OGYyYjQ2YWFhZWQwYjI1NzkxMDI5ZjhjOGIyMjIxODNiMjg0ZWRiZDViZmU0YmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM2ZDk1YjQ5NGVmNTRiN2JkN2EyMTZhMjU3Y2VhNTliZTE0OGE2Y2QzMTEyOGZmOWJlZWExOTlhYzUwZGYzM2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY1MGIyYWFlM2Y3OTkxYzExNjNiN2NkZmNmY2Q0ODAwMzkzZjgwYzdhODVmYTQ1ZGQ3NzA3OTllOWIyZGExM2QifQ"
+          "resource": "repo://functions/src/openai.ts",
+          "version": "repo-file-v1:sha256:42a841eb79d74514272981e68db3e7461d5d7bf2684295717513fa67866722e2"
         }
       ]
     },
@@ -81,12 +77,8 @@
       "statement": "`refreshTrendingRepos`는 매일 09:00 KST, `asia-northeast3`에서 GitHub Trending 상위 10개를 수집하고 결과가 5개 미만이면 기존 Firestore 캐시를 보존하며, 목록 저장 후 데모 카드 사전 생성 실패는 캐시 갱신을 되돌리지 않는다.",
       "evidence": [
         {
-          "resource": "repo://functions/src/trending.ts#L117-L158",
-          "version": "repo-lines-v1:sha256:92547d86d74c0c3e2855bd27930e2c1b438307da7f675681f882babddbcf4b80:eyJzZWxlY3RlZExpbmVDb3VudCI6NDIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA4ZGY3ZWVjMWY5M2Y1NGRlZjgwMjM0Y2UxNDdmNzU5MmUxZDg0NTMzYjQ4M2EzNjRkNWM4NTZjMGQ4ZDJhZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU4NmYwNWE0NTRmZTQyMzQ1MzJmNGUxODRiMzNkM2Q3YjMxMjcxZjA3MGYyOWUyODI4MTU5YzRjM2Q3Y2YyNzcifQ"
-        },
-        {
-          "resource": "repo://functions/src/trending.ts#L28-L33",
-          "version": "repo-lines-v1:sha256:d80455e4fc879a6f8b805e23b85dd34ab3763d54498c5aae1c071f283e94228f:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTNiNWYyMjkxMzhlNTJkZmI2MjVhOTA5MTc4ZmMwYzE5NzdmODA0OGI3MjZmY2QwNGViNjBhNjVkYzM4OTQ1ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTgzYjU2MDkzNTJlNGY3NzhkODI3Y2I4ZmQ2MzlkNjIxOTQ4NzU1YjVmY2I4Mjg4NjdlZGU3N2RmMWMxM2MwZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2QzZjVjMDE3ZWMwMDU5MzZiNGFhZGJiNjc4NWFhOTk0NTBhNjE2NDMwMWEwMDVmYjNkZjk3OGI1OTYxNzM3ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGJjY2FiNTM3NjU3YTY3OWExOTRiMTlhZDRiOGJhY2ExMTM5MGM4NjA3Mjk4NzM4YzViOWE5Njk0ZmNlOGRjNyJ9"
+          "resource": "repo://functions/src/trending.ts",
+          "version": "repo-file-v1:sha256:be8bdb2a45d32ab311cf13909309f22bd02258fbea3f0fcbd5857b5ce18e35fb"
         }
       ]
     },
@@ -95,16 +87,8 @@
       "statement": "플래시카드 사전 생성은 매시 스케줄러가 사용자 현지 0시부터 6시 사이의 최근 활동 사용자를 Cloud Tasks에 넣고, 사용자별 태스크가 최대 동시 5개·최대 3회 시도 조건에서 덱을 생성한다.",
       "evidence": [
         {
-          "resource": "repo://functions/src/flashcard-pregeneration.ts#L212-L282",
-          "version": "repo-lines-v1:sha256:09b098dfbaaa256ba8d0ced369b1c5161082ebf1babc3afb2f163ceaecc9c5b4:eyJzZWxlY3RlZExpbmVDb3VudCI6NzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZDc5N2E2OGJiNWM5NjEwOWQ5Yzg2NjM3OGQzM2FhZjBhOTg3M2RkOTJjZTNjMjZiNzQyZjQyZmNjZTNkODkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkNjY0MmIyNmY2MTZlZmQ1MTc3YTkxMDk3MTRhMGI5ODcwZDAyMWU5Y2VkNDAyN2VlYjY5N2NkNzYxODIyOWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVlNmQ5YTZhY2RlNDc0Yzc3MmExMWRiZDNiYTg1YmVmZmE2ODVjZjk2ODY0ZGY1ZDgyYjI4YjVhY2I0ODY5YmUifQ"
-        },
-        {
-          "resource": "repo://functions/src/flashcard-pregeneration.ts#L25-L44",
-          "version": "repo-lines-v1:sha256:c23c51471a992e81419b435baef802e21697b149dc305294de21735a1a282167:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ1ZDVhYmFjYTIyNjgwYWU5NTMzNjcwMGRmNzY2MzYxOTdhN2NiNmMwMDRmNGNkNzlhYzFiMWZkMmYwYWM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYzZjBmZjgzYWU0YmQxMjA5NjVjY2VlOGU1N2JlOGY1NDc0MzkzMGQ3MjVlNTdiY2U3MjJjYmNjODczNWRmNmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNlYTRkMGNhNzQ1MWY1NmU5YjkwNTc3MjJlOTcxMDk0ZmY0OThlNzM2ZmU2ZTAzMjU2ZjNlNTViNTJiNTE0ZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc3MTVlMDU1OTI3ZTQ1YWYyM2ZiMDhlN2VjNzk3NDYxNzNjNzM1YzIzYzZjYzg4YmJjMzg5ZTQ2ZTRlZmE4ZmMifQ"
-        },
-        {
-          "resource": "repo://functions/src/flashcard-pregeneration.ts#L392-L404",
-          "version": "repo-lines-v1:sha256:bfaaa70b91c7eabb67dd6fd8fb29e5b849f48e0cecb558c51f7a2066dad0d7f2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyYmMyZmRjNjExN2JkZjkyMDhhNmZmYmQwNTU3OTlmOTQ2NGQ3OGUxOTcyZTBkNjQ2NzliZmQyMTU4OWEzYjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYzk0OTg1NTI2YzFjNTdlZjAwYzAwZDNmNGRjOTA2MTU2NzdhMGEzNmE4Yjc5NWRmZjlhZmZkNTBmZTlmNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhkNjYyYWQwMWFiZmY4OWI3MGU4M2VkNzdkMTVmNTc2YTNiZjNkYzIyYjAwNjE1N2ZmN2YwODQyMzk4ZmMzMzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2YmJkYzI2MTg0NWVlOTlkOTQzMmViOTAwNjkzN2JmY2I0ZmQyMTI5NmI4OTYxNWU1YTJmNDgyMzcxYWI5ODAifQ"
+          "resource": "repo://functions/src/flashcard-pregeneration.ts",
+          "version": "repo-file-v1:sha256:1ec64b81c96778e1b8bd38528f058f53c5043e57cf1459e15e34593e1fbcbd28"
         }
       ]
     },
@@ -113,12 +97,8 @@
       "statement": "사전 생성 태스크는 기존 덱을 먼저 확인하고 저장 트랜잭션에서 다시 확인하여 앱이 먼저 만든 덱을 덮어쓰지 않으며, 일시 오류로 빈 덱이 된 경우에는 완료 기록을 남기지 않고 재시도한다.",
       "evidence": [
         {
-          "resource": "repo://functions/src/flashcard-pregeneration.ts#L382-L390",
-          "version": "repo-lines-v1:sha256:1eb44070fb4199f766d3334c5fc6e84d9ebb4b6951f66f0ac62286cb754f8e2f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVkNWFiYWNhMjI2ODBhZTk1MzM2NzAwZGY3NjYzNjE5N2E3Y2I2YzAwNGY0Y2Q3OWFjMWIxZmQyZjBhYzRhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkzYTEyZGQ1YTFjMGE1ZDUwMWI3ZmY2YTcyYmM2YTMyNTMyOTdlZjc2ZjM1Mzc3MzMxN2U3NTMzNmM1NjkzYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzAwY2VlNzQ1ZWYyNDA5ZDdmNDU3M2RmMjY1Nzk1ODAyNWQ1YjIyYmYxMjIwZWZhZGYzMWJiMmIyMjdkOWQxNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTRmNTE4MzQ5NTQxNzhhOGVlYjcxZGJiYWIxMzcxZWJiOGFhNWVjYjUwNDQzMDFkYTdhZjIxNzM0ZjNiZjViYSJ9"
-        },
-        {
-          "resource": "repo://functions/src/flashcard-pregeneration.ts#L425-L484",
-          "version": "repo-lines-v1:sha256:032138f94be8b999e5750e34f5d6cc20816dbd1c0fb4198eb30b7d1f822c0b67:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRmMzFhZjNjMTE0YjE0YTM5YzJmMjA4MGQ2ZTdhNmE2ZmVlZGJkYWI2YjdhNGJlNjliNDc1YjJiNmJmYjJjNTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhNzFkOWZiODgwZWVjZGNiYTUzMjc1MmRhMjM3YTZlOGI2MzJlMWNlY2ZlNTM2ZDhmZTkyYjhmZDA5NzJiYzciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYzMjg4ZDQ0N2I0YjcxYTIzN2U4OTRiM2NhOTQ4OTgyNjRjYmQ0N2MzMDI0OTBiNWFlYWYyOWM1YjU4ZWRlYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYyMDNiMjFlYWQ1NTgwMmY0YjRhMTE4NTAzNGEyOTQyYmU1YTZmYTg3Y2UyZWRkY2RkZmVmMGIzZDYzY2NhNzIifQ"
+          "resource": "repo://functions/src/flashcard-pregeneration.ts",
+          "version": "repo-file-v1:sha256:1ec64b81c96778e1b8bd38528f058f53c5043e57cf1459e15e34593e1fbcbd28"
         }
       ]
     },
@@ -127,12 +107,8 @@
       "statement": "푸시 작업은 매시 `asia-northeast3`에서 실행되어 각 사용자의 IANA 시간대 현지 시와 선호 시각을 비교하고, 일치하는 FCM 토큰에 500개 단위로 `/app`을 여는 리마인더를 전송한다.",
       "evidence": [
         {
-          "resource": "repo://functions/src/schedule.ts#L27-L79",
-          "version": "repo-lines-v1:sha256:2d33005747b27a234239614d52507aade7e428e57b2e9ac54a7fca1d0f297499:eyJzZWxlY3RlZExpbmVDb3VudCI6NTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMwMmFjODMzNTZjNWFmNzM5ZTFlMTE2OTI3NzFjYTQ3MzUwODA1MzI3NDYyNWRiYjNkZDQzOWZlMTA1YTM1ZTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2NjhiMzgwMTU0OGY2NjFlYjI5NTVkMzYxMTM3Yjc5ZDA4NWQxZDdiOTc3OGEwYmM4MDAzYTI3MTRhNDM5OTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkNTI2ZTVhYTFmYTk1YzhiYjM4MmI0NGM3MTNiYzQyOTgyNzQ5NjJhNjI1MGIwODk0ZmE0NzMwMjQ0ZDNiNjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjNiOTMxZjNiNjc2NDFiYjFiYjcwZDZhNjFhMDhiZDQ5YTU0ZmM3ZmU5NjhmNjE1MGU0ZTJhNzJlZWJlOTM2ZWMifQ"
-        },
-        {
-          "resource": "repo://functions/src/schedule.ts#L6-L15",
-          "version": "repo-lines-v1:sha256:b028d646fc9e497d4bc84af1d9136226413c1b1d13eb25c2113676490afce716:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4MDUzZDZhMWU4NjZmMzJkOWU2NmQ0OTRjOGY3NGQ2Yjg0YWY4NGE3OTBhYzg5YWMwZjgzMTliNDU4MzU4OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwYzk0OTg1NTI2YzFjNTdlZjAwYzAwZDNmNGRjOTA2MTU2NzdhMGEzNmE4Yjc5NWRmZjlhZmZkNTBmZTlmNTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFjYzBhODRlZGNhNDJkNDQ4MjkyZGEzMTRlYjI0NWE3MThkMjg3MDIxNGQzODMzZWZhMzRlYjRjNzJiZTQzNjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQzZTMxYzc3ZDdkYjM1ODYxMmQwODU2ODY4Yzk2NjE2ZGZiY2NlZTljNzk0Yzc1N2UwMWQxNTI2YmZkNjljZTMifQ"
+          "resource": "repo://functions/src/schedule.ts",
+          "version": "repo-file-v1:sha256:77302fd93f1f3bb4f9ee193fa18fd740ad762a9102566fb49c9ec7ed2ea2603e"
         }
       ]
     },
@@ -141,22 +117,144 @@
       "statement": "사전 생성의 시간대 계산은 사용자 IANA 시간대를 `Intl.DateTimeFormat`으로 해석하며, 유효하지 않은 시간대는 대상 설정으로 채택하지 않는다.",
       "evidence": [
         {
-          "resource": "repo://functions/src/flashcard-pregeneration.ts#L122-L133",
-          "version": "repo-lines-v1:sha256:e64e6ddfa47fb7a464ab57f63a95fc3884e676cb01a076aed6d69681320be1c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4ZTFlZmFjY2YyNjYzNjcxZWJkNDJjZWNmYjI4Njg4YzgyODg3YjI0OTU3ZjI1YTQyNGQxOWU1ZDE5MTRhNWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMmZhYTUzNWJkMmVhM2Q1MmU3NDFlZDQ1NDQzNWI3ZmU0OWU4MzU4NmU5NDNkOThkODJiYmZiMjRkMWY1YzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjMzRiOWFkZGM0OGE2YmIzYjIxYzYyMjY5N2Q5OTc4ODRjYzkyYWQxM2ZkNjZkZjNhNmYxZDk3NmJkNmI2MWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFiOTg0OTk4ZDk2OGRiYzc3MGVkOGY1ZTY1Nzk3YTYzY2IzYTIyZTJlZWZjYjczZmE5MTZiMThkZDIxMGY1OWIifQ"
+          "resource": "repo://functions/src/flashcard-pregeneration.ts",
+          "version": "repo-file-v1:sha256:1ec64b81c96778e1b8bd38528f058f53c5043e57cf1459e15e34593e1fbcbd28"
+        },
+        {
+          "resource": "repo://functions/src/timezone.ts",
+          "version": "repo-file-v1:sha256:4cfc0440c7eb876d03d7cc17f3d05c27caf8ec044ceedd6fd4871246e8640763"
+        }
+      ]
+    },
+    {
+      "id": "claim_0e87d4e1a3874f3f980bdd03fb9db440",
+      "statement": "앱 진입점은 Firebase Auth의 인증 상태를 구독하고, 로그인 사용자의 `users/{uid}` 문서 및 오늘의 플래시카드 로드 결과에 따라 로그인·온보딩·복습·설정 화면을 선택한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/App.tsx#L125-L180",
+          "version": "repo-lines-v1:sha256:a9aeabca1b6436da61da1afd29bb4da95e7a00a761a1b9806100df8741993c3d:eyJzZWxlY3RlZExpbmVDb3VudCI6NTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVmNGVjMmI4MmQ3NjUyMzVmZDE0NzIwYTQwNjcxNzNhYzA5MzRkNTljYjZiYmM5ZmM1YTM3MzE2ZTQ4YTE1YjkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhlNjQ0YWQxYTczMjNlYThhMjdmM2E2NjJlMDlmOGFmYzE1ZmZlNDQ0NWRhOTMwM2Q4MWE3ZjE2OWFjNGZhYTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwNDMwOTQ4MDQzOWNjMmM3MzhiNjkxMzliYjU3OTY4ZDliYjE1YzQxNzgxOTA5ZGU5MDQyZjM1NjMzYWEwZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExZjgxODFiNWJkNGNkNzI2YjI3MGI4OTgxNDE5M2NjZTQyYWMxMmE4NDQyODlmMWQ4MzBiZDNlMjFiZmIzNjUifQ"
+        },
+        {
+          "resource": "repo://app/src/App.tsx#L38-L87",
+          "version": "repo-lines-v1:sha256:6b084a8053897126d4f351a7040a1dd446ab41c6f3b32bf58a1196daef9e6f80:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxM2NjMjk2NTVmOGJlZTA2YjQ4Nzg4YTM5ODg2MTc0ZGU2ZjU2NmQ3ZWNhZGJiNzUyMjc5MDNhOWUxMjYxYTEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzODNlZGE4MDRmNzUxNjc0Nzc5MGQzNWU4YjM2MGQwNjA3Zjg4MThjNmQ2YzM2OTU0YWNmZjRlN2JlMjI4ZDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwYzM3YjE4YzgxZWI0NGFiY2FhYTYwOWFlNjc1MGMxZTM2YmExNGM1MmZhNTgzYzEyMzE1YmIxMTQ5N2E4ODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNlMTdhNTJkNGE2OTRhMTMyYTU4OWE1YThkNTAzZDYxNDhkNWIzM2NiM2FmZWQxOThiNjZkMTQyYWU5MTlmZWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ad8322f1138b414bbe8c5c1f479d744b",
+      "statement": "브라우저 API 클라이언트는 현재 Firebase 사용자의 ID 토큰을 `Authorization: Bearer` 헤더에 붙이며, 개발에서는 `/api`를 Vite가 모드별 Functions URL로 프록시하고 프로덕션에서는 Functions URL을 직접 base URL로 사용한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/src/shared/api/apiClient.ts#L4-L39",
+          "version": "repo-lines-v1:sha256:f121dd44b0e55a5ec235076bdfdd8e778ebb347825311fb12530bae26751d570:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM5NTg1MGQ4Y2E0YjEyMDQ0MzNkMzM5ZTM1NmQ0OTJmOTk0ZWE4ZTEwNjZmNmY3MmYyYTdhYzc2ZGVlNDdmYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5OTY3ZWMxZWQzODM2ZjhlYjE3YWZmMTcyYjViZmVmN2RlNjA0ODVhNDM5YzZjYTExYzU5MWUxNzU1NzM5YWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJmMDU5MTlhMjg0ODAxZGQ5YWY0NGQ5YTYzOTU0ZWExNGYwZDBmZGMwYzk5YzQyMmYxYjg0MmFkNjc2NmNiNGIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjBlOWU0YTM2OTkxYTdkMjBlYTdiYWM1ODU2MTRmYjMzMjVmNDNkZWIxYzU1NmU3NmUyYzljYTc2ZGZkMTllZmUifQ"
+        },
+        {
+          "resource": "repo://app/vite.config.ts#L62-L72",
+          "version": "repo-lines-v1:sha256:23afafcb9a06a064e13f1f5b0272b3e9ca41574cca5312b94b58ca79c005c5ed:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmYjI5ZTlhMzljMmFhODViZmUxOTgxZWNhNzg3YzMwNjA3MTVjN2YyMmE4ZjFhYmI0ZjFlNTI2ZTFhZDBhOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2ZjkzZDU4MTM2OGQ2MGM3YmFmMDU0YThhMGY2NmEzNzhkYjQ3YzJiMDkwOTkyNzRjNjczZjlkZDg2YWMxZmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZiYjEyNTdjNTQzMTRkYjdhMzNjNjBhYjBhNDBhNjI5M2Y0YWNkNTBiYTA5NmIyYTU3ODE0ZjdhODBkMTJjNmMifQ"
+        },
+        {
+          "resource": "repo://app/vite.config.ts#L7-L10",
+          "version": "repo-lines-v1:sha256:637516661f30d68d1f5566a07cdc74a504394da22c5d624108ae235fe1f3fe76:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTcyNmZiYzllM2VkY2VjNTBlZGZmYjgyNDc0MGM1OTRmNzI2NmE5Y2Y4NWIyODEzNmIxNTllMzY1MzlkOWZjNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTVkM2VlODVjMTE1Nzc0OTg0YmZiNmQzNDJmOTQ1YzIxYTVmNTgwZjI0YTViMDRhYjZmYzA0YzAzOWU3N2NkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDlmMTIwNzY4YTQzM2ExNjI4MDYyNDM4YmVjY2Q2YzJmMmE0NWFiZGIyZDk2MzFiN2MzZWQ3ZDNjYzcwMWE0MyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmZkZTBjODlmMjg2ZGQ0YTZlOGY2NmQ5YzdiZDdlNGM0ZjUxN2JhNTUxNGExZGQ3ODBkYmRiNzJhZWMyZDZhMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0e6e1e27b8884f0aa54b0f71f7859b46",
+      "statement": "PWA manifest의 시작 URL은 `/app`이고 Workbox 탐색 fallback은 `/app.html`이어서 설치형 앱과 오프라인 탐색은 인증 앱 문서를 진입점으로 사용한다.",
+      "evidence": [
+        {
+          "resource": "repo://app/vite.config.ts#L15-L40",
+          "version": "repo-lines-v1:sha256:71d331d3fa204efc39c0d863ea3d36c66ec3a2cf6ff715390ad73cfc2001beb7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFkY2FmM2YxNmU0ZDRmOThmOTZlNjk5NzZiNzk1Y2U0OWY1ZjlkN2M4ZGY2MDc5MzNjNWY4ZTcwYzkzMWQxNDkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ5OTBlYjZjY2RiMGZlZmNjM2M5YTg4M2M4NzljOTg2NmJlMzM5MzFjYWFhYmYzNjYyZDdhYzRjNDEzZWM4YjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmYWQzYzlmNjVhYjRiNzRmOGQ0YWI2NWIyYTg2ZDIyOWYwY2M4Nzc3ZTZmZWIzODA0ZTEzZTJlY2RkNDdjNjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1ZmEyNTk2MGNjM2M1MTZkNGJiNmEwZDk5NmNiNjlhYTM0ZWQ1YTMxMzNiMDI0NWU3NDYwNDZlMGY2NWVjNmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e56919b072ed4e12be88cc8b8e16fc35",
+      "statement": "GitHub HTTP 함수는 공개 invoker라도 Firebase ID 토큰을 검증하고 사용자 문서의 등록 저장소와 GitHub 토큰을 기준으로 커밋 조회를 수행하며, 인증 없이 허용하는 `getFileContent`는 요청 URL의 호스트를 GitHub 호스트 목록으로 제한한다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/github.ts#L107-L160",
+          "version": "repo-lines-v1:sha256:9d0027785f2cb345c05810b80e78493e95b3104c738c44fd39d71b37c6faa966:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI5ZmIwMTkyOWU1ODc5N2Y0MTZmMWI5NjBlYzQ0YWNhNDhiYzBmZjRiODY4OTZhYmZmNzI1MGNiMjdkOGU5MzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZiNTgwZTk2NGY4M2E0NzNmNDNkNDQzODQ2Mjk0OWQ2OGI1NjAwZmRhNzg3ZjE2Mzc0NWQwMGRlODljYmYzNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1ZjY5ZGZkNDk2MjQzZGYwMmJlOTkzODAzYmE3YjExYmE3YTcwN2EzZjNhZjExMGRmMzcxYjUwY2ExYTk2ZjUifQ"
+        },
+        {
+          "resource": "repo://functions/src/github.ts#L265-L329",
+          "version": "repo-lines-v1:sha256:23397a29f33226b49d412c6b7067f3554000f11565d8c3fb3ee163b5f35743dd:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlYmMyYzgxNzljNTg2YTcyYzIwMzcxMmE4YjU5NTdmMzI1NjBkNGFhZTJmNTIyZDMwNzI3YzlhNzQ2NWQ2OWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg1YzNjMzk0ODQ3MDgyMDc0NmNhMDU2MjEwMzNmMWY1YzQwYTNlZDlmYjQ1NzVhZDQ3OTNlZjFmYWU0OGMyN2MifQ"
+        },
+        {
+          "resource": "repo://functions/src/github.ts#L29-L91",
+          "version": "repo-lines-v1:sha256:6f3f1b50dbf51d0adc5f642aa5af9ad39ef90ffbfd0aaaa8a752865c84b608b2:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxMWQwZjliNmJlYTFjNzZmMmQ4OGMzOTQwMzNjOGM4MmU5MzUxMDQ3YWZiM2RmM2E5MTJkZWViNDhjMzVkYjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgzZGY4ZmJhMDAxMTY3ZjI0ZTNkN2Q2NTg0OTg2YTU2ZjJiOTdlOWRkZmQyMDg1MGYyYWJkY2I0Y2JjMGJjYzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMwNDQ4MmQ2ZDdlNGQzNzY0Y2ZmODQxNGQ3ZjQ4NDVjOThlZWE4ZmYxYThhZTQzZmQzMWFjYWI0YjQxMTRlZTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0a7f1cc2702b43c89e549a8c8e1246c6",
+      "statement": "공개 OpenAI 생성 및 번역 함수는 모델 호출 전에 서버 전용 `aiUsage` 트랜잭션 카운터를 차감한다. 인증 요청은 UID와 서버가 읽은 등급별 한도를, 비인증 요청은 IP 해시별 한도와 전역 한도를 적용한다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/ai-guard.ts#L118-L161",
+          "version": "repo-lines-v1:sha256:049a74c7727fc872193b2638c365247bf82a6251b683a5ca21d9513f56ba1ae9:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRjYjAxNjAxZmFiYTVlY2E4MDVjOWZjYTkyNjNjYTU1NGU4M2QyZGVmNGE2OGMwYTc5NjU3MDc4MmRlMTlhMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmNWQ0MGVkZTA2YTQwYTg1ZGEzMWJhMTFmNmVkM2VjZTYxNjJiODZkMjQwMjgxNzhhZmM4YWY3Yzk3NWVhYjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNlY2U2ZjVhNTY4NTdiYzAzN2YzNTNjMDQzNTk2ZTUxN2I2NTg0ZWNlZDY5YmIzZGNmOGI5MDM2ZjIxNzlkMmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM3OTI5ZTkxZTBmOTljM2U4MjVkZTY5YjQzNWZiNjQ4NGQxYjBhMWRmMmY0NjU2MWFiZjFhMjlmMDQxODhiODgifQ"
+        },
+        {
+          "resource": "repo://functions/src/ai-guard.ts#L173-L237",
+          "version": "repo-lines-v1:sha256:eef7fa8535fa304db6144b4ca976f10c00ec84b2b31ce584ef3d93e3cb26b773:eyJzZWxlY3RlZExpbmVDb3VudCI6NjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjM2Nzg2NDdiYjMzNjZjOGRjZjcxOWM4ZjkyNmY0MTk5ZTFmMmEyMjg5OWI1Y2VjMzU4OGI3MWU1N2MyNjEwY2IiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjliYzRkMjMzYjU5ZGYwOTg4YTBlNDEzZGExYTY0YjE0ZTc4NzRjMjY4NTY3NGRhZmQzNDNlNjI2YWMwOGM5YzIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyZjZkMjA4ODk3ZDFiNzA0MTkzZGRmZDc3Y2VjNjcyYjQyNmVlOTdkZjFiM2FjNjdhYjFiMDZkOGU3MGMyYjUifQ"
+        },
+        {
+          "resource": "repo://functions/src/openai.ts#L40-L69",
+          "version": "repo-lines-v1:sha256:4a461b241033dc10349f1709f3faf8ef4d9d9f2bd59bac7450542dce0020f419:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMxZTE2NjAxOWU3MGJhZTNlYWM5ZjY0ZDk1YjE4MTc5NjU0ZTcyOWRlZDQ2NGY0MjYyNGEzODlmNTg3YTZiNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJjZTk1YTIxNjgyMTVkY2I4YjYwMGI1MDQwN2Q2ZjYzZmVhNzUyNzEwODE2YTE5Mjc2MmY2ODkxMGU1OGE1M2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg5MzQ0NmViMDFhYTVkZWFiMmEyNTUyYWRiY2JkOTZlMjFiMTdlYTM0MTkyMzI1ZDZjNTBjZGM5N2ZiYzQ5YmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxY2FmZWYxZDZmZmY1MDYwYzY0N2RkYTIxZTE4ZmVjOTBhOTFhZDc1ZDI4YjgwYWU5YTczZWFhNzU3YmEyMTEifQ"
+        },
+        {
+          "resource": "repo://functions/src/translateFlashcards.ts#L71-L102",
+          "version": "repo-lines-v1:sha256:b552aa9292a28ca07a4f323758aed71ae88fca7f0441414450d210e2f515a6f6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2ODY5Mjc2M2M3NTc0Mzc0MDZmOThiODBhMWY3ZDMwZDg5Y2EzYzI5NTEzNTY4MjcwZDIzMTdmNTEwNTFlNzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM0NWJjNWMxNTJiNGZlOGQyYTFhNzQ5MGE0YmE1YWJmOGRiMDRmZDA0ZGY4YmU3ZDQ0ZWZlOTE0MzA4ZDUzMTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2ODlkY2Q0N2NjNTIyYTUzYTMwZWE4ODg2ODdhYWFhYmI3ZjM1NTU2NzM0ZGIwMjBmYWUyOGI1NWM1Mjc4ZDIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3632f05e40b14e4ea7b4a3d742852ab4",
+      "statement": "사전 생성 Scheduler는 사용자별 유효 IANA 시간대·언어·저장소 설정과 현지 0시 이상 6시 미만 조건을 확인하고, 완료 기록 및 Firebase Auth의 최근 토큰 갱신 또는 로그인 시각을 사용해 태스크 후보를 좁힌다.",
+      "evidence": [
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L112-L160",
+          "version": "repo-lines-v1:sha256:768f2970bd7b6f5edfd396bcd03ed2e6bebae1d4172dec07e562cefb168c1ccc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjAyOGM1YmI2NGNjODIyNTY3ODlkYzZjNjA2NzFjZWRjNmMxOThjYzc2ZjFjNzkxZGZiNjZkYzUwYTM4ODA4ZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQxYmQ5MDI2ZGVkNjFhZjkxOWZjY2Y0Njk3ZmZlZGVhYmIwZGEyOTcwMzQ3N2JjMGQwNGIxMzhmMDZjNWU0ZTQifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L212-L255",
+          "version": "repo-lines-v1:sha256:cfe7f7f7251850c21a9c9bf62b2a79aab40654c491c425363449daf5113c0e46:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4ZGUwYjk3MzMyN2IwM2ZkYmRhNDhlNDQwZjFjNWY4MzUzNTJmM2MxNDNmNWMyYjY1NmZkZDAwZDhjNTZhMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4M2UzZmI4ZWIzM2E3NGUxOTJlYzFmNWYxYWMxYWFiZTk1OTU4MjVmNzY4MWRkM2M3NWUwMWNlN2JjZTc4NWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5NDFlNjVjZGQ5OTc0NzUyNzQ0ZGM0MGM1YWU2NDc5YTIwOGIyNmM2MzhkZGU0YzQ2MjYyMmJmOTJjMDBlMzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjIzMjdlOTBiMjU4ODNjMjQxNmFjYmE0MmIyZWFjNmNiODI2MTdjZTBiZjJmMGVjMmZkYTI5MTBhOTc0YjdhYWYifQ"
         },
         {
           "resource": "repo://functions/src/timezone.ts#L15-L23",
-          "version": "repo-lines-v1:sha256:5aa6ae0c57ece5c0414fd48880d54e0f8ee134b4ade3cbbba0678a1189494d9d:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzFhNzZiMzlhNWQzZGRlN2JhMjA3NTlkMDA3NWEwZWZmODY2ZTE0MzE2Y2JhOWQ0MmNkZmE0YjRjODA0ZmZkNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTIyZmFhNTM1YmQyZWEzZDUyZTc0MWVkNDU0NDM1YjdmZTQ5ZTgzNTg2ZTk0M2Q5OGQ4MmJiZmIyNGQxZjVjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmY5MjNkMmE0ZDI1YzM1Yjg4ZmY1YWY0ZjI2NDUwNjVmZWI4ZTZjYTUwMjFhOTMxNTgwMDc4YjRlNjM4MTM1ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2EwNDFlZTMwNTIzNTVlNWZhMzJmNGM3OGI2N2FjMmM3M2IxNjBjYzk0NjE2NmRlNDVkMWVhMmM4OWM4MDZjMCJ9"
+          "version": "repo-lines-v1:sha256:ff936acd06af8e2154bd11333cd042516e79b264fe31dc80029107e39373349f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjY5ODlhZTFlMmVlMzlmZjQ3NjgxNmZkOTg1ODE2ZDg2NDRiZmQxY2ZmNTI2NjA5YjVlNGZhMWRlZjJiMWFlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDEyY2EzNDVjY2Y3NWJmOWMwODA2YmNlNjk1YmU4ZGU4MDhiNzk5ODQyNTFhN2E1NGQyMDJjZjYxMDFkZDQ1MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWVmZGIxNzdkNDQ5ZDQ4ZGJjMGJkYTE4MTE1ZjQ2OWMwYjdhMWEyYmFjMjE3MzBhMTRiYzZhMzcyMDIwYjkxNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDNmZjRiMGRiZjIxNzA1OWQzMzJiNzdiNmExYzM0MTYzYTk1MzM0NjlkMmY4MjNjNDRhNDM1ZDJlZTlhYTQxYiJ9"
         },
         {
-          "resource": "repo://functions/src/timezone.ts#L39-L52",
-          "version": "repo-lines-v1:sha256:98414c071135a71c6caaa674f951007928bb7e06e187211959e4fafb6793e48d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliYmZkYmNiZWE3MWQ0M2Y1YWJjMzVkZDQ4NjhmMDY4YmU3MmEwMzdkZWI4OTljYWZmN2MzYWMzNjk2ODY2MGYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxMzQ1MTgwMTA1YjBjNjZhNzdkYWQ1MWJiMzc5MDFhMzczMmM5NjU0YmE0ZGUzOTgxZjgxZTE4MTc1MjQ4YmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg2MzYzYjkzODlkNGM2OTQ1NTU2YjdjMGU0Y2YxNjljN2ZhYjFlZGU5OTNlZmJlMTZlMjNiZGM5ZTExY2NhODYifQ"
+          "resource": "repo://functions/src/timezone.ts#L46-L52",
+          "version": "repo-lines-v1:sha256:667734a41d75c70dbd97fcb2667e1e5f8c8ef86e2e5f00ab832bd80dc22ef23c:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGI1MzU4N2NmOThkY2RmZmFhMzI2MzAyMTllNjNkZDA4ZjgzOWVhOWY1Y2JmNWRjZTk0NWFjMDRiN2Q3ZTkzNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWZjNjQ2MTM0NWFjOTc0MmY3NzZmYzU0MDMwZmQ2ZTJiYzFkNzcwMTFhODMwOGQ2MWYxMmU1NjM5ZjI4ODdhNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzc5MjllOTFlMGY5OWMzZTgyNWRlNjliNDM1ZmI2NDg0ZDFiMGExZGYyZjQ2NTYxYWJmMWEyOWYwNDE4OGI4OCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_25b1b9786d2d4086b37cc2b174d0383c",
+      "statement": "사전 생성 완료 기록은 서버 전용 `flashcardPregeneration`에 날짜와 결과를 남기며, 같은 시각의 태스크 ID는 사용자·날짜·현지 시를 포함한다. 완료되지 않은 사용자는 다음 시각의 새 태스크로 다시 시도할 수 있다.",
+      "evidence": [
+        {
+          "resource": "repo://firestore.rules#L204-L208",
+          "version": "repo-lines-v1:sha256:0f434a0b2d63ab2c5024ba5c1d0c8eafd30ced10b43eeccd23b93ac456d56be8:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTFmMzdjYWZmMDU0YWY3MzNjYTI0ZGUzY2ZiMzBmZjI0NjIyMzc2MWM4ZTg2ZmYyMDVmYTYwMmM2MDUwYmIyNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzg3ZjU2NGM2Y2YwOTE1ZjZlNGRkMzAwYmU3OTliNTA1MGZkYjE3NDA4ZTIxYTk5N2Q1MjM2MDE3ZmJkZGNlZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmRmY2UwMDJjOTk3NDViMmU3ODE1MDRkOWQ3YzU0MWRlMThjOTVhM2U1OTk1YjM1NGU5Y2Y2ZTE2Y2NkY2MxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjk1ZGIyODFlMmU1NGRiMGRkNDkyYTNkZGRhZGUyZWYyYmNjY2RiZTAwODRlMGM3ODIzN2YwNzI5NWRmMTI1YSJ9"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L192-L210",
+          "version": "repo-lines-v1:sha256:0abb071f3b22f7e151ecf1ce9bbb64cf92b2b739483272f7506e37f884e9f6ae:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVhZjIyY2YwNzMyNTkyYzI0NzE0MWNiZTYxZWZhMTEwMTI2MTJmNWEzMTIyYjlhZjliYmFmNTJmNTcyNGQxOTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5ZTJlNzE4N2M0NmFmNWU0NDY4MWY3NjY0ZTU5ZDQzYmI1ODE4MDgyODg3NDJlZTAxMTc2MTYxYTVlM2YwNjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlhYzBjMmUzZDY4YjEyNDVjZDU0ZGFjZGVjNGI1MDFiMzg1ZjFlN2RlYzc5ZTZhMGM1NjA0MzlhNzYzZTI1MDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM2MGE3YzFhMTgzNzM0MGQyYzE5ZmE0N2FmNGFmYjY4NTRiM2JkYWViMmEwZmU0NDg1ZGU1Y2EwNjdjYjM1ZDIifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L257-L281",
+          "version": "repo-lines-v1:sha256:337ce9f4405490b3af96ed21b152d5c42bf5a0e46bfbdd8250b3153e368cb6e8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ2OWI3Y2IxN2Q4YTU5MzkxZTZjMWMyODUyNTdmZDE3NjU3MTYxMjQwNDZmNmU2MjA0YTFiM2NmMzM3OWUyY2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdkYjVmZjQ1ZTA5ZjNlMzVmZDJiNjUzNTk3ZmExOTkyOTFlNzIzZThmYWYxYTk2MmRlNWI0ZDE5YmQ5YmRjODEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJlYmMyYzgxNzljNTg2YTcyYzIwMzcxMmE4YjU5NTdmMzI1NjBkNGFhZTJmNTIyZDMwNzI3YzlhNzQ2NWQ2OWQifQ"
+        },
+        {
+          "resource": "repo://functions/src/flashcard-pregeneration.ts#L63-L69",
+          "version": "repo-lines-v1:sha256:138f4017e88c4cfa6d8b78e7ce62bf06d438add33ffc16178fcb5be2e2da5359:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZWFmMjJjZjA3MzI1OTJjMjQ3MTQxY2JlNjFlZmExMTAxMjYxMmY1YTMxMjJiOWFmOWJiYWY1MmY1NzI0ZDE5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGQ5ZWEwYWQyNDRmNzVkYTc1YjU4MTk2YWFlMmFjOTRlNWE0MzEwYjgzZGUxZmE1OTU0YjYxNWQxODE3MTFiYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWM1YTM3NWU1MWM3MmE1ZDU5ODJmMTk5YjliZGJkN2YyNjM3MTA1MTM4ZDVkODY2NGYzMjNmMDFlYTEyNDEzZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWRjZjY4OGUxZmQ3NTU1MTJhZmE2ZjRkODlmZTU4Yzk4YmZiNWM0NTIyOTA2ZDE5MTk4ZWQyMjk1NmVmNGQ3YyJ9"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.7.0",
-    "at": "2026-10-05T07:59:19.883Z"
+    "at": "2026-11-01T19:15:23.382Z"
   }
 }

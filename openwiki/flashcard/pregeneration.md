@@ -1,6 +1,6 @@
 ---
 type: generation-workflow
-title: 오늘의 플래시카드 사전 생성
+title: 사용자 덱 사전 생성
 description: 사용자 타임존의 새벽에 최근 활동 사용자의 오늘 덱을 Cloud Tasks로 생성해 첫 화면의 GitHub·AI 대기를 줄이는 서버 워크플로를 설명한다. 대상 선정, 앱과의 저장 경쟁, 완료 기록 및 재시도 경계를 다룬다.
 tags: [flashcard, scheduler, cloud-tasks, firestore]
 sources:
@@ -8,14 +8,16 @@ sources:
     resource: repo://app/src/features/flashcard/model/useTodayFlashcards.ts
   - id: openwiki-source-60b51f83565a4de6497fc329
     resource: repo://firestore.rules
+  - id: openwiki-source-5a4dfd84d0c43f8e8e449364
+    resource: repo://functions/src/flashcard-deck-size.ts
   - id: openwiki-source-bcaca72a0469dfd8f568b3ca
     resource: repo://functions/src/flashcard-pregeneration.ts
   - id: openwiki-source-94f067e411507438068e4aeb
     resource: repo://functions/src/index.ts
+generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
 verified:
   - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+    at: 2026-11-01T19:15:23.382Z
 ---
 
 ## 목적과 경계

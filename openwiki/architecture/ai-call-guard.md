@@ -1,6 +1,6 @@
 ---
 type: 보안 경계
-title: 공개 AI 함수 호출 경계
+title: AI 호출 비용·입력 경계
 description: 비로그인 데모와 로그인 사용자가 호출하는 공개 AI HTTP 함수에서 인증별 일일 한도, 서버 소유 트랜잭션 카운터, 입력 크기 제한 및 실패 시 차감 의미를 설명한다.
 tags: [ai, security, cost-control, firebase]
 sources:
@@ -24,8 +24,8 @@ sources:
     resource: repo://functions/src/translateFlashcards.ts
 verified:
   - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+    at: 2026-11-01T19:15:23.382Z
+generated: { by: "openwiki/0.7.0", at: "2026-11-01T19:15:23.382Z" }
 ---
 
 # 범위와 목적
@@ -122,4 +122,4 @@ pnpm --prefix functions run lint
 pnpm --prefix functions run build
 ```
 
-카드 생성의 공용 모델 호출 및 사전 생성 경로와의 관계는 [카드 생성 경로](../flashcard/generation-paths.md)에서 확인할 수 있다.
+이 문서의 프롬프트 상한은 모델 입력과 호출량의 경계이며, Firestore에 저장할 덱의 바이트 예산과 축소 순서는 [플래시카드 덱 크기 예산](../flashcard/deck-size-budget.md)에서 별도로 다룬다. 카드 생성의 공용 모델 호출·사전 생성 경로와의 관계는 [카드 생성 경로](../flashcard/generation-paths.md)를, 사전 생성의 스케줄·재시도·완료 기록은 [오늘의 플래시카드 사전 생성](../flashcard/pregeneration.md)을 참고한다.

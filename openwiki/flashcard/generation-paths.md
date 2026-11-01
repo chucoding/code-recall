@@ -1,12 +1,11 @@
 ---
 type: generation-flow
-title: 카드 생성 경로
-description: 즉시 생성, 사용자별 사전 생성, 랜딩 데모 캐시가 GitHub 변경을 카드 덱으로 만들고 저장하는 공통 단계와 각 경로의 분기·후속 번역·질문 재생성을 설명한다.
+title: 플래시카드 생성 경로
+description: 오늘의 덱이 캐시 읽기, 반대 언어 번역, 브라우저 즉시 생성, 서버 사전 생성으로 갈라지는 조건을 설명한다. GitHub 커밋에서 AI 카드 생성과 Firestore 저장으로 이어지는 공통 계약 및 실패 폴백을 다룬다.
 tags: [flashcard, generation, github, openai, firestore]
-verified:
-  - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
 sources:
+  - id: openwiki-source-e4f0bc11a3299c1766d09546
+    resource: repo://app/src/features/flashcard/api/demo-cache.ts
   - id: openwiki-source-43482a23192c1b4cd832a0a3
     resource: repo://app/src/features/flashcard/lib/deck-size.ts
   - id: openwiki-source-c33b33487dc43a2b94fbff20
@@ -36,6 +35,9 @@ sources:
   - id: openwiki-source-541ae8313cfd3a449526d707
     resource: repo://functions/src/trending.ts
 generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+verified:
+  - by: openwiki/0.7.0
+    at: 2026-11-01T19:15:23.382Z
 ---
 
 사용자 날짜 덱과 랜딩 데모는 모두 GitHub 커밋을 질문·답변 카드로 바꾸지만, **누가 언제 생성하고 어디에 보관하는지**가 다르다. 로그인 앱은 이미 저장된 언어별 덱을 우선 읽고, 없으면 반대 언어 덱을 번역하며, 그것도 없을 때만 즉시 생성한다. 서버는 같은 사용자 덱을 새벽에 미리 채울 수 있고, 랜딩은 Trending 저장소의 별도 공개 캐시를 먼저 읽는다. 데이터 소유권과 읽기 권한은 [Firestore 데이터 경계](../architecture/firestore-data-boundary.md)를 참고한다.
