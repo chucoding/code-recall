@@ -3,9 +3,6 @@ type: notification-operations
 title: 시간대 기반 푸시 알림
 description: 브라우저 권한과 FCM 등록 토큰을 사용자 설정에 저장하고, 매시 실행되는 Cloud Scheduler가 사용자별 현지 시각에 따라 리마인더를 배치 전송하는 경로를 설명한다. 시간대·시각 폴백, 실패 관측의 한계 및 안전한 변경 지점을 다룬다.
 tags: [firebase, fcm, notifications, scheduler, operations, timezone]
-verified:
-  - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
 sources:
   - id: openwiki-source-3e6f4b4f8f3965d2e9e4ed43
     resource: repo://app/src/main.tsx
@@ -21,12 +18,15 @@ sources:
     resource: repo://functions/src/schedule.ts
   - id: openwiki-source-7b16b1573c8ef4417ee924bc
     resource: repo://functions/src/timezone.ts
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+generated: { by: "openwiki/0.7.0", at: "2026-11-08T19:13:36.236Z" }
+verified:
+  - by: openwiki/0.7.0
+    at: 2026-11-08T19:13:36.236Z
 ---
 
 # 시간대 기반 푸시 알림
 
-이 기능은 앱의 설정 화면에서 웹 푸시 권한을 받고 FCM 등록 토큰을 `users/{uid}`에 저장한 뒤, 서버의 `sendDaily8amPush`가 매시 대상자를 다시 골라 리마인더를 보내는 구조다. 토큰 전체를 브라우저에 노출하거나 클라이언트에서 전송하지 않는다. Cloud Functions의 Admin SDK가 `pushEnabled` 사용자를 조회하고 FCM을 호출한다.
+이 기능은 앱의 설정 화면에서 웹 푸시 권한을 받고, 브라우저가 얻은 FCM 등록 토큰을 `users/{uid}`에 저장한 뒤, 서버의 `sendDaily8amPush`가 매시 대상자를 다시 골라 리마인더를 보내는 구조다. 클라이언트는 자신의 토큰과 선호 설정만 저장하며, 전체 대상 조회와 FCM 전송은 Cloud Functions의 Admin SDK가 맡는다.
 
 FCM 토큰·운영 계정 정보·VAPID 값은 공개 저장소 문서, 이슈, 로그에 복사하지 않는다. 앱의 VAPID 공개 키는 로컬 `app/.env`의 `VITE_VAPID_KEY`로만 제공한다.
 
@@ -62,7 +62,7 @@ sequenceDiagram
 
 *권한·토큰 등록에서 서버의 시간대 판정과 배치 전송을 거쳐, 알림의 `url` 데이터로 `/app`에 진입하는 흐름이다.*
 
-브라우저 앱은 로드 시 `/firebase-messaging-sw.js`를 등록한다. 예약 작업이 보내는 메시지는 고정된 제목·본문과 `type: "daily-reminder"`, `url: "/app"` 데이터를 포함한다. Hosting은 `/app`과 `/app/**`를 `app.html`로 rewrite하므로 이 URL은 랜딩(`/`)이 아니라 인증 앱 진입점이다. 서비스 워커 등록 실패는 현재 무시되므로, 등록 실패 자체가 설정 UI에서 사용자에게 별도로 보고되지는 않는다.
+브라우저 앱은 `load` 이벤트에서 `/firebase-messaging-sw.js` 등록을 시작한다. 예약 작업이 보내는 메시지는 고정된 제목·본문과 `type: "daily-reminder"`, `url: "/app"` 데이터를 포함한다. Hosting은 `/app`과 `/app/**`를 `app.html`로 rewrite하므로 이 URL은 랜딩(`/`)이 아니라 인증 앱 진입점이다. 서비스 워커 등록 실패는 현재 무시되므로, 등록 실패 자체가 설정 UI에서 사용자에게 별도로 보고되지는 않는다.
 
 ## 설정, 권한 및 사용자 문서
 
@@ -104,9 +104,9 @@ Firestore 규칙은 소유자만 자신의 `users/{uid}`를 읽고 쓰게 하며
 
 ## 실패 의미와 현재의 한계
 
-발송 실패는 내구성 있는 운영 기록이 아니다. `sendEach()`가 정상 응답한 배치에서는 실패한 각 응답에 대해 토큰의 **배치 내 인덱스와 오류 메시지**를 `console.warn`에 남기고, 성공·실패 합계를 `console.log`에 남긴다. 실패 토큰을 사용자 문서에서 삭제하거나 `pushEnabled`를 끄거나, 실패 사유·재시도 상태를 Firestore에 저장하지 않는다. 무효·만료 토큰도 다음 시간에 다시 후보가 될 수 있다.
+발송 실패는 내구성 있는 운영 기록이 아니다. `sendEach()`가 정상 응답한 배치에서는 실패한 각 응답에 대해 토큰 배열의 **전체 인덱스와 오류 메시지**를 `console.warn`에 남기고, 성공·실패 합계를 `console.log`에 남긴다. 실패 토큰을 사용자 문서에서 삭제하거나 `pushEnabled`를 끄거나, 실패 사유·재시도 상태를 Firestore에 저장하지 않는다. 무효·만료 토큰도 다음 시간에 다시 후보가 될 수 있다.
 
-또한 작업 전체는 하나의 `try/catch`다. 잘못된 시간대 문자열은 `Intl.DateTimeFormat`에서 예외를 낼 수 있으며, 이 경우 이후 사용자 판정과 전송은 건너뛰고 오류만 로그에 남긴다. 한 배치의 `sendEach()` 자체가 reject해도 이후 배치는 실행되지 않는다. 함수가 오류를 로그만 남기고 반환하므로, 이 코드만으로는 Scheduler 재시도나 실패 배치 재처리를 보장하지 않는다.
+또한 작업 전체는 하나의 `try/catch`다. `timezone.ts`에는 IANA 시간대를 검사하는 `isValidTimezone()`이 있지만 이 발송 경로와 클라이언트 쓰기 경로는 이를 호출하지 않는다. 따라서 잘못된 시간대 문자열은 `Intl.DateTimeFormat`에서 예외를 낼 수 있으며, 이 경우 이후 사용자 판정과 전송은 건너뛰고 오류만 로그에 남긴다. 한 배치의 `sendEach()` 자체가 reject해도 이후 배치는 실행되지 않는다. 함수가 오류를 로그만 남기고 반환하므로, 이 코드만으로는 Scheduler 재시도나 실패 배치 재처리를 보장하지 않는다.
 
 따라서 현재 시스템이 보장하는 것은 “조건에 맞는 토큰에 전송을 시도하고 결과를 함수 로그로 관찰한다”는 수준이다. 다음은 아직 구현돼 있지 않다.
 

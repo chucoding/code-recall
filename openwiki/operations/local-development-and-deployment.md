@@ -1,14 +1,18 @@
 ---
 type: operations-workflow
 title: 로컬 실행과 Firebase 배포
-description: app과 Cloud Functions의 환경 변수 생성, 프록시, 빌드, 에뮬레이터 및 Firebase 배포 순서를 설명한다. 번들 시점 Functions URL과 Hosting 산출물의 배포 불변식을 중심으로 안전한 검증 절차를 정리한다.
+description: app과 Cloud Functions의 환경 변수 생성, 프록시, 에뮬레이터 범위, 빌드 산출물 및 Firebase 배포 순서를 설명한다. Functions URL이 브라우저 번들의 빌드 시점 계약이라는 점과 Hosting의 수동 빌드 전제 조건을 다룬다.
 tags: [firebase, deployment, local-development, vite, operations]
 verified:
   - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
+    at: 2026-11-08T19:13:36.236Z
 sources:
+  - id: openwiki-source-57b81e54d1113287ebfdf6f8
+    resource: repo://.github/CONTRIBUTING.md
   - id: openwiki-source-ea70eb6c045047448e446296
     resource: repo://.gitignore
+  - id: openwiki-source-728b7409249f85eb89f094f6
+    resource: repo://.worktreeinclude
   - id: openwiki-source-2e864397dd35ae1d8930724e
     resource: repo://app/.env.example
   - id: openwiki-source-bb10b670204c16db33dbab0b
@@ -35,7 +39,7 @@ sources:
     resource: repo://README.md
   - id: openwiki-source-82f574a2d5a654bb69161540
     resource: repo://scripts/setup-proxy.js
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+generated: { by: "openwiki/0.7.0", at: "2026-11-08T19:13:36.236Z" }
 ---
 
 # 로컬 실행과 Firebase 배포
@@ -91,6 +95,8 @@ firebase use
 cp app/.env.example app/.env
 ```
 
+`.env`와 `.firebaserc`는 Git에서 무시된다. Orca worktree를 사용할 경우 `.worktreeinclude`는 `app/.env`와 `functions/.env`를 기본 checkout에서 복사하지만 `.firebaserc`는 복사하지 않는다. 따라서 worktree마다 프로젝트 연결을 다시 확인한다.
+
 ## `pnpm proxy`: 주소를 만드는 빌드 전 계약
 
 `pnpm proxy`는 `scripts/setup-proxy.js`를 실행한다. 이 스크립트는 `app/.env`의 `VITE_PROJECT_ID`를 읽어 아래의 Functions 관련 키를 보완한다.
@@ -103,6 +109,8 @@ cp app/.env.example app/.env
 | `VITE_FUNCTIONS_URL_PROD` | 프로덕션 브라우저가 HTTP Functions를 호출할 기본 URL |
 
 이 명령은 파일이나 `VITE_PROJECT_ID`가 없으면 실패한다. 이미 값이 있는 키는 **덮어쓰지 않으며**, 빈 값만 채운다. 따라서 Firebase 프로젝트나 리전을 바꿨다면 기존의 비어 있지 않은 URL이 새 프로젝트와 일치하는지 확인해야 한다. 단순히 명령을 다시 실행하는 것만으로 오래된 값이 교체되지는 않는다.
+
+스크립트는 완료 시 최종 `app/.env` 전체 내용을 표준 출력에 쓴다. 터미널 기록, CI 로그, 화면 공유에 환경 설정이 남을 수 있으므로, 민감한 환경에서 실행할 때는 출력을 기록·공유하지 않도록 한다.
 
 Functions URL은 런타임에 서버에서 발견되는 설정이 아니다. Vite는 production 모드에서 `VITE_FUNCTIONS_URL_PROD`를 읽고, API 모듈은 이를 프로덕션 번들에 포함해 함수 이름을 붙여 요청한다. 반대로 development 모듈은 `/api`만 요청한다. 즉 URL·리전·프로젝트를 변경한 뒤에는 다음을 반드시 지킨다.
 
@@ -134,6 +142,8 @@ Vite 설정은 development 모드에서 `VITE_FUNCTIONS_URL_LOCAL`을 `/api`의 
 
 `--only functions`은 Firestore, Auth, Hosting Emulator를 시작하지 않는다. 또한 앱 Firebase 초기화에는 `connectFirestoreEmulator`나 `connectAuthEmulator` 연결이 없다. 따라서 로컬에서 Firestore 읽기·쓰기를 수행할 경우 선택한 Firebase 프로젝트의 규칙과 데이터에 영향을 준다. 규칙 변경을 안전하게 점검하려면 먼저 인증·소유자·공개 읽기·거부되어야 할 쓰기를 실제 테스트용 프로젝트에서 작은 범위로 확인하고, 운영 프로젝트를 선택한 상태에서 임의 데이터를 만들지 않는다.
 
+Analytics는 `VITE_MEASUREMENT_ID`가 있어도 development 모드에서는 초기화하지 않는다. 반면 Auth와 Firestore는 위 Firebase 웹 설정으로 생성되므로, Analytics 제외가 다른 Firebase 서비스의 로컬 에뮬레이션을 뜻하지는 않는다.
+
 Functions의 `OPENAI_API_KEY`가 없으면 AI HTTP 함수는 오류를 응답한다. 키가 필요한 호출을 검증할 때는 키가 로컬에 존재하는지 확인하되, 터미널 출력·스크린샷·PR에 값을 노출하지 않는다. AI 호출의 쿼터와 실패 의미는 [공개 AI 함수 호출 경계](../architecture/ai-call-guard.md)에, 서버 사전 생성 작업은 [오늘의 플래시카드 사전 생성](../flashcard/pregeneration.md)에 정리되어 있다.
 
 ## 빌드와 배포 불변식
@@ -153,7 +163,7 @@ pnpm --filter functions lint
 
 이를 생략하면 배포가 실패할 수도 있지만, 더 위험하게는 이전 산출물이 남아 있으면 오래된 Functions URL·코드·정적 파일을 정상 배포처럼 올릴 수 있다. `app/dist`와 `functions/lib`은 무시되는 생성물이라 clone 후에는 특히 이 순서를 생략할 수 없다.
 
-Hosting은 `/app`과 `/app/**`를 `app.html`로 rewrite하고 `/terms`, `/privacy`는 각 정적 HTML로 보낸다. `vite.config.ts`는 랜딩, 앱, 약관, 개인정보 HTML을 다중 입력으로 빌드한다. 라우트나 엔트리 변경 배포에서는 루트 랜딩, `/app` 새로고침, 약관·개인정보 경로가 모두 새 `app/dist`에서 의도한 문서를 내는지 점검한다.
+Hosting은 `/app`과 `/app/**`를 `app.html`로 rewrite하고 `/terms`, `/privacy`는 각 정적 문서로 보낸다. `vite.config.ts`는 랜딩, 앱, 약관, 개인정보 HTML과 영어 약관·개인정보 HTML을 다중 입력으로 빌드한다. 라우트나 엔트리 변경 배포에서는 루트 랜딩, `/app` 새로고침, 약관·개인정보 경로가 모두 새 `app/dist`에서 의도한 문서를 내는지 점검한다.
 
 ## 안전한 배포 절차
 
@@ -186,7 +196,7 @@ pnpm push
 ### 배포 전후 점검표
 
 - `firebase use`가 의도한 프로젝트를 가리키는지 확인한다. 프로젝트 ID나 키 값을 문서화하거나 공유하지 않는다.
-- `pnpm proxy` 실행 뒤 `VITE_FUNCTIONS_URL_PROD`가 현재 프로젝트·리전과 일치하는지, 비어 있지 않은 오래된 값이 남지 않았는지 확인한다.
+- `pnpm proxy` 실행 뒤 `VITE_FUNCTIONS_URL_PROD`가 현재 프로젝트·리전과 일치하는지, 비어 있지 않은 오래된 값이 남지 않았는지 확인한다. 이 명령의 전체 환경 파일 출력도 남기지 않는다.
 - `pnpm build`와 `pnpm --filter functions lint`가 통과하는지 확인한다. 저장소에는 전용 자동 테스트 스위트가 없으므로 변경한 경계를 수동으로 확인한다.
 - Functions 변경이면 Emulator에서 대표 HTTP 요청과 인증 실패 경로를 확인한다. 공개 AI 호출은 한도·외부 모델 비용이 있으므로 반복 호출을 무작정 하지 않는다.
 - 규칙 변경이면 최소한 소유자 읽기·쓰기, 비소유자 접근 거부, 공개 캐시 읽기, 서버 전용 컬렉션의 클라이언트 거부를 확인한다. 규칙은 Admin SDK 경로에는 적용되지 않으므로 Functions의 인증·입력 검증도 별도로 점검한다.

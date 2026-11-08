@@ -1,11 +1,11 @@
 ---
-type: system-architecture
+type: 시스템 아키텍처
 title: 시스템 구성
 description: 랜딩과 인증 앱의 다중 진입점, Firebase Hosting·Cloud Functions·Firestore의 배포 및 권한 경계, 그리고 외부 API와 정기 작업이 연결되는 런타임 구조를 설명한다.
 tags: [architecture, firebase, runtime, deployment]
 verified:
   - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
+    at: 2026-11-08T19:13:36.236Z
 sources:
   - id: openwiki-source-12b1b6adc0320b33d94219fd
     resource: repo://app/app.html
@@ -33,7 +33,7 @@ sources:
     resource: repo://functions/src/timezone.ts
   - id: openwiki-source-541ae8313cfd3a449526d707
     resource: repo://functions/src/trending.ts
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+generated: { by: "openwiki/0.7.0", at: "2026-11-08T19:13:36.236Z" }
 ---
 
 # 시스템 구성
@@ -91,7 +91,7 @@ Firebase Hosting의 배포 대상은 `app/dist`다. `/app` 및 `/app/**`만 `app
 
 브라우저의 Firestore SDK는 규칙을 통과해야 한다. 본인 `users/{uid}` 및 덱은 사용자 소유 데이터이고, 랜딩에 필요한 `meta/trendingRepos`와 `demoFlashcards`는 공개 읽기 캐시다. 반면 `aiUsage`, `flashcardPregeneration` 등은 클라이언트용 규칙이 없어 기본 거부되며, Admin SDK가 이들을 읽고 쓴다. Admin SDK는 규칙을 우회하므로 서버 코드에서 UID, 입력, 쓰기 대상을 명시적으로 검증하지 않고 클라이언트 규칙에만 의존해서는 안 된다. 컬렉션별 계약은 [Firestore 데이터 경계](firestore-data-boundary.md)를 따른다.
 
-HTTP Functions 중 일부는 CORS preflight와 랜딩 데모를 위해 `invoker: "public"`이다. 이것은 누구나 URL에 도달할 수 있다는 뜻이지 개인 데이터 접근을 허용한다는 뜻이 아니다. GitHub 경로는 Firebase ID 토큰을 Admin Auth로 검증한 뒤 해당 사용자의 `users/{uid}` 설정에서 저장소와 GitHub 토큰을 읽는다. 공개 AI 경로는 모델 호출 전에 서버 전용 Firestore 카운터를 트랜잭션으로 차감한다. 공개 URL을 숨기는 대신 인증·입력 검증·한도를 서버에서 강제하는 이유와 세부 한도는 [공개 AI 함수 호출 경계](ai-call-guard.md)를 참고한다.
+HTTP Functions 중 일부는 CORS preflight와 랜딩 데모를 위해 `invoker: "public"`이다. 이것은 누구나 URL에 도달할 수 있다는 뜻이지 개인 데이터 접근을 허용한다는 뜻이 아니다. 커밋 조회 `getCommits`는 Firebase ID 토큰을 Admin Auth로 검증한 뒤 해당 사용자의 `users/{uid}` 설정에서 GitHub 토큰과 허용된 저장소를 읽고, 요청 저장소가 허용 목록에 없으면 첫 번째 설정 저장소로 한정한다. 공개 AI 경로는 모델 호출 전에 서버 전용 Firestore 카운터를 트랜잭션으로 차감한다. 공개 URL을 숨기는 대신 인증·입력 검증·한도를 서버에서 강제하는 이유와 세부 한도는 [공개 AI 함수 호출 경계](ai-call-guard.md)를 참고한다.
 
 ## 외부 서비스의 책임
 
@@ -111,7 +111,7 @@ HTTP Functions 중 일부는 CORS preflight와 랜딩 데모를 위해 `invoker:
 | `scheduleFlashcardPregeneration` | 매시 정각, `asia-northeast3` | 사용자 현지 0시부터 6시 사이의 최근 활동 사용자만 골라 Cloud Tasks에 사용자별 덱 생성 작업을 넣는다. 등록 실패가 하나라도 있으면 스케줄러 재시도를 위해 예외를 던진다. |
 | `pregenerateUserFlashcards` | 태스크 큐, `asia-northeast3` | GitHub 커밋과 OpenAI 생성 결과로 날짜별 사용자 덱을 저장한다. 최대 동시 디스패치는 5이며 최대 3회 시도한다. |
 | `refreshTrendingRepos` | 매일 09:00 KST, `asia-northeast3` | GitHub Trending 캐시와 랜딩 데모 카드를 갱신한다. 실행 제한은 540초, 메모리는 512MiB다. |
-| `cleanupDeletedUsers` | 매일 12:00 KST, `asia-northeast3` | `deletedUsers`에서 KST 기준 당일 기록만 남기고 이전 기록을 배치 삭제한다. |
+| `cleanupDeletedUsers` | 매일 03:00 KST, `asia-northeast3` | `deletedUsers`에서 KST 기준 당일 기록만 남기고 이전 기록을 배치 삭제한다. |
 
 시간대별 작업은 Scheduler의 기준 시간대만으로 사용자 현지 시간을 표현하지 않는다. 푸시와 덱 사전 생성 모두 매시 실행한 뒤 `Intl` 기반 사용자 IANA 시간대에서 시각과 날짜를 계산한다. 이 때문에 모든 시간대를 하루 24회로 훑을 수 있으며, 잘못된 시간대 값은 사전 생성 대상에서 제외된다.
 
