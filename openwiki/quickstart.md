@@ -1,11 +1,8 @@
 ---
-type: Workflow
+type: 변경 절차
 title: CodeRecall 변경 길잡이
 description: 로컬 실행과 Firebase 배포의 안전한 출발점, 그리고 변경 유형별로 확인할 시스템·플래시카드·GitHub·푸시 경계를 안내한다.
 tags: [quickstart, development, deployment, architecture]
-verified:
-  - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
 sources:
   - id: openwiki-source-57b81e54d1113287ebfdf6f8
     resource: repo://.github/CONTRIBUTING.md
@@ -23,12 +20,15 @@ sources:
     resource: repo://README.md
   - id: openwiki-source-82f574a2d5a654bb69161540
     resource: repo://scripts/setup-proxy.js
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+generated: { by: "openwiki/0.7.0", at: "2026-11-08T19:13:36.236Z" }
+verified:
+  - by: openwiki/0.7.0
+    at: 2026-11-08T19:13:36.236Z
 ---
 
 # CodeRecall 변경 길잡이
 
-CodeRecall은 `app`의 Vite 브라우저 번들과 `functions`의 Firebase Cloud Functions를 별도로 빌드·배포한다. 기능을 바꾸기 전에는 이 페이지에서 **변경이 건드리는 경계**를 찾고, 연결한 상세 페이지와 실제 코드를 함께 확인한다. 위키와 코드가 다르면 현재 동작의 정본은 코드다.
+CodeRecall은 `app`의 Vite 브라우저 번들과 `functions`의 Firebase Cloud Functions를 별도로 빌드·배포한다. 기능을 바꾸기 전에는 이 페이지에서 **변경이 건드리는 경계**를 찾고, 연결한 상세 페이지와 실제 코드를 함께 확인한다.
 
 ## 가장 짧은 로컬 시작 경로
 
@@ -102,5 +102,5 @@ firebase deploy --only hosting
 
 - 관련 이슈를 먼저 검색하고, 큰 변경은 구현 전에 방향을 맞춘다. 브랜치·커밋·PR 형식은 [기여 가이드](../.github/CONTRIBUTING.md)를 따른다.
 - 한 PR에는 한 목적만 담고, 리팩터링과 기능 추가는 나눈다.
-- 코드나 규칙의 사실이 바뀌면 관련 위키도 같은 PR에서 갱신한다. 설계 결정을 새로 내리거나 바꾸는 경우에는 위키 대신 `docs/adr/`에 ADR을 추가한다.
+- 위키의 범위와 우선순위는 `openwiki/INSTRUCTIONS.md`에서 확인한다. 위키를 갱신해야 하면 이 지침에 따라 생성 절차를 사용하고, 설계 결정을 새로 내리거나 바꾸는 경우에는 사람이 관리하는 `docs/adr/`에 새 ADR을 추가하며 채택된 ADR 본문은 고치지 않는다.
 - 비밀 값, API 키, 사용자 개인정보, 운영 계정 정보와 비용·매출 수치는 공개 문서·PR 산출물에 기록하지 않는다.

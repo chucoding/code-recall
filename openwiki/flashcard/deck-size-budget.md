@@ -1,16 +1,17 @@
 ---
 type: data-budget
 title: 덱 문서 크기 예산
-description: 한 날짜의 한국어·영어 플래시카드 덱을 하나의 Firestore 문서에 저장할 때 적용하는 바이트 예산과 축소 계약을 설명한다. 앱 실시간 생성과 서버 사전 생성이 같은 저장 규칙을 유지하는 방법을 다룬다.
+description: 한 날짜의 한국어·영어 플래시카드 덱을 하나의 Firestore 문서에 저장할 때 적용하는 바이트 예산과 축소 계약을 설명한다. 앱 실시간 생성과 서버 사전 생성이 같은 저장 규칙을 유지하는 방법과 예산 보장의 범위를 다룬다.
 tags: [flashcard, firestore, data-budget]
-verified:
-  - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
 sources:
   - id: openwiki-source-43482a23192c1b4cd832a0a3
     resource: repo://app/src/features/flashcard/lib/deck-size.ts
   - id: openwiki-source-38581190ff5761f7869b5cfa
     resource: repo://app/src/features/flashcard/model/useTodayFlashcards.ts
+  - id: openwiki-source-160c92eb52fdd31b0ea9d6a9
+    resource: repo://app/src/pages/FlashCardViewer.tsx
+  - id: openwiki-source-aa8955a01a898cdf1f9c5079
+    resource: repo://app/src/pages/PastDateReview.tsx
   - id: openwiki-source-60b51f83565a4de6497fc329
     resource: repo://firestore.rules
   - id: openwiki-source-f156ae50cd10545e0fcc37c4
@@ -19,56 +20,62 @@ sources:
     resource: repo://functions/src/flashcard-deck-size.ts
   - id: openwiki-source-bcaca72a0469dfd8f568b3ca
     resource: repo://functions/src/flashcard-pregeneration.ts
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+generated: { by: "openwiki/0.7.0", at: "2026-11-08T19:13:36.236Z" }
+verified:
+  - by: openwiki/0.7.0
+    at: 2026-11-08T19:13:36.236Z
 ---
 
-`users/{uid}/flashcards/{YYYY-MM-DD}` 한 문서에는 언어별 배열 `data_ko`, `data_en`가 함께 저장된다. Firestore 문서가 1 MiB(1,048,576 bytes)를 넘으면 쓰기가 거부되며, 큰 커밋의 원문 diff는 여러 카드에 반복되어 문서 크기를 빠르게 키운다. 따라서 덱은 **저장 직전**에 보수적인 문서 예산 안으로 축소한다. 이 경로의 소유권과 클라이언트 쓰기 권한은 [Firestore 데이터 경계](../architecture/firestore-data-boundary.md)를 참고한다.
+`users/{uid}/flashcards/{YYYY-MM-DD}` 문서는 언어별 배열 `data_ko`, `data_en`을 함께 가진다. Firestore 문서의 1 MiB(1,048,576 bytes) 상한에 비해, 큰 커밋의 원문 diff가 카드마다 반복되면 덱이 빠르게 커진다. 앱과 서버는 생성 결과를 쓰기 전에 덱의 저장 표현을 줄인다. 데이터 소유권과 클라이언트 쓰기 권한은 [Firestore 데이터 경계](../architecture/firestore-data-boundary.md)를 참고한다.
 
-## 예산과 측정 기준
+## 예산과 측정 단위
 
 | 항목 | 값 | 의미 |
 |---|---:|---|
-| Firestore 문서 상한 | 1,048,576 bytes | 넘으면 문서 쓰기가 거부되는 상한 |
-| `MAX_FLASHCARD_DOC_BYTES` | 900,000 bytes | 필드명 등을 고려한 안전 상한 |
-| `FLASHCARD_DECK_BUDGET_BYTES` | 450,000 bytes | 두 언어 필드가 같은 문서 예산을 공유하므로 언어별 기본 절반 |
-| `MAX_RAW_DIFF_CHARS` | 30,000자 | 카드에 남길 `rawDiff`의 최초 상한이며 생성 프롬프트의 diff 상한과 동일 |
-| `MIN_RAW_DIFF_CHARS` | 1,000자 | 이보다 짧게 해야 하면 `rawDiff`를 저장하지 않는 경계 |
-| `MAX_FILES_PER_CARD` | 20개 | 파일 보기 탭에 남길 파일 메타데이터 상한 |
+| Firestore 문서 상한 | 1,048,576 bytes | 이를 넘으면 문서 쓰기가 거부된다. |
+| `MAX_FLASHCARD_DOC_BYTES` | 900,000 bytes | 필드 등 문서 오버헤드에 여유를 둔 안전 상한이다. |
+| `FLASHCARD_DECK_BUDGET_BYTES` | 450,000 bytes | 같은 문서에 두 언어 덱이 공존하는 경우의 언어별 기본 예산이다. |
+| `MAX_RAW_DIFF_CHARS` | 30,000자 | 카드 `rawDiff`의 최초 상한이며 생성 프롬프트의 diff 상한과 같다. |
+| `MIN_RAW_DIFF_CHARS` | 1,000자 | 이 길이까지 줄여도 맞지 않으면 `rawDiff`를 생략한다. |
+| `MAX_FILES_PER_CARD` | 20개 | 사용자 덱 카드의 파일 메타데이터 상한이다. |
 
-앱은 `TextEncoder().encode(JSON.stringify(deck)).length`, 서버는 `Buffer.byteLength(JSON.stringify(deck), "utf8")`로 덱 배열의 UTF-8 직렬화 크기를 잰다. 이는 Firestore의 정확한 저장 크기 계산식은 아니지만 JSON의 따옴표와 이스케이프까지 포함하는 보수적 근사치다. 예산은 카드 수를 제한하는 규칙이 아니라 저장 표현의 바이트 크기 제한이다.
+앱은 `TextEncoder().encode(JSON.stringify(deck)).length`, Functions는 `Buffer.byteLength(JSON.stringify(deck), "utf8")`로 덱 배열의 JSON UTF-8 바이트 수를 잰다. 이는 Firestore 저장 크기의 정확한 계산식은 아니지만 따옴표와 이스케이프를 포함하는 일관된 근사치다. 카드 수가 아니라 **직렬화된 저장 표현**을 제한하는 규칙이다.
 
 ```mermaid
 flowchart TD
-  Input["생성된 카드 덱"] --> Compact["파일 patch 제거 및 파일 20개로 제한"]
-  Compact --> Try["rawDiff 30000자로 절단"]
+  Input["생성 또는 번역된 카드 덱"] --> Compact["patch 제거와 파일 20개 제한"]
+  Compact --> Try["rawDiff 최대 30000자로 축소"]
   Try --> Fits{"덱 JSON UTF-8 크기가 예산 이하"}
-  Fits -->|"예"| Save["data_ko 또는 data_en 병합 저장"]
+  Fits -->|"예"| Fitted["첫 적합 표현 반환"]
   Fits -->|"아니오"| Half{"다음 절반 길이가 1000자 이상"}
   Half -->|"예"| Try
-  Half -->|"아니오"| NoDiff["rawDiff 없이 축소"]
-  NoDiff --> Save
+  Half -->|"아니오"| NoDiff["rawDiff 없이 반환"]
+  Fitted --> Write["언어 필드 병합 저장"]
+  NoDiff --> Write
 ```
 
-저장 직전에 중복 데이터를 먼저 제거하고, 남은 원문 diff만 단계적으로 줄이는 흐름이다.
+*생성·번역 덱의 축소 순서와, diff 없는 마지막 반환도 예산 충족을 다시 확인하지 않는 현재 제어 흐름을 보여 준다.*
 
-## 축소 순서와 보존되는 정보
+## 축소 순서와 보존 정보
 
-`fitFlashcardDeckToBudget`은 각 후보 길이에 대해 모든 카드를 축소하고 크기를 재서, 예산에 처음 들어오는 표현을 선택한다.
+`fitFlashcardDeckToBudget`은 후보별로 모든 카드를 축소하고 측정하여, 예산 이하가 되는 첫 표현을 반환한다.
 
-1. 각 카드의 `metadata.files[].patch`를 항상 제거한다. 같은 변경 내용이 `rawDiff`에 이미 있어 중복이며, 파일 보기 탭은 `filename`, `raw_url` 등의 남은 메타데이터로 원본 파일을 다시 가져올 수 있다.
-2. `files`는 앞의 20개만 남긴다.
-3. `rawDiff`는 30,000자부터 시작하여 `30,000 → 15,000 → 7,500 ...`처럼 절반씩 줄인다. 질문·답변·하이라이트와 커밋/저장소/브랜치 메타데이터는 이 단계에서 유지한다.
-4. 1,000자 이상인 모든 후보도 예산을 넘으면 `rawDiff` 자체를 뺀 표현을 반환한다. 질문 재생성에는 원문 diff가 필요하므로 이런 카드에서는 재생성 UI가 숨겨진다.
+1. 각 카드의 `metadata.files[].patch`를 제거한다. 동일한 변경 내용이 `rawDiff`에 중복되며, 파일 보기에는 `filename`, `raw_url` 등 남은 메타데이터를 쓴다.
+2. `files`는 앞의 20개만 유지한다.
+3. `rawDiff`는 30,000자부터 `30,000 → 15,000 → 7,500 → 3,750 → 1,875` 순으로 후보를 만든다. 질문·답변·하이라이트와 커밋·저장소·브랜치 메타데이터는 이 단계에서 보존한다.
+4. 1,000자 이상 후보도 예산을 넘으면 `rawDiff`를 생략한 덱을 반환한다. 이때도 카드 자체를 임의로 삭제하지 않는다.
 
-원문 diff는 설명 가능성과 문서 크기 사이의 의도적인 trade-off다. `patch`를 없애도 `rawDiff`가 남아 있으면 카드 뒷면의 Diff 보기는 유지된다. 반대로 최종 단계에서 diff를 없애면 저장 실패는 피하지만, 해당 카드는 질문·답변과 비-diff 메타데이터만 가진다. 따라서 이 알고리즘은 카드 자체를 임의로 삭제하는 대신, 먼저 중복 표현과 원문 세부도를 희생한다.
+따라서 이 함수는 `rawDiff`가 없는 최종 표현의 크기를 다시 판정하거나 실패를 반환하지 않는 **best-effort 축소기**다. 질문·답변 등 비-diff 필드만으로도 예산을 넘는 덱, 또는 음수인 번역 예산에는 반환값도 예산을 넘을 수 있고, 이후 Firestore 쓰기가 거부될 수 있다. 호출자가 성공 여부를 받지 못하므로, 엄격한 보장이 필요하면 최종 덱과 전체 문서 표현을 다시 측정해 쓰기를 건너뛰거나 카드 감소 정책을 별도로 정해야 한다.
+
+`rawDiff`가 남으면 카드 뒷면의 Diff 보기와 질문 재생성이 가능하다. 최종 단계에서 생략되면 재생성 UI는 숨겨지지만 질문·답변과 비-diff 메타데이터는 보존된다. 이는 저장 실패를 줄이기 위해 중복 표현과 원문 세부도를 먼저 희생하는 선택이다.
 
 ### Markdown 안전 절단
 
-`rawDiff`는 Markdown이며 보통 ` ```diff ` 코드 펜스를 포함한다. 단순 문자열 절단 지점까지의 펜스 개수가 홀수이면 절단 결과에 닫는 ` ``` `를 추가한 뒤 `…(truncated)`를 붙인다. 렌더러가 이후 본문까지 코드 블록으로 해석하는 문제를 막는 대신, 마지막 hunk나 코드 줄은 불완전할 수 있다. 이 표시는 원문 전체가 아니라 저장 예산 때문에 잘린 미리보기임을 명시한다.
+`rawDiff`는 Markdown 코드 펜스를 포함할 수 있다. 절단 지점까지 `^````에 맞는 펜스 수가 홀수이면 닫는 ` ``` `를 추가하고, 항상 `…(truncated)` 표식을 붙인다. 따라서 잘린 마지막 hunk나 코드 줄은 불완전할 수 있어도 이후 본문이 코드 블록으로 계속 렌더링되는 일을 막고, 저장용 미리보기임을 표시한다.
 
-## 앱 쓰기 경로의 남은 예산
+## 앱 쓰기 경로: 기본 예산과 남은 예산
 
-앱의 `useTodayFlashcards`는 오늘 문서에서 현재 언어 덱을 먼저 읽는다. 현재 언어 덱이 없고 반대 언어 덱이 있으면 번역 결과를 저장하기 전에 다음 중 작은 값을 번역 덱의 예산으로 쓴다.
+`useTodayFlashcards`는 오늘 문서에서 현재 언어 덱을 먼저 읽는다. 현재 언어가 없고 반대 언어 덱이 있으면 GitHub 재조회 대신 번역한 뒤 다음 값으로 축소한다.
 
 ```ts
 Math.min(
@@ -77,24 +84,34 @@ Math.min(
 )
 ```
 
-이 계산은 예산 도입 이전의 큰 반대 언어 덱이 남아 있는 경우에도 두 배열의 합이 안전 상한을 넘지 않게 하려는 호환 처리다. 두 덱이 모두 없어서 새로 생성하는 경우에는 기본 언어별 예산으로 축소 후 `setDoc(..., { merge: true })`로 해당 `data_{lang}` 필드만 쓴다. 생성 경로 전체와 언어 전환의 관계는 [카드 생성 경로](generation-paths.md)를 참고한다.
+이는 기본적으로 언어별 450,000-byte 예산을 적용하되, 예산 도입 전의 큰 반대 언어 덱이 있으면 900,000-byte 안전 상한에서 측정한 잔여분보다 더 쓰지 않도록 하는 계산이다. 다만 축소기는 최종 크기 초과를 보고하지 않으므로, 반대 언어 덱이 이미 안전 상한 이상이거나 번역 결과의 비-diff 부분이 잔여 예산보다 크면 이 계산만으로 합계가 보장되지는 않는다.
 
-## 서버 사전 생성과 동시성
+두 언어 덱이 모두 없으면 앱은 기본 예산으로 축소한 뒤 `setDoc(..., { merge: true })`로 `data_{lang}`만 저장한다. 현재 덱·반대 언어 덱·즉시 생성의 우선순위는 [카드 생성 경로](generation-paths.md)를 참고한다.
 
-서버 사전 생성은 카드 생성 결과를 같은 `fitFlashcardDeckToBudget` 규칙으로 축소한 뒤 `data_{language}`를 트랜잭션 병합 저장한다. 저장 전과 트랜잭션 안에서 이미 덱이 존재하는지 확인하므로, 사용자가 앱에서 먼저 생성한 문서를 서버가 덮어쓰지 않는다. 서버는 어느 한 언어 덱이라도 있으면 작업을 건너뛴다. 따라서 언어별 덱을 나중에 채우는 일은 앱의 번역 경로가 담당하며, 그때 위의 남은 예산 계산이 필요하다. 스케줄링·재시도·완료 기록의 세부 사항은 [오늘의 플래시카드 사전 생성](pregeneration.md)에 있다.
+### 축소기를 거치지 않는 후속 쓰기
 
-## 변경 계약: 복제 구현을 함께 갱신한다
+이 예산 제어는 새로 생성하거나 번역하는 덱의 저장 전 단계다. 기존 덱에서 누락된 `branch`를 보강하는 쓰기와, 질문 재생성 결과의 질문·하이라이트를 반영하는 쓰기는 현재 배열을 그대로 `setDoc(..., { merge: true })`로 다시 쓴다. 이 경로들은 `fitFlashcardDeckToBudget`을 호출하지 않는다. 카드 형식 또는 재생성 결과를 키우는 변경에서는 이 쓰기들도 문서 한도 실패 지점이 될 수 있으므로, 크기 정책을 강화할 때 함께 보호해야 한다.
 
-앱의 `app/src/features/flashcard/lib/deck-size.ts`와 서버의 `functions/src/flashcard-deck-size.ts`는 별도 패키지여서 이 로직을 공유하지 않고 동등한 구현을 각각 가진다. 두 구현은 다음을 함께 바꿔야 한다.
+## 서버 사전 생성과 경쟁
 
-- 문서·언어별 예산, diff 최대/최소 길이, 파일 수 상한
-- JSON UTF-8 측정 방식과 비교 조건
-- `patch` 제거, 파일 보존 필드, `rawDiff` 생략 조건
+`pregenerateUserFlashcards`는 생성한 덱을 Functions의 `fitFlashcardDeckToBudget`으로 축소한다. 저장 전 일반 읽기와 실제 저장 트랜잭션 안에서 모두 `data_ko`, `data_en` 중 **어느 하나라도** 비어 있지 않은 배열인지 검사한다. 기존 덱이 있으면 AI 생성 자체를 건너뛰거나 트랜잭션 쓰기를 포기하고 `exists` 완료 기록을 남긴다. 비어 있을 때만 선택 언어의 `data_{language}`를 `{ merge: true }`로 저장한다.
+
+이 이중 검사는 앱이 자정 직후 먼저 만든 문서를 서버가 덮어쓰지 않도록 한다. 그 결과 서버는 다른 언어 필드를 나중에 채우지 않으며, 언어 전환 뒤 빈 필드를 채우는 책임은 앱의 번역 경로에 있다. 스케줄링·완료 기록·재시도는 [오늘의 플래시카드 사전 생성](pregeneration.md)에 있다.
+
+## 변경 계약: 복제 구현을 함께 갱신
+
+앱의 `app/src/features/flashcard/lib/deck-size.ts`와 Functions의 `functions/src/flashcard-deck-size.ts`는 별도 패키지라 같은 정책을 각각 구현한다. 둘은 현재 다음을 동일하게 둔다.
+
+- 900,000-byte 문서 안전 상한과 450,000-byte 언어별 기본 예산
+- JSON UTF-8 측정과 `<=` 비교
+- `patch` 제거, 파일 20개 제한, 30,000자에서 시작하는 반감, diff 없는 fallback
 - 코드 펜스 닫기와 `…(truncated)` 표식을 포함한 절단 형식
-- 카드 및 파일 메타데이터 타입이 바뀔 때 축소 대상 필드
+- 카드·파일 메타데이터 중 축소할 필드
 
-한쪽만 변경하면 실시간 생성과 사전 생성이 같은 날짜 문서에 서로 다른 크기·표현의 덱을 기록한다. 특히 앱에서 예산을 늘리고 서버를 그대로 두면 사전 생성 카드가 불필요하게 손실될 수 있고, 반대로 서버만 늘리면 앱이 번역 덱을 추가할 때 문서 상한을 넘길 위험이 생긴다. 상수나 축소 규칙 변경은 두 파일과 두 쓰기 경로를 하나의 변경으로 검토하고, 경계 크기·열린/닫힌 코드 펜스·diff 없는 fallback·기존 반대 언어 덱이 큰 번역 저장을 각각 검증해야 한다. 현재 이 전용 축소 모듈에 대한 테스트 파일은 없으므로, 계약 변경에는 양 구현을 같은 fixture로 비교하는 단위 테스트를 추가하는 것이 안전하다.
+상수나 축소 순서를 한쪽만 바꾸면 실시간 생성·번역과 서버 사전 생성이 같은 날짜 문서에 다른 크기와 표현의 덱을 쓴다. 변경 시 두 구현, 앱의 남은 예산 계산, 그리고 모든 후속 덱 쓰기를 한 변경으로 검토한다. 특히 다음 경계를 검증하는 fixture 기반 단위 테스트가 필요하다: 정확히 예산 이하/초과인 UTF-8 JSON, 열린 코드 펜스, diff 없는 fallback, 큰 반대 언어 덱, 그리고 축소 후에도 예산을 넘는 덱이다. 현재 두 패키지에는 전용 `deck-size` 테스트 파일이 없다.
 
-## 별도인 데모 캐시 예산
+## 별도 정책인 데모 캐시
 
-`demoFlashcards/{cacheId}`는 사용자 날짜 덱과 다른 문서 모델이다. 데모 사전 생성은 언어별로 문서 하나를 만들고, 커밋당 파일을 10개·각 patch를 4,000자로 제한한 뒤 문서 전체의 JSON UTF-8 크기가 900,000 bytes를 넘으면 **축소 재시도 없이 저장을 건너뛴다**. 그러므로 데모의 `MAX_DOCUMENT_BYTES = 900_000`은 같은 Firestore 상한에 대한 별도 캐시 정책이지, 위의 두 언어 `data_ko`/`data_en` 공유 예산 계약을 대체하지 않는다.
+`demoFlashcards/{owner}__{repo}__{lang}`는 사용자 날짜 덱과 다른 공개 캐시 모델이다. 서버는 한국어·영어 각각을 **별도 문서**로 만들며, 최근 3개 커밋을 대상으로 파일을 커밋당 10개, 각 `patch`를 4,000자로 제한한다. 문서 전체의 JSON UTF-8 크기가 `MAX_DOCUMENT_BYTES = 900_000`보다 크면 추가 축소나 재시도 없이 저장을 건너뛴다.
+
+그러므로 데모의 900,000-byte 값은 같은 Firestore 한도에 대한 독립적인 캐시 거부 정책이다. 사용자 문서에서 `data_ko`와 `data_en`이 공유하는 450,000-byte 기본 예산이나 앱·Functions 축소 계약을 대체하지 않는다.
