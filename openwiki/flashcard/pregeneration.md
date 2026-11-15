@@ -1,21 +1,25 @@
 ---
 type: generation-workflow
-title: 오늘의 플래시카드 사전 생성
-description: 사용자 타임존의 새벽에 최근 활동 사용자의 오늘 덱을 Cloud Tasks로 생성해 첫 화면의 GitHub·AI 대기를 줄이는 서버 워크플로를 설명한다. 대상 선정, 앱과의 저장 경쟁, 완료 기록 및 재시도 경계를 다룬다.
+title: 사용자 덱 사전 생성
+description: 시간대별 스케줄러가 최근 활동 사용자의 오늘 플래시카드 덱을 Cloud Tasks로 미리 생성하는 워크플로를 설명한다. 완료 기록, 트랜잭션 경쟁 방지, 확정 실패와 일시 실패의 재시도 경계를 다룬다.
 tags: [flashcard, scheduler, cloud-tasks, firestore]
+verified:
+  - by: openwiki/0.7.0
+    at: 2026-11-15T20:00:44.576Z
 sources:
   - id: openwiki-source-38581190ff5761f7869b5cfa
     resource: repo://app/src/features/flashcard/model/useTodayFlashcards.ts
   - id: openwiki-source-60b51f83565a4de6497fc329
     resource: repo://firestore.rules
+  - id: openwiki-source-5a4dfd84d0c43f8e8e449364
+    resource: repo://functions/src/flashcard-deck-size.ts
   - id: openwiki-source-bcaca72a0469dfd8f568b3ca
     resource: repo://functions/src/flashcard-pregeneration.ts
   - id: openwiki-source-94f067e411507438068e4aeb
     resource: repo://functions/src/index.ts
-verified:
-  - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+  - id: openwiki-source-7b16b1573c8ef4417ee924bc
+    resource: repo://functions/src/timezone.ts
+generated: { by: "openwiki/0.7.0", at: "2026-11-15T20:00:44.576Z" }
 ---
 
 ## 목적과 경계
@@ -26,7 +30,7 @@ generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
 
 - **읽기·쓰기 대상:** 생성 결과는 `data_ko` 또는 `data_en`만 병합해 사용자 날짜 덱에 쓴다. 서버는 해당 문서에 비어 있지 않은 덱이 어느 언어로든 있으면 생성하지 않는다. 다른 언어를 나중에 채우는 책임은 앱의 번역 경로에 있다.
 - **서버 전용 상태:** `flashcardPregeneration/{uid}`에는 그 사용자·날짜의 처리가 끝났다는 기록을 둔다. 이 컬렉션에는 Firestore 규칙의 `match`가 없으므로 클라이언트는 읽거나 쓰거나 삭제할 수 없다. 소유권 경계는 [Firestore 데이터 경계](../architecture/firestore-data-boundary.md)를 참고한다.
-- **공유 계약:** Free는 `[1, 7]`, Pro는 `[1, 7, 30]`일 전을 대상으로 한다. 이 상수와 카드 형태는 앱 즉시 생성 경로와 맞춰야 한다. 저장 전에는 서버의 `fitFlashcardDeckToBudget`으로 덱을 축소한다. 크기 예산은 [덱 문서 크기 예산](deck-size-budget.md)에 있다.
+- **공유 계약:** Free는 `[1, 7]`, Pro는 `[1, 7, 30]`일 전을 대상으로 한다. 이 상수와 카드 형태는 앱 즉시 생성 경로와 맞춰야 한다. 저장 전에는 서버의 `fitFlashcardDeckToBudget`으로 덱을 축소 처리한다. 이 함수는 diff를 줄이거나 제거하지만 카드 자체를 제거하지 않으므로, 반환값이 항상 예산 이하인 것은 아니다. 크기 예산과 이 한계는 [덱 문서 크기 예산](deck-size-budget.md)에 있다.
 
 ## 스케줄, 큐, 저장 경쟁
 
@@ -92,7 +96,7 @@ sequenceDiagram
 생성 전 일반 읽기는 불필요한 AI 호출을 줄이고, 저장 트랜잭션의 재검사는 경쟁에서 데이터 손실을 막는다. `hasDeck`은 `data_ko`와 `data_en` 중 하나라도 비어 있지 않은 배열인지 검사한다.
 
 - 일반 읽기에서 기존 덱을 발견하면 `exists`를 기록하고 AI 호출 없이 끝낸다.
-- 생성 결과가 있으면 덱 크기를 맞춘 뒤 트랜잭션 안에서 다시 `hasDeck`을 검사한다. 여전히 없을 때만 선택 언어 필드를 `{merge: true}`로 저장하고 `saved`를 기록한다.
+- 생성 결과가 있으면 덱을 축소 처리한 뒤 트랜잭션 안에서 다시 `hasDeck`을 검사한다. 여전히 없을 때만 선택 언어 필드를 `{merge: true}`로 저장하고 `saved`를 기록한다.
 - 트랜잭션 사이에 앱이 먼저 저장했다면 트랜잭션은 쓰지 않고 `false`를 반환하며, 태스크는 `exists`를 기록한다. 따라서 서버는 앱이 생성한 어느 언어 덱도 덮어쓰지 않는다.
 
 ## 완료 기록과 실패 의미
@@ -106,7 +110,7 @@ sequenceDiagram
 | `empty` | 모든 조합이 정상적으로 끝났지만 카드가 하나도 없었다 | 커밋 없음으로 확정하고 같은 날짜 후보에서 제외 |
 | `unavailable` | 설정·GitHub 토큰이 없거나 GitHub 토큰이 무효다 | 재시도해도 바뀌지 않는 문제로 보고 같은 날짜 후보에서 제외 |
 
-실패는 결과가 비어 있는지와 원인을 함께 판단한다. 조합별 일반 오류는 로그를 남기고 다른 조합을 계속 생성하며 `failedCount`를 올린다. 모든 결과가 비었고 실패도 없을 때만 `empty`다. 일부 조합이 실패한 채 덱이 비었으면 그 조합에 카드가 될 커밋이 있었을 수 있으므로 완료 기록을 쓰지 않고 예외를 던진다. GitHub 인증 오류는 예외적으로 결정적 실패라 `unavailable`으로 끝낸다. 그 밖에 OpenAI·GitHub 네트워크·파싱 같은 일시 오류가 태스크까지 전파되면 Cloud Tasks는 최대 3회, 최소 120초 backoff로 재시도한다. 세 번 모두 실패해도 완료 기록이 없으므로 새벽 창 안의 다음 정각 스케줄러가 새 ID의 태스크를 다시 넣을 수 있다.
+실패는 결과가 비어 있는지와 원인을 함께 판단한다. 조합별 일반 오류는 로그를 남기고 다른 조합을 계속 생성하며 `failedCount`를 올린다. 모든 결과가 비었고 실패도 없을 때만 `empty`다. 일부 조합이 실패한 채 덱이 비었으면 그 조합에 카드가 될 커밋이 있었을 수 있으므로 완료 기록을 쓰지 않고 예외를 던진다. GitHub 인증 오류는 예외적으로 결정적 실패라 `unavailable`으로 끝낸다. 그 밖에 OpenAI·GitHub 네트워크·파싱·Firestore 저장처럼 확정 완료로 분류되지 않은 오류가 태스크까지 전파되면 Cloud Tasks는 최대 3회, 최소 120초 backoff로 재시도한다. 세 번 모두 실패해도 완료 기록이 없으므로 새벽 창 안의 다음 정각 스케줄러가 새 ID의 태스크를 다시 넣을 수 있다.
 
 카드가 일부라도 만들어진 경우에는 부분 실패 수가 있어도 그 덱을 저장하고 `saved`로 완료한다. 이는 이미 사용 가능한 첫 화면 결과를 보존하는 선택이다. 반대로 **부분 실패 + 빈 결과**만 미처리로 남기는 것이 빈 덱과 실패를 혼동하지 않는 핵심 불변식이다.
 
@@ -122,4 +126,4 @@ pnpm --prefix functions run lint
 pnpm --prefix functions run build
 ```
 
-현재 `functions/`와 `app/`에는 전용 테스트 파일이 없다. 이 워크플로를 변경할 때는 최소한 Emulator 또는 의존성 mock으로 다음을 검증하는 테스트를 추가하는 것이 안전하다: 시간대 경계와 서머타임 날짜 범위, 7일 활동 필터와 완료 사용자 제외, 같은 태스크 ID의 멱등 등록, 앱 저장과 트랜잭션 저장의 경쟁, `empty`와 부분 실패의 구분, GitHub 401의 `unavailable`, 태스크 예외가 완료 기록 없이 재시도되는 경로.
+이 워크플로를 변경할 때는 Emulator 또는 의존성 mock으로 다음을 우선 검증한다: 시간대 경계와 서머타임 날짜 범위, 7일 활동 필터와 완료 사용자 제외, 같은 태스크 ID의 멱등 등록, 앱 저장과 트랜잭션 저장의 경쟁, `empty`와 부분 실패의 구분, GitHub 401의 `unavailable`, 태스크 예외가 완료 기록 없이 재시도되는 경로.

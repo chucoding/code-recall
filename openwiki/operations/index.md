@@ -1,4 +1,4 @@
 # 파일
 
-- [로컬 실행과 Firebase 배포](local-development-and-deployment.md) - app과 Cloud Functions의 환경 변수 생성, 프록시, 빌드, 에뮬레이터 및 Firebase 배포 순서를 설명한다. 번들 시점 Functions URL과 Hosting 산출물의 배포 불변식을 중심으로 안전한 검증 절차를 정리한다.
-- [시간대 기반 푸시 알림](push-notifications.md) - 브라우저 권한과 FCM 등록 토큰을 사용자 설정에 저장하고, 매시 실행되는 Cloud Scheduler가 사용자별 현지 시각에 따라 리마인더를 배치 전송하는 경로를 설명한다. 시간대·시각 폴백, 실패 관측의 한계 및 안전한 변경 지점을 다룬다.
+- [로컬 개발·배포·운영 확인](local-development-and-deployment.md) - pnpm 워크스페이스에서 Vite 프런트엔드와 Firebase Cloud Functions를 안전하게 빌드·실행·배포하는 순서를 설명한다. 프록시가 만드는 Functions URL, Hosting 산출물, PWA 캐시를 함께 확인한다.
+- [시간대별 푸시 알림과 탈퇴 기록 정리](push-notifications.md) - 브라우저 알림 권한과 FCM 등록 정보를 사용자 설정으로 연결하고, 사용자별 현지 시각에 맞춘 매시 발송과 실패 관찰 방식을 설명한다. 탈퇴 당일 재가입 제한 기록의 생성·검사·KST 정리 일정 및 그 운영상 한계를 함께 다룬다.

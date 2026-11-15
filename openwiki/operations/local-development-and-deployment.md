@@ -1,11 +1,11 @@
 ---
 type: operations-workflow
-title: 로컬 실행과 Firebase 배포
-description: app과 Cloud Functions의 환경 변수 생성, 프록시, 빌드, 에뮬레이터 및 Firebase 배포 순서를 설명한다. 번들 시점 Functions URL과 Hosting 산출물의 배포 불변식을 중심으로 안전한 검증 절차를 정리한다.
+title: 로컬 개발·배포·운영 확인
+description: pnpm 워크스페이스에서 Vite 프런트엔드와 Firebase Cloud Functions를 안전하게 빌드·실행·배포하는 순서를 설명한다. 프록시가 만드는 Functions URL, Hosting 산출물, PWA 캐시를 함께 확인한다.
 tags: [firebase, deployment, local-development, vite, operations]
 verified:
   - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
+    at: 2026-11-15T20:00:44.576Z
 sources:
   - id: openwiki-source-ea70eb6c045047448e446296
     resource: repo://.gitignore
@@ -35,12 +35,14 @@ sources:
     resource: repo://README.md
   - id: openwiki-source-82f574a2d5a654bb69161540
     resource: repo://scripts/setup-proxy.js
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+generated: { by: "openwiki/0.7.0", at: "2026-11-15T20:00:44.576Z" }
 ---
 
-# 로컬 실행과 Firebase 배포
+# 로컬 개발·배포·운영 확인
 
-이 저장소는 Vite 기반 브라우저 패키지 `app`과 Firebase Cloud Functions 패키지 `functions`를 **서로 별도로 빌드**한다. 개발 중 브라우저의 Functions 요청은 Vite의 `/api` 프록시를 거쳐 Functions Emulator로 가고, 배포 번들은 Functions 공개 URL을 직접 호출한다. Firestore·Authentication은 현재 `pnpm serve`가 띄우는 에뮬레이터 범위가 아니므로, 로컬 앱도 `app/.env`가 가리키는 Firebase 프로젝트의 클라이언트 SDK를 사용한다. 로컬 Functions만 격리된다는 점을 이해하고 공유 프로젝트에서 쓰기 동작을 시험할 때 특히 주의한다.
+이 저장소는 Vite 브라우저 패키지 `app`과 Firebase Cloud Functions 패키지 `functions`를 별도로 빌드한다. 개발 중 브라우저의 Functions 요청은 Vite의 `/api` 프록시를 거쳐 Functions Emulator로 가며, production 번들은 Functions 공개 URL을 직접 호출한다. 따라서 **프로젝트 연결 → 환경 변수와 URL 생성 → 빌드 → 서버 측 배포 → Hosting 배포** 순서를 지켜야 URL과 정적 산출물이 어긋나지 않는다.
+
+`pnpm serve`는 Functions Emulator만 시작한다. Firestore와 Authentication Emulator는 이 절차에 포함되지 않으므로, 로컬 앱의 Auth·Firestore SDK는 `app/.env`가 가리키는 Firebase 프로젝트를 사용한다. 공유 또는 운영 프로젝트를 선택한 상태에서 데이터를 쓰는 수동 검증은 피한다.
 
 ```mermaid
 sequenceDiagram
@@ -49,13 +51,13 @@ sequenceDiagram
   participant Proxy as pnpm proxy
   participant Emu as Functions Emulator
   participant Vite as Vite dev server
-  participant Browser
+  participant Browser as 브라우저
   participant Fn as Cloud Functions
   participant Host as Firebase Hosting
 
-  Dev->>Env: Firebase 웹 설정과 선택 값 준비
-  Dev->>Proxy: 프로젝트 ID에서 주소 생성
-  Proxy->>Env: Functions URL 변수 보완
+  Dev->>Env: 웹 SDK 설정을 준비
+  Dev->>Proxy: 프로젝트 ID에서 URL 생성
+  Proxy->>Env: Functions URL 키를 보완
   Dev->>Emu: pnpm serve
   Dev->>Vite: pnpm dev
   Browser->>Vite: /api 요청
@@ -65,17 +67,17 @@ sequenceDiagram
   Dev->>Host: app/dist 배포
 ```
 
-*환경 변수 생성부터 로컬 프록시, 그리고 명시적으로 빌드한 Hosting 산출물과 Functions·규칙을 배포하는 순서다.*
+*환경 변수 생성부터 로컬 프록시, 서버 측 배포, 검증된 Hosting 산출물 배포까지의 안전한 순서다.*
 
-## 시작 전: 의존성, 프로젝트 연결, 비밀 관리
+## 시작 전: 워크스페이스와 프로젝트 연결
 
-Node.js 22 이상, pnpm, Firebase CLI가 필요하다. 루트의 package manager는 `pnpm@10.18.0`이고 Functions 런타임도 Node.js 22를 선언한다. 의존성은 루트에서 한 번 설치한다.
+루트 워크스페이스에는 `app`과 `functions`가 있다. Node.js 22 이상, pnpm, Firebase CLI를 준비하고 루트에서 의존성을 설치한다. 루트의 package manager는 `pnpm@10.18.0`이며 Functions 런타임도 Node.js 22를 선언한다.
 
 ```bash
 pnpm install
 ```
 
-Firebase 로그인 뒤에는 현재 작업 사본에 사용할 프로젝트를 선택한다. `.firebaserc`는 무시되는 로컬 연결 파일이므로 새 clone 또는 worktree에서는 다시 연결하고, 배포 전에도 활성 선택을 확인한다.
+Firebase 로그인 뒤에는 이 작업 사본에서 쓸 프로젝트를 선택한다. `.firebaserc`는 Git에서 무시되므로 새 clone 또는 worktree에서는 다시 연결하고, 배포 전에는 활성 선택을 다시 확인한다.
 
 ```bash
 firebase login
@@ -83,87 +85,104 @@ firebase use --add
 firebase use
 ```
 
-`firebase init`은 실행하지 않는다. 저장소가 이미 `firebase.json`, `firestore.rules`, `functions` 코드베이스 설정을 소유한다. 초기화 마법사는 이 배포 설정이나 규칙을 변경·덮어쓸 위험이 있으므로, 프로젝트 연결에는 `firebase use --add`만 사용한다.
+`firebase init`은 실행하지 않는다. 저장소가 이미 `firebase.json`, `firestore.rules`, `functions` 설정을 소유한다. 초기화 마법사는 기존 배포 설정이나 규칙을 바꿀 수 있으므로 프로젝트 연결에는 `firebase use --add`를 사용한다.
 
-`app/.env.example`을 `app/.env`로 복사해 Firebase 웹 SDK가 초기화에 쓰는 `VITE_API_KEY`, `VITE_AUTH_DOMAIN`, `VITE_PROJECT_ID`, `VITE_STORAGE_BUCKET`, `VITE_MESSAGING_SENDER_ID`, `VITE_APP_ID`, `VITE_MEASUREMENT_ID`를 준비한다. 웹 푸시를 사용할 때는 `VITE_VAPID_KEY`, 분석을 사용할 때는 선택적으로 `VITE_CLARITY_PROJECT_ID`도 설정한다. Functions의 AI 경로에는 `functions/.env`의 `OPENAI_API_KEY`가 필요하다. 어떤 파일도 저장소에 커밋하지 말고, 값·키·운영 프로젝트 식별자를 문서나 로그에 복사하지 않는다.
+## 환경 변수와 `pnpm proxy`
+
+`app/.env.example`을 `app/.env`로 복사한 뒤 Firebase 웹 SDK 초기화용 `VITE_API_KEY`, `VITE_AUTH_DOMAIN`, `VITE_PROJECT_ID`, `VITE_STORAGE_BUCKET`, `VITE_MESSAGING_SENDER_ID`, `VITE_APP_ID`, `VITE_MEASUREMENT_ID`를 설정한다. 웹 푸시에는 `VITE_VAPID_KEY`, Clarity에는 선택적으로 `VITE_CLARITY_PROJECT_ID`를 사용한다. AI HTTP 함수의 제공자 키는 `functions/.env`에서 관리한다.
 
 ```bash
 cp app/.env.example app/.env
 ```
 
-## `pnpm proxy`: 주소를 만드는 빌드 전 계약
+`.env`와 `.firebaserc`는 Git에서 무시된다. 환경 변수의 **값**, API 키, 운영 프로젝트·계정 정보는 커밋, 문서, 터미널 공유 로그, 스크린샷에 넣지 않는다.
 
-`pnpm proxy`는 `scripts/setup-proxy.js`를 실행한다. 이 스크립트는 `app/.env`의 `VITE_PROJECT_ID`를 읽어 아래의 Functions 관련 키를 보완한다.
+그 다음 `pnpm proxy`를 실행한다. `scripts/setup-proxy.js`는 `app/.env`의 `VITE_PROJECT_ID`가 없거나 파일이 없으면 실패하며, 이 값으로 다음 키를 보완한다.
 
 | 키 | 용도 |
 | --- | --- |
-| `VITE_FIREBASE_PROJECT_ID` | Functions 주소 구성에 쓰는 Firebase 프로젝트 ID의 복사본 |
+| `VITE_FIREBASE_PROJECT_ID` | Functions 주소 구성에 쓰는 프로젝트 ID |
 | `VITE_FIREBASE_REGION` | Functions 리전 |
-| `VITE_FUNCTIONS_URL_LOCAL` | Vite 개발 프록시가 향할 Emulator 기본 URL |
-| `VITE_FUNCTIONS_URL_PROD` | 프로덕션 브라우저가 HTTP Functions를 호출할 기본 URL |
-
-이 명령은 파일이나 `VITE_PROJECT_ID`가 없으면 실패한다. 이미 값이 있는 키는 **덮어쓰지 않으며**, 빈 값만 채운다. 따라서 Firebase 프로젝트나 리전을 바꿨다면 기존의 비어 있지 않은 URL이 새 프로젝트와 일치하는지 확인해야 한다. 단순히 명령을 다시 실행하는 것만으로 오래된 값이 교체되지는 않는다.
-
-Functions URL은 런타임에 서버에서 발견되는 설정이 아니다. Vite는 production 모드에서 `VITE_FUNCTIONS_URL_PROD`를 읽고, API 모듈은 이를 프로덕션 번들에 포함해 함수 이름을 붙여 요청한다. 반대로 development 모듈은 `/api`만 요청한다. 즉 URL·리전·프로젝트를 변경한 뒤에는 다음을 반드시 지킨다.
-
-1. `app/.env`의 `VITE_PROJECT_ID`와 자동 생성 Functions URL 키가 의도한 프로젝트·리전을 가리키는지 검토한다.
-2. `pnpm proxy`로 누락되거나 빈 키를 보완한다.
-3. Vite 개발 서버를 재시작하고, 배포용이면 `pnpm build`로 **새 번들**을 만든다.
-4. 이미 배포된 Hosting 파일은 이전 URL을 포함하므로, Functions만 재배포해서 클라이언트의 호출 대상을 바꿀 수 없다는 점을 확인한다.
-
-이 계약은 공개 URL을 비밀로 만드는 장치가 아니다. 공개 AI HTTP 함수는 URL 은닉 대신 서버의 인증·입력·사용량 경계로 보호한다. 호출 보안의 상세는 [공개 AI 함수 호출 경계](../architecture/ai-call-guard.md)를 참고한다.
-
-## 로컬 실행: Functions 먼저, Vite는 별도 터미널
-
-다음 순서로 실행한다.
+| `VITE_FUNCTIONS_URL_LOCAL` | Vite 프록시가 향할 Emulator 기본 URL |
+| `VITE_FUNCTIONS_URL_PROD` | production 브라우저가 HTTP Functions를 호출할 기본 URL |
 
 ```bash
+pnpm proxy
+```
+
+이 스크립트는 없는 키를 추가하고, 이미 있는 키는 값이 비어 있을 때만 채운다. 비어 있지 않은 기존 값은 덮어쓰지 않는다. 따라서 프로젝트 또는 리전을 바꿨다면, 명령을 재실행하기 전에 기존 Functions URL이 의도한 대상인지 검토하고 필요하면 안전하게 수정한 뒤 다시 실행한다.
+
+### Functions URL은 빌드 계약이다
+
+Vite 설정은 development에서 `VITE_FUNCTIONS_URL_LOCAL`, production에서 `VITE_FUNCTIONS_URL_PROD`를 선택한다. 개발 API 모듈은 `/api`를 기본 경로로 쓰지만 production 모듈은 production URL에 함수 이름을 붙여 요청한다. 즉 이 URL은 서버가 런타임에 발견하는 값이 아니라 Vite가 번들에 포함하는 빌드 시점 계약이다.
+
+프로젝트·리전·URL·함수 HTTP 이름을 바꿀 때는 다음을 수행한다.
+
+1. `app/.env`의 `VITE_PROJECT_ID`와 Functions URL 키가 같은 의도한 프로젝트·리전을 가리키는지 확인한다.
+2. `pnpm proxy`로 누락되거나 빈 키를 보완한다.
+3. 실행 중인 Vite 개발 서버를 재시작한다.
+4. 배포할 변경이면 `pnpm build`로 새 `app/dist`를 만든다.
+5. 이미 Hosting에 올라간 번들은 이전 URL을 포함하므로 Functions만 재배포해 호출 대상을 바꿀 수 없음을 확인한다.
+
+공개 Functions URL은 비밀 정보가 아니다. API 호출의 인증·입력·사용량 제한은 Functions 경계에서 다뤄야 한다. 관련 보안 계약은 [공개 AI 함수 호출 경계](../architecture/ai-call-guard.md)를 참고한다.
+
+## 로컬 실행과 Emulator 범위
+
+Functions를 먼저 준비하고 별도 터미널에서 Vite를 실행한다.
+
+```bash
+# 터미널 1
 pnpm proxy
 pnpm serve
 ```
 
-다른 터미널에서 다음을 실행한다.
-
 ```bash
+# 터미널 2
 pnpm dev
 ```
 
-루트 `pnpm serve`는 먼저 Functions TypeScript를 빌드한 다음 `firebase emulators:start --only functions`를 실행한다. Functions 패키지의 `serve`도 같은 역할을 한다. Functions가 컴파일되지 않았거나 Emulator가 준비되기 전에 Vite를 띄우면 `/api` 요청을 신뢰성 있게 확인할 수 없으므로 백엔드를 먼저 준비한다.
+루트 `pnpm serve`는 Functions TypeScript를 빌드한 뒤 `firebase emulators:start --only functions`를 실행한다. `pnpm dev`는 `app`의 Vite 개발 서버를 실행한다. Vite는 `/api` 요청을 `VITE_FUNCTIONS_URL_LOCAL`로 프록시하고 `/api` 접두사를 제거한다. 예를 들어 `/api/openaiChatCompletions`는 Emulator의 `/openaiChatCompletions`로 전달된다.
 
-Vite 설정은 development 모드에서 `VITE_FUNCTIONS_URL_LOCAL`을 `/api`의 target으로 선택하고, `/api` 접두사를 제거해 전달한다. 예를 들어 프런트엔드의 `/api/openaiChatCompletions` 요청은 Emulator의 `/openaiChatCompletions`로 전달된다. 프로덕션에서는 이 프록시 경로가 아니라 `VITE_FUNCTIONS_URL_PROD`에 같은 함수 이름을 붙여 호출한다. Functions 이름 또는 HTTP 경로를 바꾸면 개발 프록시와 프로덕션 API 모듈을 함께 확인해야 한다.
+`--only functions`은 Firestore, Auth, Hosting Emulator를 띄우지 않는다. 앱의 Firebase 초기화 코드에도 Auth·Firestore Emulator 연결이 없다. 따라서 Firestore 읽기·쓰기는 선택한 Firebase 프로젝트의 규칙과 데이터에 영향을 줄 수 있다. 규칙 변경은 테스트용 프로젝트에서 소유자 허용, 비소유자 거부, 공개 읽기, 거부되어야 할 쓰기를 작은 범위로 검증한다.
 
-`--only functions`은 Firestore, Auth, Hosting Emulator를 시작하지 않는다. 또한 앱 Firebase 초기화에는 `connectFirestoreEmulator`나 `connectAuthEmulator` 연결이 없다. 따라서 로컬에서 Firestore 읽기·쓰기를 수행할 경우 선택한 Firebase 프로젝트의 규칙과 데이터에 영향을 준다. 규칙 변경을 안전하게 점검하려면 먼저 인증·소유자·공개 읽기·거부되어야 할 쓰기를 실제 테스트용 프로젝트에서 작은 범위로 확인하고, 운영 프로젝트를 선택한 상태에서 임의 데이터를 만들지 않는다.
+Functions의 AI 경로를 확인하려면 로컬 `functions/.env`에 필요한 제공자 키가 있어야 한다. 키가 없을 때의 오류 경로도 검증하되 값을 노출하지 않는다. 사전 생성 서버 작업은 [사용자 덱 사전 생성](../flashcard/pregeneration.md), 알림의 브라우저·서버 경계는 [시간대 기반 푸시 알림](push-notifications.md)을 참고한다.
 
-Functions의 `OPENAI_API_KEY`가 없으면 AI HTTP 함수는 오류를 응답한다. 키가 필요한 호출을 검증할 때는 키가 로컬에 존재하는지 확인하되, 터미널 출력·스크린샷·PR에 값을 노출하지 않는다. AI 호출의 쿼터와 실패 의미는 [공개 AI 함수 호출 경계](../architecture/ai-call-guard.md)에, 서버 사전 생성 작업은 [오늘의 플래시카드 사전 생성](../flashcard/pregeneration.md)에 정리되어 있다.
+## 빌드와 배포 단위
 
-## 빌드와 배포 불변식
-
-루트 `pnpm build`는 워크스페이스 전체의 build 스크립트를 실행한다. `app`은 `tsc && vite build`로 `app/dist`를 만들고, `functions`는 `tsc`로 `functions/lib`을 만든다.
+루트 `pnpm build`는 두 워크스페이스의 build 스크립트를 실행한다. `app`은 `tsc && vite build`로 `app/dist`를 만들고, `functions`는 `tsc`로 `functions/lib`을 만든다. 두 생성물은 Git에서 무시된다.
 
 ```bash
 pnpm build
 pnpm --filter functions lint
 ```
 
-`firebase.json`에서 Functions는 배포 직전에 `pnpm --prefix "$RESOURCE_DIR" run build`라는 predeploy를 실행한다. 따라서 Functions 단독 배포에는 컴파일 보호막이 있다. 반면 Hosting 설정의 public 디렉터리는 `app/dist`지만 **Hosting에는 predeploy가 없다.** `firebase deploy`나 `firebase deploy --only hosting`은 Vite를 실행하지 않고 현재 존재하는 `app/dist`를 업로드한다.
+`firebase.json`에서 Functions는 배포 직전에 `pnpm --prefix "$RESOURCE_DIR" run build`를 실행한다. Firestore 규칙도 같은 Firebase 설정의 배포 대상이다. 반면 Hosting은 `app/dist`를 public 디렉터리로 지정할 뿐 Vite를 실행하는 predeploy가 없다. 따라서 `firebase deploy`와 `firebase deploy --only hosting`은 현재 있는 `app/dist`를 업로드하며, Hosting을 배포하기 전에 현재 검토한 환경 변수로 `pnpm build`를 성공시켜야 한다.
 
-따라서 다음은 배포 불변식이다.
+Functions 진입점은 Admin 앱을 초기화하고 HTTP·스케줄·태스크 트리거 모듈을 export한다. 전역 `maxInstances: 10`도 배포되는 함수 집합에 적용된다. Functions와 규칙의 변경은 함께 배포하는 서버 측 계약인지 검토하고, 스케줄·태스크 변경은 배포 직후가 아니라 다음 트리거 또는 의도적인 운영 검증 시점에 결과가 나타날 수 있음을 고려한다.
 
-> Hosting을 배포하기 전에는, 현재 검토한 환경 변수로 `pnpm build`를 성공시켜 새 `app/dist`를 만들어야 한다.
+Hosting은 `/app`과 `/app/**`를 `app.html`로 rewrite하고, `/terms`와 `/privacy`를 각각 정적 문서로 보낸다. Vite는 랜딩·앱·약관·개인정보의 한국어·영어 HTML, 총 여섯 입력을 빌드한다. 라우트나 엔트리를 바꾼 배포 뒤에는 `/`, `/app`, `/app/` 하위 새로고침, `/terms`, `/privacy`를 모두 확인한다. 시스템 경계의 개요는 [시스템 개요와 런타임 경계](../architecture/system-overview.md)를 참고한다.
 
-이를 생략하면 배포가 실패할 수도 있지만, 더 위험하게는 이전 산출물이 남아 있으면 오래된 Functions URL·코드·정적 파일을 정상 배포처럼 올릴 수 있다. `app/dist`와 `functions/lib`은 무시되는 생성물이라 clone 후에는 특히 이 순서를 생략할 수 없다.
+## PWA 캐시를 고려한 배포 후 확인
 
-Hosting은 `/app`과 `/app/**`를 `app.html`로 rewrite하고 `/terms`, `/privacy`는 각 정적 HTML로 보낸다. `vite.config.ts`는 랜딩, 앱, 약관, 개인정보 HTML을 다중 입력으로 빌드한다. 라우트나 엔트리 변경 배포에서는 루트 랜딩, `/app` 새로고침, 약관·개인정보 경로가 모두 새 `app/dist`에서 의도한 문서를 내는지 점검한다.
+Vite PWA 설정은 `registerType: 'autoUpdate'`를 사용하고 JavaScript·CSS·HTML·아이콘·이미지 정적 자산을 Workbox precache 대상으로 지정한다. navigation fallback은 `/app.html`이다. 따라서 Hosting에 새 `app/dist`를 올렸더라도 이미 설치되었거나 열려 있던 클라이언트는 서비스 워커 갱신과 캐시 교체 시점 때문에 이전 HTML·번들·Functions URL을 잠시 사용할 수 있다.
 
-## 안전한 배포 절차
+배포 후에는 새 브라우저 세션뿐 아니라 기존 탭 또는 설치된 PWA에서도 다음을 확인한다.
 
-영향 범위를 분리해 검증하고 배포한다. Functions와 Firestore 규칙이 같이 바뀌면 먼저 두 서버 측 단위를 배포해 API와 권한 계약을 맞춘 뒤, 검증한 번들을 Hosting에 올린다.
+- 새로고침 뒤 변경한 화면과 실제 API 대상이 갱신됐는지 브라우저 네트워크 도구로 확인한다.
+- 예상과 다른 이전 번들이 계속 보이면 서비스 워커의 갱신 상태와 캐시를 먼저 점검하고, 하드 새로고침 또는 서비스 워커 갱신 뒤 다시 확인한다.
+- `/app` 진입과 하위 라우트 새로고침이 `app.html` fallback과 Hosting rewrite 모두에서 정상인지 확인한다.
+
+수동으로 등록하는 `/firebase-messaging-sw.js`는 푸시 메시징용 서비스 워커이므로, Workbox의 앱 캐시 문제와 혼동하지 않는다.
+
+## 안전한 배포 순서와 점검표
+
+Functions와 Firestore 규칙이 함께 바뀌면 서버 측 단위를 먼저 배포하고, 그 계약을 가리키도록 빌드한 Hosting 번들을 배포한다.
 
 ```bash
-# 1. 활성 Firebase 프로젝트를 눈으로 확인
+# 1. 활성 Firebase 프로젝트 확인
 firebase use
 
-# 2. app/.env의 Functions URL 계약을 확인한 뒤 전체 빌드 및 Functions 정적 검사
+# 2. URL 계약 확인, 빌드, 정적 검사
 pnpm proxy
 pnpm build
 pnpm --filter functions lint
@@ -175,21 +194,13 @@ firebase deploy --only functions,firestore:rules
 firebase deploy --only hosting
 ```
 
-전체 배포가 필요한 경우 루트 명령도 사용할 수 있다.
+`pnpm push`는 `firebase deploy`의 별칭일 뿐 Hosting 빌드를 대신하지 않는다. 전체 배포에도 위의 환경 변수·활성 프로젝트·산출물 점검을 선행한다.
 
-```bash
-pnpm push
-```
+배포 전후에는 다음을 기록 가능한 범위에서 확인한다.
 
-다만 `pnpm push`는 `firebase deploy`의 별칭일 뿐 Hosting 빌드를 대신하지 않는다. 위의 빌드·활성 프로젝트·환경 변수 점검을 먼저 수행한 뒤에만 사용한다. Functions만 수정했더라도 클라이언트 URL이나 응답 계약이 바뀌었다면 Hosting을 포함해 새 번들을 배포해야 한다. 반대로 정적 UI만 바뀐 경우에도 Hosting predeploy 부재 때문에 build는 여전히 선행 조건이다.
-
-### 배포 전후 점검표
-
-- `firebase use`가 의도한 프로젝트를 가리키는지 확인한다. 프로젝트 ID나 키 값을 문서화하거나 공유하지 않는다.
-- `pnpm proxy` 실행 뒤 `VITE_FUNCTIONS_URL_PROD`가 현재 프로젝트·리전과 일치하는지, 비어 있지 않은 오래된 값이 남지 않았는지 확인한다.
-- `pnpm build`와 `pnpm --filter functions lint`가 통과하는지 확인한다. 저장소에는 전용 자동 테스트 스위트가 없으므로 변경한 경계를 수동으로 확인한다.
-- Functions 변경이면 Emulator에서 대표 HTTP 요청과 인증 실패 경로를 확인한다. 공개 AI 호출은 한도·외부 모델 비용이 있으므로 반복 호출을 무작정 하지 않는다.
-- 규칙 변경이면 최소한 소유자 읽기·쓰기, 비소유자 접근 거부, 공개 캐시 읽기, 서버 전용 컬렉션의 클라이언트 거부를 확인한다. 규칙은 Admin SDK 경로에는 적용되지 않으므로 Functions의 인증·입력 검증도 별도로 점검한다.
-- Hosting 배포 뒤 `/`, `/app`, `/app/` 하위 새로고침, `/terms`, `/privacy`를 확인하고, 실제 API 호출이 이전 번들 URL이 아니라 기대한 Functions 대상으로 향하는지 브라우저 네트워크 도구에서 확인한다.
-
-Functions는 `index.ts`에서 HTTP·스케줄·태스크 트리거를 export하므로 서버 배포에는 이 집합이 함께 포함된다. 전역 컨테이너 상한도 함께 적용된다. 배포가 끝났다고 스케줄 작업의 결과까지 즉시 바뀌는 것은 아니다. 예를 들어 랜딩 데모 카드의 갱신·사전 생성은 별도 스케줄과 데이터 상태를 따르므로, 트리거 변경은 다음 실행 또는 의도적인 운영 검증 시점까지 관찰해야 한다.
+- `firebase use`가 의도한 프로젝트인지 확인한다. ID나 계정 정보를 출력·공유하지 않는다.
+- `pnpm proxy` 뒤 Functions URL 키에 오래된 비어 있지 않은 값이 남지 않았는지 확인한다.
+- `pnpm build`와 `pnpm --filter functions lint`가 통과하는지 확인한다. 저장소에는 전용 자동화 테스트 스위트가 없으므로 변경 경계의 정상·실패 경로를 수동 확인한다.
+- Functions 변경이면 Emulator에서 대표 HTTP 요청과 인증 실패 경로를 확인한다. 반복적인 AI 호출은 비용·한도를 고려한다.
+- 규칙 변경이면 허용·거부 사례를 테스트용 프로젝트에서 확인한다. Admin SDK 경로에는 Firestore 규칙이 적용되지 않으므로 Functions의 인증·입력 검증도 별도로 확인한다.
+- Hosting 배포 뒤 라우트, 실제 API 대상, 기존 PWA 클라이언트의 캐시 갱신을 확인한다.
