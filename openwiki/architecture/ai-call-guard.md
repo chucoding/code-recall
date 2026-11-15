@@ -1,7 +1,7 @@
 ---
 type: 보안 경계
-title: 공개 AI 함수 호출 경계
-description: 비로그인 데모와 로그인 사용자가 호출하는 공개 AI HTTP 함수에서 인증별 일일 한도, 서버 소유 트랜잭션 카운터, 입력 크기 제한 및 실패 시 차감 의미를 설명한다.
+title: AI 호출 비용·보안 경계
+description: 공개 HTTP AI 엔드포인트에서 인증 상태별 일일 사용량, 익명 전체 상한, 서버 전용 카운터와 입력 크기 경계로 모델 호출을 제한하는 방식을 설명한다. 질문 재생성 경로의 별도 카운터 정책과 공용 guard와의 차이도 다룬다.
 tags: [ai, security, cost-control, firebase]
 sources:
   - id: openwiki-source-6a1f26bbf1befe09d5589480
@@ -10,6 +10,8 @@ sources:
     resource: repo://app/src/features/ai-generation/api/translateApi.ts
   - id: openwiki-source-154558270ce37c4ae3ee5619
     resource: repo://app/src/shared/api/auth-header.ts
+  - id: openwiki-source-1cc9cef288222413560b8ebf
+    resource: repo://app/vite.config.ts
   - id: openwiki-source-60b51f83565a4de6497fc329
     resource: repo://firestore.rules
   - id: openwiki-source-c4371dcf561815a8869a8951
@@ -24,102 +26,110 @@ sources:
     resource: repo://functions/src/translateFlashcards.ts
 verified:
   - by: openwiki/0.7.0
-    at: 2026-10-05T07:59:19.883Z
-generated: { by: "openwiki/0.7.0", at: "2026-10-05T07:59:19.883Z" }
+    at: 2026-11-15T20:00:44.576Z
+generated: { by: "openwiki/0.7.0", at: "2026-11-15T20:00:44.576Z" }
 ---
 
-# 범위와 목적
+# 범위와 책임
 
-`openaiChatCompletions`와 `translateFlashcards`는 랜딩 데모도 호출해야 하므로 CORS를 허용하고 `invoker: "public"`인 HTTP 함수다. 프런트엔드는 프로덕션에서 환경 변수로 정한 Functions 기본 URL에 함수 이름을 붙여 호출하고, 그 URL은 빌드 산출물에 포함된다. 따라서 URL을 비공개 정보처럼 취급하거나 주소를 숨겨 모델 호출을 막는 방식은 성립하지 않는다.
+`openaiChatCompletions`와 `translateFlashcards`는 비로그인 랜딩 데모를 위해 CORS를 허용하고 `invoker: "public"`으로 배포한 HTTP 함수다. 클라이언트는 프로덕션에서 `VITE_FUNCTIONS_URL_PROD`에 함수 이름을 붙여 `POST`하며, 로그인 상태면 Firebase ID 토큰을 `Authorization` 헤더에 보낸다. 개발 중에는 같은 클라이언트 코드가 `/api`를 사용하고 Vite 프록시가 이를 로컬 Functions URL로 전달한다.
 
-이 경계의 보호 수단은 `functions/src/ai-guard.ts`의 `consumeAiQuota`다. 모델 요청 전에 서버가 소유하는 일일 카운터를 원자적으로 차감하고, 호출자는 인증 상태에 따라 다른 버킷을 사용한다. 이는 공개 엔드포인트를 없애는 장치가 아니라 공개 상태를 전제로 호출량과 입력량을 제한하는 장치다.
-
-질문 재생성의 `regenerateCardQuestion`도 공개 HTTP 함수지만 이 공용 guard의 대상은 아니다. 해당 함수는 `regenerateCounts`와 `demoRegenerateCounts`로 별도의 인증·기기 식별자 기반 정책을 구현한다. 따라서 이 문서의 한도나 실패 차감 규칙을 재생성 경로에 일반화해서는 안 된다.
+따라서 함수 URL을 숨기는 것은 보안 경계가 될 수 없다. 주소는 클라이언트가 호출해야 하는 공개 진입점이며, 인증되지 않은 요청도 도달할 수 있다. 이 경계의 책임은 진입 자체를 감추는 것이 아니라, 모델 호출 전에 서버가 신뢰하는 식별자·일일 사용량·입력 크기를 검사해 호출량을 제한하는 것이다. 공용 정책의 소유자는 `functions/src/ai-guard.ts`의 `consumeAiQuota`다.
 
 ```mermaid
-sequenceDiagram
-  participant Browser
-  participant Function as Public AI function
-  participant Guard as consumeAiQuota
-  participant Store as Firestore aiUsage
-  participant Model as OpenAI
-  Browser->>Function: POST with optional Bearer token
-  Function->>Function: validate request and input limits
-  Function->>Guard: consume quota
-  Guard->>Store: transaction read and increment
-  alt blocked or invalid token
-    Guard-->>Function: status and error body
-    Function-->>Browser: error response
-  else allowed
-    Guard-->>Function: allowed
-    Function->>Model: bounded prompt
-    Model-->>Function: completion or failure
-    Function-->>Browser: normalized result or 500
-  end
+flowchart TD
+  Browser["브라우저"] --> Endpoint["공개 HTTP 함수"]
+  Endpoint --> Valid["요청 형식과 사전 조건 검사"]
+  Valid -->|"실패"| BadRequest["400 또는 405 또는 413"]
+  Valid -->|"통과"| Guard["consumeAiQuota"]
+  Guard --> Auth{"Bearer 토큰이 있는가"}
+  Auth -->|"예"| Verify["ID 토큰 검증 및 uid 카운터 트랜잭션"]
+  Auth -->|"아니오"| Anon["IP 해시와 전역 카운터 트랜잭션"]
+  Verify -->|"잘못된 토큰"| Unauthorized["401 UNAUTHENTICATED"]
+  Verify -->|"한도 초과"| Limited["429 LIMIT_EXCEEDED"]
+  Anon -->|"한도 초과"| Limited
+  Verify -->|"허용 및 차감 완료"| Model["OpenAI 호출"]
+  Anon -->|"허용 및 차감 완료"| Model
+  Model --> Result["정규화한 결과 또는 500"]
 ```
 
-*공개 호출부터 검증, 한도 차감, 모델 호출과 응답까지의 순서이며, 모델 호출 전 통과한 요청은 이미 차감되어 있다.*
+*공용 생성·번역 경로에서 요청 검증 뒤 quota를 원자적으로 차감하고, 허용된 요청만 모델로 진행하는 분기다.*
 
-## 호출자 구분과 일 경계
+`openaiChatCompletions`는 API 키와 `text` 존재를 확인한 뒤 guard를 호출한다. `translateFlashcards`는 `POST` 여부, 카드 배열과 대상 언어, 아래의 카드 수·본문 길이를 먼저 검증한다. 따라서 번역의 `413`과 형식 오류는 quota를 소모하지 않는다. 반면 생성 프롬프트의 자르기는 guard 뒤 공용 모델 호출 안에서 일어난다.
+
+## 인증별 버킷과 일 경계
 
 | 호출 상태 | 식별 키 | 일일 한도 | 추가 제한 |
 | --- | --- | ---: | --- |
-| 유효한 Firebase ID 토큰이 있는 Free 사용자 | 검증된 `uid` | 100 | 없음 |
-| 유효한 Firebase ID 토큰이 있는 Pro 사용자 | 검증된 `uid` | 300 | 없음 |
-| Authorization 헤더가 없는 데모 호출 | `X-Forwarded-For` 첫 값 또는 `req.ip`의 SHA-256 앞 32자 | 30 | 모든 비로그인 호출이 공유하는 500회 상한 |
+| 유효한 Firebase ID 토큰의 Free 사용자 | 검증된 `uid` | 100회 | 없음 |
+| 유효한 Firebase ID 토큰의 Pro 사용자 | 검증된 `uid` | 300회 | 없음 |
+| `Authorization` 헤더가 없는 익명 호출 | `X-Forwarded-For` 첫 값 또는 `req.ip`의 SHA-256 앞 32자 | 30회 | 모든 익명 호출이 공유하는 500회 상한 |
 
-`Authorization`이 `Bearer `로 시작하면 guard는 익명으로 되돌아가지 않고 ID 토큰을 검증한다. 검증 실패는 `401`과 `UNAUTHENTICATED`로 끝나며 카운터를 차감하지 않는다. 토큰이 없을 때만 익명 정책을 적용한다. 앱 API 클라이언트도 로그인 상태라면 ID 토큰을 헤더에 실어, 로그인 호출이 데모 버킷을 소모하지 않게 한다.
+`Authorization`이 `Bearer `로 시작하면 익명으로 폴백하지 않고 Firebase Admin SDK로 ID 토큰을 검증한다. 검증 실패는 카운터를 바꾸지 않고 `401 UNAUTHENTICATED`를 반환한다. 헤더가 없을 때만 익명 버킷을 사용한다. 앱의 `getAuthHeader`는 현재 로그인 사용자의 토큰을 가져오지 못하면 빈 헤더를 반환하므로, 이 경우 서버는 익명 정책으로 처리한다.
 
-날짜 키는 현재 시각에 9시간을 더한 뒤 ISO 날짜 부분을 취한 `YYYY-MM-DD`이며, 즉 KST 자정에 일일 집계가 바뀐다. 각 문서는 `date`, `count`, `updatedAt`을 저장하며 문서의 날짜가 오늘과 다르면 기존 `count`는 0으로 간주한다. 별도 정리 작업 없이 다음 번 차감에서 새 날짜와 카운트로 덮어쓴다.
+Pro 판정은 서버가 읽은 `users/{uid}.subscriptionTier === "pro"`이다. 클라이언트는 이 필드를 변경할 수 없도록 Firestore 규칙이 사용자 쓰기 필드를 제한한다. 일자 키는 현재 시각에 9시간을 더해 만든 KST `YYYY-MM-DD`다. 카운터 문서의 `date`가 오늘과 다르면 기존 `count`를 0으로 취급하고 다음 허용 요청이 새 날짜·카운트·`updatedAt`을 쓴다. 별도 정리 작업은 필요하지 않다.
 
-## 왜 익명 한도가 두 개인가
+## 익명 상한이 IP 은닉보다 중요한 이유
 
-IP별 문서 ID에는 원본 IP 대신 해시만 저장한다. 그러나 `X-Forwarded-For`는 호출자가 채울 수 있으므로 IP별 30회 제한만으로는 헤더 값을 바꿔 우회할 수 있다. 익명 차감은 같은 Firestore 트랜잭션 안에서 호출자 문서와 `anonGlobal` 문서를 함께 읽고 둘 다 증가시킨다. 전역 카운터가 먼저 500에 도달했는지 검사한 뒤 호출자 한도를 검사하므로, IP를 바꾼 요청도 공유 상한을 넘으면 `429`, `DEMO_BUDGET_EXCEEDED`가 된다.
+익명 호출자 문서에는 원본 IP가 아니라 해시만 저장한다. 이는 저장되는 식별 정보를 줄이는 조치이지 요청 출처를 증명하는 보안 경계는 아니다. 특히 `X-Forwarded-For`의 첫 값은 호출자가 넣을 수 있으므로, 요청자가 값을 바꾸면 IP별 30회 제한의 키를 계속 바꿀 수 있다. URL이나 클라이언트 주소를 숨겨도 공개 HTTP 요청의 헤더를 통제할 수 없으므로 같은 문제가 남는다.
 
-반대로 로그인 호출에는 이 익명 전역 상한을 적용하지 않는다. 익명 트래픽이 전역 몫을 모두 써도 로그인 사용자의 카드 생성이 함께 중단되지 않게 하는 분리다. 더 강한 요청 출처 증명이 필요하면 이 코드만으로는 충분하지 않으며, App Check를 도입하려면 Firebase 콘솔의 reCAPTCHA 등록과 enforcement 설정을 함께 운영해야 한다.
+이를 완화하는 비용 경계는 `anonGlobal`이다. 익명 요청은 호출자 문서와 전역 문서를 **하나의 Firestore 트랜잭션**에서 읽고, 전역 상한을 먼저 검사한 뒤 둘을 함께 1씩 증가시킨다. 이 서버 전용 공유 카운터는 위조 가능한 호출자 키와 독립적이므로, IP별 제한을 우회해도 하루 익명 호출 전체는 500회 뒤 `429 DEMO_BUDGET_EXCEEDED`로 멈춘다. 로그인 호출은 이 전역 버킷을 쓰지 않아 익명 트래픽이 로그인 사용자의 버킷을 소진시키지는 않는다.
 
-## 카운터 소유권과 원자성
+더 강한 출처 증명은 현재 IP 해시만으로 제공되지 않는다. App Check를 추가하려면 코드 외에도 Firebase 콘솔에서 reCAPTCHA 등록과 enforcement를 함께 운영해야 한다. 이 변경은 전역 상한을 대체하기보다, 위조 요청이 함수까지 도달하는 것을 줄이는 별도 계층으로 검토한다.
 
-카운터는 `users/{uid}`가 아니라 `aiUsage` 컬렉션에 있다. Firestore 규칙은 이 컬렉션에 클라이언트용 `match` 규칙을 두지 않아 기본 거부이며, Cloud Functions의 Admin SDK만 접근한다. 사용자가 쓸 수 있고 삭제도 가능한 사용자 문서에 사용량을 저장하면 문서 삭제·재생성으로 한도를 초기화할 수 있기 때문이다. 이 저장소 경계의 상세는 [Firestore 데이터 경계](firestore-data-boundary.md)에서 다룬다.
+## 서버가 소유하는 카운터와 원자성
 
-- 로그인 호출은 `user__${uid}` 문서를 트랜잭션으로 읽고, 오늘의 카운트가 등급 한도 미만일 때만 1 증가시킨다.
-- 익명 호출은 `anon__${ipHash}`와 `anonGlobal`을 **한 트랜잭션**에서 읽고 쓴다. 읽기와 쓰기를 분리하면 동시 요청이 같은 잔여 횟수를 보고 상한 이상으로 통과할 수 있다.
-- 한도에 막힌 요청은 `429`를 돌려주고 카운터를 바꾸지 않는다. 일반 한도 오류는 `LIMIT_EXCEEDED`와 적용 한도를 담는다.
+`aiUsage`는 `users/{uid}`와 분리된 서버 전용 컬렉션이다. Firestore 규칙에 이 컬렉션의 클라이언트 `match` 규칙이 없으므로 기본 거부이며, Functions의 Admin SDK만 읽고 쓴다. 반대로 `users/{uid}`는 본인이 삭제할 수 있다. 사용량을 그 문서에 두면 삭제 후 재생성으로 한도를 초기화할 수 있으므로, 서버 전용 상태가 호출 한도의 필수 조건이다. 데이터 접근 경계의 전체 맥락은 [Firestore 데이터 경계](firestore-data-boundary.md)를 참고한다.
 
-# 입력 크기 경계
+- 로그인 요청은 `user__${uid}`를 트랜잭션으로 읽고, 오늘의 수가 등급 한도 미만일 때만 증가시킨다.
+- 익명 요청은 `anon__${ipHash}`와 `anonGlobal`을 같은 트랜잭션에서 읽고 쓴다. 읽기와 증가를 분리하면 동시 요청이 같은 잔여 횟수를 보고 상한 이상으로 통과할 수 있다.
+- 한도에 막힌 요청은 `429`를 반환하고 증가시키지 않는다. 일반 한도 초과의 코드는 `LIMIT_EXCEEDED`이며 적용 한도를 포함한다.
 
-호출 횟수 제한은 요청 하나가 매우 큰 프롬프트가 되는 문제를 해결하지 않는다. 두 공개 함수는 모델 호출 전에 다음 입력 경계를 적용한다.
+## 입력 크기 경계
 
-| 경로 | 제한 | 처리 |
+호출 횟수만 제한하면 하나의 요청이 과도하게 큰 프롬프트가 될 수 있다. 모델 호출 전후의 위치가 서로 다른 두 입력 정책이 이를 보완한다.
+
+| 경로 | 제한 | 처리와 quota 관계 |
 | --- | --- | --- |
-| 카드 생성 `openaiChatCompletions` | `MAX_FLASHCARD_PROMPT_CHARS` 30,000자 | 공용 `requestFlashcardCompletion`이 본문을 앞부분으로 자르고 경고를 남긴 뒤 호출한다. 큰 커밋을 이유로 정상 흐름 전체를 거부하지 않는다. |
-| 카드 번역 `translateFlashcards` | `MAX_TRANSLATE_CARDS` 200장 | 초과 시 모델 호출·쿼터 차감 전에 `413 PAYLOAD_TOO_LARGE`로 거부한다. |
-| 카드 번역 `translateFlashcards` | `MAX_TRANSLATE_PROMPT_CHARS` 120,000자 | 질문·답변 쌍을 JSON 문자열로 만든 길이가 초과하면 같은 `413`으로 거부한다. |
+| 카드 생성 `openaiChatCompletions` | `MAX_FLASHCARD_PROMPT_CHARS` 30,000자 | `requestFlashcardCompletion`이 본문 앞부분을 잘라 모델에 보낸다. 이 동작은 quota 차감 뒤이므로 허용된 생성 요청은 잘렸더라도 1회를 쓴다. |
+| 카드 번역 `translateFlashcards` | `MAX_TRANSLATE_CARDS` 200장 | 초과하면 모델 호출과 quota 차감 전에 `413 PAYLOAD_TOO_LARGE`로 거부한다. |
+| 카드 번역 `translateFlashcards` | `MAX_TRANSLATE_PROMPT_CHARS` 120,000자 | 질문·답변 쌍을 JSON으로 직렬화한 길이가 초과하면 같은 `413`으로 거부한다. |
 
-번역은 결과 배열을 원본 카드 인덱스에 맞춰 다시 붙인다. 입력을 임의로 잘라 카드 수가 달라지면 이 대응이 깨질 수 있으므로, 생성 경로와 달리 잘라서 계속하지 않는다. 번역 결과 수가 실제 카드 수와 달라도 함수는 경고를 남기고 없는 항목에는 원본 질문·답변을 유지한다.
+번역은 모델 결과를 원본 카드의 인덱스에 다시 결합한다. 입력을 임의로 자르면 카드 수와 순서의 대응을 보장할 수 없으므로 생성과 달리 계속 진행하지 않는다. 응답 항목 수가 원본과 다르면 경고를 남기고, 없는 번역에는 원본 질문·답변을 유지한다.
 
-# 차감 순서와 실패 의미
+## 차감 시점과 실패 계약
 
-입력 검증의 위치가 비용 경계의 일부다.
+guard가 `allowed: true`를 반환할 때 Firestore 트랜잭션의 증가는 이미 끝났다. 이후 모델의 비정상 상태, 네트워크 오류, 또는 번역 응답 JSON 파싱 오류가 나도 `aiUsage`를 감소시키는 로직은 없다. 즉 모델 결과를 받지 못한 호출도 공용 생성·번역 버킷에서는 이미 한 번 사용한 것으로 남는다. 선차감은 동시 요청이 동일한 잔여 한도를 중복 소비하는 일을 막지만, 실패한 요청을 자동 환불하지는 않는다.
 
-1. `openaiChatCompletions`는 API 키 설정과 `text` 존재를 확인한 뒤 quota를 차감하고, 공용 생성 함수가 프롬프트를 자른 뒤 모델을 호출한다.
-2. `translateFlashcards`는 HTTP 메서드, 요청 구조, 카드 수, 직렬화한 본문 길이를 먼저 확인한 뒤 quota를 차감하고 모델을 호출한다.
-3. guard가 허용을 반환하는 시점에는 Firestore 트랜잭션의 증가가 이미 완료되어 있다. 그 뒤 모델이 오류를 반환하거나, 네트워크 오류·응답 JSON 파싱 오류가 나도 차감은 되돌리지 않는다.
+환불 또는 재시도를 도입하려면 오류 처리기에 단순 감소 연산을 추가해서는 안 된다. 중복 오류 처리·재시도와 경쟁하지 않도록 요청 식별자, 예약 상태, 최종 확정 상태를 갖는 별도 설계가 필요하다.
 
-이 선차감은 동일한 허용량을 여러 동시 요청이 소비하는 일을 막는 대신, 모델 실패가 사용자 관점에서는 성공 결과 없이 한도를 소비할 수 있음을 뜻한다. 재시도나 환불 동작을 추가하려면 단순 감소 연산을 오류 처리기에 붙이지 말고, 요청 식별자와 최종 상태를 포함하는 별도 예약·확정 설계를 도입해야 한다. 그렇지 않으면 중복 실패 처리나 재시도로 다시 상한을 우회할 수 있다.
+함수의 오류 응답도 외부 계약이다. guard의 인증 실패와 한도 초과는 각각 `401`·`429`와 구조화된 본문을 호출자에게 전달한다. 번역은 공급자 비정상 응답의 상태만 일반 오류 메시지에 넣지만, 카드 생성은 `OpenAIRequestError`의 공급자 상태와 본문을 500 응답에 포함한다. 공급자 오류의 노출 정책을 변경한다면 두 경로를 함께 검토해야 한다.
 
-응답도 호출자가 관찰하는 계약이다. guard의 인증 실패·한도 초과는 각각 `401`·`429`와 구조화된 오류 본문을 그대로 반환한다. 번역 함수는 모델 비정상 응답의 상태 코드만 오류 메시지에 담지만, 카드 생성 함수의 `OpenAIRequestError` 처리기는 모델 오류 본문을 500 응답에 포함한다. 외부 공급자 오류 본문을 클라이언트에 노출하지 않는 정책으로 바꾸려면 이 두 경로를 함께 검토해야 한다.
+# 질문 재생성은 별도 정책이다
 
-# 변경 및 운영 점검
+`regenerateCardQuestion`도 CORS와 `invoker: "public"`을 사용하는 공개 HTTP 함수지만 `consumeAiQuota`를 호출하지 않는다. 그러므로 위의 `aiUsage` 한도, 익명 전역 상한, 입력 자르기 및 선차감 규칙을 이 경로에 적용해 해석해서는 안 된다.
 
-- 공개 함수 이름이나 호출 URL을 바꾸면 앱의 `openaiApi.ts`와 `translateApi.ts`가 조합하는 URL, 그리고 개발 서버의 `/api` 프록시를 함께 확인한다. 프로덕션 URL은 빌드 시 환경 변수에서 인라인되며, 로컬 개발은 `/api`를 Functions Emulator 대상으로 다시 쓴다.
-- 등급 판정은 `users/{uid}.subscriptionTier === "pro"`만 Pro로 보고 그 외는 Free로 취급한다. 한도나 등급을 바꿀 때는 서버가 신뢰하는 이 필드의 쓰기 권한도 [Firestore 데이터 경계](firestore-data-boundary.md)와 함께 검토한다.
-- `aiUsage`의 문서 ID 접두사와 `anonGlobal`은 정책 상태의 일부다. 이름을 바꾸거나 사용자 문서로 옮기면 기존 사용량 연속성과 클라이언트 비쓰기 불변식을 명시적으로 이전해야 한다.
-- Functions는 배포 전에 TypeScript를 빌드한다. 변경 후 최소한 다음을 실행하고, Emulator에서 유효 토큰·없는 토큰·잘못된 Bearer 토큰, 각 413 입력, 한도 도달, 모델 실패 뒤 재호출을 확인한다.
+| 재생성 호출 상태 | 상태 컬렉션과 키 | 일일 한도 | 차감 시점 |
+| --- | --- | ---: | --- |
+| 로그인 Free | `regenerateCounts/{uid}` | 3회 | 모델 응답을 파싱한 뒤 성공 응답 직전 |
+| 로그인 Pro | `regenerateCounts/{uid}` | 20회 | 모델 응답을 파싱한 뒤 성공 응답 직전 |
+| 익명 데모 | 해시한 `demoDeviceId`의 `demoRegenerateCounts/{hash}` | 1회 | 모델 응답을 파싱한 뒤 성공 응답 직전 |
+
+로그인 재생성은 Bearer 토큰이 있으면 이를 검증하고, 없으면 호출자가 보낸 `demoDeviceId`를 필수로 한다. 두 종류의 카운터 모두 KST 날짜가 달라지면 0부터 다시 센다. 이 카운터들은 `users/{uid}` 밖에 있어 클라이언트가 사용자 문서를 삭제해서 초기화할 수 없고, Firestore 규칙도 `regenerateCounts`에는 본인 읽기만 허용하며 `demoRegenerateCounts`에는 클라이언트 규칙을 두지 않는다.
+
+공용 guard와 달리 재생성은 카운터를 읽어 한도를 검사한 후 모델을 호출하고, 성공 처리 끝에 `set`한다. 따라서 모델 오류와 파싱 오류는 재생성 카운터를 소모하지 않는다. 또한 이 읽기·호출·쓰기 흐름은 트랜잭션이 아니므로 동시에 여러 요청이 같은 잔여 횟수를 관찰하면 설정한 한도를 초과해 성공할 가능성이 있다. 재생성 한도를 공용 guard 수준으로 엄격히 적용하려면 모델 호출 전에 서버 전용 트랜잭션으로 예약·차감하는 방식과 실패 처리 정책을 명시해야 한다.
+
+# 변경·운영·검증
+
+- 공개 함수 이름 또는 기본 URL을 바꾸면 `openaiApi.ts`, `translateApi.ts`, 그리고 로컬 `/api` 프록시를 함께 변경·검증한다. 배포 진입점은 `functions/src/index.ts`의 export로 결정된다.
+- 한도 또는 등급을 바꿀 때는 상수만 바꾸지 말고 `subscriptionTier`의 서버 전용 쓰기 불변식, KST 일 경계, 기존 `aiUsage` 문서 ID의 연속성을 함께 검토한다.
+- `aiUsage`, `anonGlobal`, `regenerateCounts`, `demoRegenerateCounts`에 클라이언트 쓰기 규칙을 추가하지 않는다. 사용자가 카운터를 수정하거나 삭제할 수 있으면 호출 한도는 보안 경계가 아니다.
+- 현재 이 경로를 직접 다루는 자동 테스트 파일은 없다. Emulator 또는 배포 전 환경에서 유효 토큰·토큰 없음·잘못된 Bearer 토큰, 사용자·익명 한도 도달, 번역의 두 `413` 사례, 모델 실패 뒤 공용 quota 재호출, 동시 재생성 요청을 확인한다.
+- Functions 배포 전에는 TypeScript 빌드가 실행된다. 최소한 다음을 실행한다.
 
 ```bash
 pnpm --prefix functions run lint
 pnpm --prefix functions run build
 ```
 
-카드 생성의 공용 모델 호출 및 사전 생성 경로와의 관계는 [카드 생성 경로](../flashcard/generation-paths.md)에서 확인할 수 있다.
+카드 생성의 공용 모델 호출과 사전 생성 경로는 [카드 생성 경로](../flashcard/generation-paths.md), 덱 크기와 번역 입력의 관계는 [덱 크기 예산](../flashcard/deck-size-budget.md)에서 확인할 수 있다.
